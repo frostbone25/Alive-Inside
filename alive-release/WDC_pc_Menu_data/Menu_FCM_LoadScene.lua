@@ -36,20 +36,22 @@ end
 --enables some archives that the cutscene uses assets from
 local EnableCutsceneArchives = function()
     --enable these archives since the cutscene was built in S2 and uses S2 assets.
-    ResourceSetEnable("ProjectSeason2");
-    ResourceSetEnable("WalkingDead201"); --need this especially, contains flashback clem
+    --ResourceSetEnable("ProjectSeason2");
+    --ResourceSetEnable("WalkingDead201"); --need this especially, contains flashback clem
     
     --enable these since we use some particle effects from S4
-    ResourceSetEnable("WalkingDead401");
+    --ResourceSetEnable("WalkingDead401");
 end
 
 --function that is exectued when the user presses the play cutscene button in the menu
 PlayFirstCutsceneLevel = function()
     SetProjectSettings();
     EnableCutsceneArchives();
+    --ResourceSetEnable("AliveIn_Library_AliveInside");
+
 
     --note to self: we need to do a scene fade both when opening the scene and exiting the scene.
 
     --execute the cutscene level script
-    dofile("FirstCutsceneLevel.lua");
+    --dofile("ALIVE_Level_Sandbox.lua");
 end

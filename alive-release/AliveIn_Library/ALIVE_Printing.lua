@@ -868,7 +868,7 @@ end
 
 
 --loads the lines from agentName_propertyName_txtFile into an array
---probably a bad idea to load all the lines of a file into memory... but fuck it!
+--probably a bad idea to load all the lines of a big ass text file into memory... but fuck it!
 ALIVE_PrintValidNodeNames = function(agent)
     local theAgentName = AgentGetName(agent)
 

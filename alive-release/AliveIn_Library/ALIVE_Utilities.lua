@@ -3,13 +3,22 @@
 --||||||||||||||||||||| CUSTOM UTILITIES |||||||||||||||||||||
 
 ALIVE_Clamp = function(a, minimum, maximum)
-	if (a > maximum) then
-		return maximum;
-	elseif (a < minimum) then
-		return minimum;
-	else
-		return a;
-	end
+    if (a > maximum) then
+        return maximum;
+    elseif (a < minimum) then
+        return minimum;
+    else
+        return a;
+    end
+end
+
+ALIVE_Repeat = function(t, length)
+    return ALIVE_Clamp(t - math.floor(t / length) * length, 0.0, length);
+end
+
+ALIVE_PingPong = function(t, length)
+    t = ALIVE_Repeat(t, length * 2);
+    return length - math.abs(t - length);
 end
 
 ALIVE_NumberLerp = function(a, b, t)
@@ -17,7 +26,7 @@ ALIVE_NumberLerp = function(a, b, t)
 end
 
 ALIVE_Smoothstep = function(a, b, t)
-	return a + (b - a) * ( (-2 * math.pow(t, 3)) + (3 * math.pow(t, 2)) );
+    return a + (b - a) * ( (-2 * math.pow(t, 3)) + (3 * math.pow(t, 2)) );
 end
 
 ALIVE_VectorLerp = function(a, b, t)
@@ -36,7 +45,7 @@ ALIVE_VectorSmoothstep = function(a, b, t)
     return Vector(newX, newY, newZ);
 end
 
-ColorLerp = function(colorA, colorB, t)
+ALIVE_ColorLerp = function(colorA, colorB, t)
     local newColorR = ALIVE_NumberLerp(colorA.r, colorB.r, t);
     local newColorG = ALIVE_NumberLerp(colorA.g, colorB.g, t);
     local newColorB = ALIVE_NumberLerp(colorA.b, colorB.b, t);
@@ -46,24 +55,24 @@ ColorLerp = function(colorA, colorB, t)
 end
 
 ALIVE_GetTableType = function(tableValue)
-	local stringType = "table";
-	
-	local colorMatch = 0;
-	
-	for key, value in pairs(tableValue) do
-		--if the key is a string type
-		if (type(key) == "string") then
-			--check if the key name matches the variables of the color type
-			if (key == "r") or (key == "g") or (key == "b") or (key == "a") then
-				colorMatch = colorMatch + 1
-			end
-		end
+    local stringType = "table";
+    
+    local colorMatch = 0;
+    
+    for key, value in pairs(tableValue) do
+        --if the key is a string type
+        if (type(key) == "string") then
+            --check if the key name matches the variables of the color type
+            if (key == "r") or (key == "g") or (key == "b") or (key == "a") then
+                colorMatch = colorMatch + 1
+            end
+        end
     end
-	
-	--if the color is a full match then this table is infact a color
-	if (colorMatch == 4) then
-		stringType = "color";
-	end
-	
-	return stringType;
+    
+    --if the color is a full match then this table is infact a color
+    if (colorMatch == 4) then
+        stringType = "color";
+    end
+    
+    return stringType;
 end

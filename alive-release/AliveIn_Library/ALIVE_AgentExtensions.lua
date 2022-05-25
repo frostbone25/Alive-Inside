@@ -1,4 +1,4 @@
-﻿--||||||||||||||||||||| EXTENDED SCENE AGENT FUNCTIONS |||||||||||||||||||||
+--||||||||||||||||||||| EXTENDED SCENE AGENT FUNCTIONS |||||||||||||||||||||
 --||||||||||||||||||||| EXTENDED SCENE AGENT FUNCTIONS |||||||||||||||||||||
 --||||||||||||||||||||| EXTENDED SCENE AGENT FUNCTIONS |||||||||||||||||||||
 --these are extensions of the existing telltale scene agent functions
@@ -341,18 +341,3 @@ ALIVE_ChorePlayOnAgent = function(chore, agentName, priority, bWait)
         return ChorePlay(chore, priority, "default", agentName);
     end
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

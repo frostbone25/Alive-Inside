@@ -1,12 +1,13 @@
 {
   "formatVersion": "1",
   "tool": {
-    "game": "TTDS"
+    "game": "TTDS",
+    "legacyBuild": true
   },
   "mod": {
     "name": "Alive Inside",
     "version": "1.0",
-    "author": "changemymindpls1",
+    "author": "changemymindpls1 and droyti",
     "priority": 950
   }
 }
