@@ -18,6 +18,7 @@ local thirdperson_controller_anim_walking = nil;
 local thirdperson_controller_anim_running = nil;
 local thirdperson_controller_anim_crouchIdle = nil;
 local thirdperson_controller_anim_crouchMoving = nil;
+local thirdperson_controller_anim_blinking = nil;
 local thirdperson_controller_anim_idle_contribution = 0;
 local thirdperson_controller_anim_walk_contribution = 0;
 local thirdperson_controller_anim_running_contribution = 0;
@@ -53,18 +54,19 @@ local thirdperson_characterDirection = Vector(0, 0, 0);
 local thirdperson_characterOffset = Vector(0, 0, 0);
 local thirdperson_movementVector = Vector(0,0,0);
 local thirdperson_movementSpeed = 0.0;
-local thirdperson_constrainToWBOX = true;
+local thirdperson_constrainToWBOX = false;
 
 -------------------------- PROPERTIES - STATES --------------------------
 local thirdperson_state_moving = false;
 local thirdperson_state_running = false;
 local thirdperson_state_crouching = false;
+local thirdperson_state_dying = false;
 
 --|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER SETUP ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER SETUP ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER SETUP ||||||||||||||||||||||||||||||||||||||||||||||
 
-ALIVE_Gameplay_CreateThirdPersonController = function(findExistingCharacter)
+ALIVE_Gameplay_CreateThirdPersonController = function(findExistingCharacter, startingPosition)
     -----------------------------------------------
     local cam_prop = "module_camera.prop";
     local group_prop = "group.prop";
@@ -103,22 +105,16 @@ ALIVE_Gameplay_CreateThirdPersonController = function(findExistingCharacter)
     ALIVE_SetAgentWorldRotation(thirdperson_name_character, Vector(0, 0, 0), ThirdPerson_kScene);
     
     -----------------------------------------------
-    local controllersTable_aj = AgentGetControllers(agent_character);
+    local controllersTable_character = AgentGetControllers(agent_character);
     
-    for i, cnt in ipairs(controllersTable_aj) do
+    for i, cnt in ipairs(controllersTable_character) do
         ControllerKill(cnt);
     end
     
     -----------------------------------------------
     thirdperson_controller_anim_idle = PlayAnimation(agent_character, "sk63_idle_ajStandA.anm");
-    --thirdperson_controller_anim_idle = PlayAnimation(agent_character, "sk61_action_louisJumpGap.anm");
-    --thirdperson_controller_anim_idle = PlayAnimation(agent_character, "sk61_action_batmanJumpDownOneStoryToCatwoman.anm");
-    --thirdperson_controller_anim_idle = PlayAnimation(agent_character, "sk61_action_javierJumpDownLedge.anm");
     thirdperson_controller_anim_walking = PlayAnimation(agent_character, "sk63_aj_walk.anm");
-    --thirdperson_controller_anim_walking = PlayAnimation(agent_character, "sk61_zombie400_walkA.anm");
     thirdperson_controller_anim_running = PlayAnimation(agent_character, "sk63_aj_run.anm");
-    --thirdperson_controller_anim_running = PlayAnimation(agent_character, "sk35_rosie_run.anm");
-    --thirdperson_controller_anim_running = PlayAnimation(agent_character, "sk62_clementine400_run.anm");
     thirdperson_controller_anim_crouchIdle = PlayAnimation(agent_character, "sk63_idle_ajCrouch.anm");
     thirdperson_controller_anim_crouchMoving = PlayAnimation(agent_character, "sk62_clementine400_crouchWalk.anm");
     
@@ -136,113 +132,16 @@ ALIVE_Gameplay_CreateThirdPersonController = function(findExistingCharacter)
     
     AgentSetState("AJ", "bodyJacketDisco");
     
-    ALIVE_SetAgentWorldPosition(thirdperson_name_characterParent, Vector(0, 0, 11), ThirdPerson_kScene);
-end
+    ALIVE_SetAgentWorldPosition(thirdperson_name_characterParent, startingPosition, ThirdPerson_kScene);
 
---|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - CHARACTER ANIMATION ||||||||||||||||||||||||||||||||||||||||||||||
---|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - CHARACTER ANIMATION ||||||||||||||||||||||||||||||||||||||||||||||
---|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - CHARACTER ANIMATION ||||||||||||||||||||||||||||||||||||||||||||||
-
-ALIVE_Gameplay_UpdateThirdPerson_CharacterAnimation = function()
-    local frameTime = GetFrameTime();
-    local animationFadeTime = 7.5;
-
-    local idle_contribution_target = 1;
-    local walk_contribution_target = 0;
-    local running_contribution_target = 0;
-    local crouch_contribution_target = 0;
-    local crouchWalk_contribution_target = 0;
-    
-    if (thirdperson_state_moving) then
-        if (thirdperson_state_running) then
-            idle_contribution_target = 0;
-            walk_contribution_target = 0;
-            running_contribution_target = 1;
-            crouch_contribution_target = 0;
-            crouchWalk_contribution_target = 0;
-        else
-            if(thirdperson_state_crouching) then
-                idle_contribution_target = 0;
-                walk_contribution_target = 0;
-                running_contribution_target = 0;
-                crouch_contribution_target = 0;
-                crouchWalk_contribution_target = 1;
-            else
-                idle_contribution_target = 0;
-                walk_contribution_target = 1;
-                running_contribution_target = 0;
-                crouch_contribution_target = 0;
-                crouchWalk_contribution_target = 0;
-            end
-        end
-    else
-        if (thirdperson_state_crouching) then
-            idle_contribution_target = 0;
-            walk_contribution_target = 0;
-            running_contribution_target = 0;
-            crouch_contribution_target = 1;
-            crouchWalk_contribution_target = 0;
-        else
-            idle_contribution_target = 1;
-            walk_contribution_target = 0;
-            running_contribution_target = 0;
-            crouch_contribution_target = 0;
-            crouchWalk_contribution_target = 0;
-        end
-    end
-
-    thirdperson_controller_anim_idle_contribution = ALIVE_NumberLerp(thirdperson_controller_anim_idle_contribution, idle_contribution_target, frameTime * animationFadeTime);
-    thirdperson_controller_anim_walk_contribution = ALIVE_NumberLerp(thirdperson_controller_anim_walk_contribution, walk_contribution_target, frameTime * animationFadeTime);
-    thirdperson_controller_anim_running_contribution = ALIVE_NumberLerp(thirdperson_controller_anim_running_contribution, running_contribution_target, frameTime * animationFadeTime);
-    thirdperson_controller_anim_crouch_contribution = ALIVE_NumberLerp(thirdperson_controller_anim_crouch_contribution, crouch_contribution_target, frameTime * animationFadeTime);
-    thirdperson_controller_anim_crouchWalk_contribution = ALIVE_NumberLerp(thirdperson_controller_anim_crouchWalk_contribution, crouchWalk_contribution_target, frameTime * animationFadeTime);
-
-    ControllerSetContribution(thirdperson_controller_anim_idle, thirdperson_controller_anim_idle_contribution);
-    ControllerSetContribution(thirdperson_controller_anim_walking, thirdperson_controller_anim_walk_contribution);
-    ControllerSetContribution(thirdperson_controller_anim_running, thirdperson_controller_anim_running_contribution);
-    ControllerSetContribution(thirdperson_controller_anim_crouchIdle, thirdperson_controller_anim_crouch_contribution);
-    ControllerSetContribution(thirdperson_controller_anim_crouchMoving, thirdperson_controller_anim_crouchWalk_contribution);
-end
-
---|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - CAMERA ANIMATION ||||||||||||||||||||||||||||||||||||||||||||||
---|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - CAMERA ANIMATION ||||||||||||||||||||||||||||||||||||||||||||||
---|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - CAMERA ANIMATION ||||||||||||||||||||||||||||||||||||||||||||||
-
-ALIVE_Gameplay_UpdateThirdPerson_CameraAnimation = function()
-    local frameTime = GetFrameTime();
-
-    ------------------------------FOV KICK------------------------------
-    if (thirdperson_state_moving) then
-        if (thirdperson_state_running) then
-            thirdperson_camera_currentCameraFOV = ALIVE_NumberLerp(thirdperson_camera_currentCameraFOV, thirdperson_camera_runningFOV, frameTime * 2.5);
-        else
-            thirdperson_camera_currentCameraFOV = ALIVE_NumberLerp(thirdperson_camera_currentCameraFOV, thirdperson_camera_defaultFOV, frameTime * 2.5);
-        end
-    else
-        thirdperson_camera_currentCameraFOV = ALIVE_NumberLerp(thirdperson_camera_currentCameraFOV, thirdperson_camera_defaultFOV, frameTime * 2.5);
-    end
-
-    ALIVE_AgentSetProperty(thirdperson_name_camera, "Field Of View", thirdperson_camera_currentCameraFOV, ThirdPerson_kScene);
-
-    ------------------------------CAMERA BOBBING------------------------------
-    local newCamRotX = 0.0;
-
-    if (thirdperson_state_moving) then
-        if (thirdperson_state_running) then
-            thirdperson_camera_bobbingX = thirdperson_camera_bobbingX + (GetFrameTime() * thirdperson_camera_bobbingXSpeed_Run);
-            newCamRotX = math.sin(thirdperson_camera_bobbingX) * thirdperson_camera_bobbingXAmount_Run;
-        else
-            thirdperson_camera_bobbingX = thirdperson_camera_bobbingX + (GetFrameTime() * thirdperson_camera_bobbingXSpeed_Walk);
-            newCamRotX = math.sin(thirdperson_camera_bobbingX) * thirdperson_camera_bobbingXAmount_Walk;
-        end
-    else
-        thirdperson_camera_bobbingX = 0.0;
-        newCamRotX = 0.0;
-    end
-
-    thirdperson_camera_desiredRotation = Vector(newCamRotX, thirdperson_camera_desiredRotation.y, thirdperson_camera_desiredRotation.z);
-
-    ALIVE_SetAgentRotation(thirdperson_name_animGroupCamera, thirdperson_camera_desiredRotation, ThirdPerson_kScene);
+    -----------------------------------------------
+    Callback_OnPostUpdate:Add(ALIVE_Gameplay_UpdateThirdPerson_Input);
+    Callback_OnPostUpdate:Add(ALIVE_Gameplay_UpdateThirdPerson_Camera);
+    Callback_OnPostUpdate:Add(ALIVE_Gameplay_UpdateThirdPerson_Character);
+    Callback_OnPostUpdate:Add(ALIVE_Gameplay_UpdateThirdPerson_CharacterAnimation);
+    Callback_OnPostUpdate:Add(ALIVE_Gameplay_UpdateThirdPerson_CameraAnimation);
+    Callback_OnPostUpdate:Add(ALIVE_Gameplay_UpdateThirdPerson_CustomZombat);
+    Callback_OnPostUpdate:Add(ALIVE_Gameplay_UpdateThirdPerson_DeathState);
 end
 
 --|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - INPUT ||||||||||||||||||||||||||||||||||||||||||||||
@@ -339,6 +238,8 @@ end
 ALIVE_Gameplay_UpdateThirdPerson_Camera = function()
     local frameTime = GetFrameTime();
 
+    if (thirdperson_state_dying) then do return end end
+
     local newRotation = Vector(thirdperson_inputMouseAmountY - 90, thirdperson_inputMouseAmountX, 0);
     newRotation.x = ALIVE_Clamp(newRotation.x, -90, 90);
     
@@ -403,8 +304,26 @@ end
 --|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - CHARACTER ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - CHARACTER ||||||||||||||||||||||||||||||||||||||||||||||
 
+local prevFinalPlayerMovement = Vector(0,0,0);
+
+ALIVE_Gameplay_UpdateThirdPerson_CustomZombat = function()
+    local agent_character = AgentFindInScene(thirdperson_name_character, ThirdPerson_kScene); --Agent type
+    local agent_zombie = AgentFindInScene("ZombieAI", ThirdPerson_kScene); --Agent type
+
+    local vector_character_position = AgentGetWorldPos(agent_character); --Vector type
+    local vector_zombie_position = AgentGetWorldPos(agent_zombie); --Vector type
+
+    local distance_target = VectorDistance(vector_zombie_position, vector_character_position);
+
+    if (distance_target < 1.0) then
+        thirdperson_state_dying = true;
+    end
+end
+
 ALIVE_Gameplay_UpdateThirdPerson_Character = function()
     local frameTime = GetFrameTime();
+
+    if (thirdperson_state_dying) then do return end end
 
     local newRotation = Vector(thirdperson_inputMouseAmountY - 90, thirdperson_inputMouseAmountX, 0);
     newRotation.x = ALIVE_Clamp(newRotation.x, -90, 90);
@@ -441,10 +360,17 @@ ALIVE_Gameplay_UpdateThirdPerson_Character = function()
     
     local newCharacterPosition = AgentGetWorldPos(agent_characterParent);
     finalPlayerMovement = VectorScale(finalPlayerMovement, thirdperson_movementSpeed);
-    
+
+    if (thirdperson_state_running) then
+        prevFinalPlayerMovement = ALIVE_VectorLerp(prevFinalPlayerMovement, finalPlayerMovement, frameTime * 2.0);
+    else
+        prevFinalPlayerMovement = ALIVE_VectorLerp(prevFinalPlayerMovement, finalPlayerMovement, frameTime * 7.5);
+    end
+
     local lockedPos = VectorScale(Vector(0,0,1), AgentGetForwardAnimVelocity(agent_character));
 
-    newCharacterPosition = newCharacterPosition + finalPlayerMovement;
+    --newCharacterPosition = newCharacterPosition + finalPlayerMovement;
+    newCharacterPosition = newCharacterPosition + prevFinalPlayerMovement;
 
     if (thirdperson_constrainToWBOX) then
         newCharacterPosition = WalkBoxesPosOnWalkBoxes(newCharacterPosition, 0, thirdperson_sceneWbox, 1);
@@ -458,4 +384,240 @@ ALIVE_Gameplay_UpdateThirdPerson_Character = function()
     AgentFacePos(agent_character, thirdperson_characterDirection);
 
     ------------------------------STORE FOR NEXT FRAME------------------------------
+end
+
+
+--|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - CHARACTER ANIMATION ||||||||||||||||||||||||||||||||||||||||||||||
+--|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - CHARACTER ANIMATION ||||||||||||||||||||||||||||||||||||||||||||||
+--|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - CHARACTER ANIMATION ||||||||||||||||||||||||||||||||||||||||||||||
+
+local PlayBlinkAnimation = function()
+    local agent_character = AgentFindInScene(thirdperson_name_character, ThirdPerson_kScene); --Agent type
+
+    --thirdperson_controller_anim_blinking = ALIVE_ChorePlayOnAgent("aJ_face_blink.chore", agent_character, nil, nil);
+    --thirdperson_controller_anim_blinking = PlayAnimation(agent_character, "wd400GM_face_eyesClosed_add.anm");
+    --thirdperson_controller_anim_blinking = PlayAnimation(agent_character, "aj_face_eyesClosed.anm");
+    thirdperson_controller_anim_blinking = PlayAnimation(agent_character, "aj_face_eyesClosed_add.anm");
+    ControllerSetLooping(thirdperson_controller_anim_blinking, false);
+    ControllerSetPriority(thirdperson_controller_anim_blinking, 100);
+end
+
+local ajBlinkTick = 0;
+local ajBlinkMaxTick = 120;
+
+ALIVE_Gameplay_UpdateThirdPerson_CharacterAnimation = function()
+    local frameTime = GetFrameTime();
+    local animationFadeTime = 7.5;
+
+    if (thirdperson_state_dying) then do return end end
+
+    local idle_contribution_target = 1;
+    local walk_contribution_target = 0;
+    local running_contribution_target = 0;
+    local crouch_contribution_target = 0;
+    local crouchWalk_contribution_target = 0;
+    
+    if (thirdperson_state_moving) then
+        if (thirdperson_state_running) then
+            idle_contribution_target = 0;
+            walk_contribution_target = 0;
+            running_contribution_target = 1;
+            crouch_contribution_target = 0;
+            crouchWalk_contribution_target = 0;
+        else
+            if(thirdperson_state_crouching) then
+                idle_contribution_target = 0;
+                walk_contribution_target = 0;
+                running_contribution_target = 0;
+                crouch_contribution_target = 0;
+                crouchWalk_contribution_target = 1;
+            else
+                idle_contribution_target = 0;
+                walk_contribution_target = 1;
+                running_contribution_target = 0;
+                crouch_contribution_target = 0;
+                crouchWalk_contribution_target = 0;
+            end
+        end
+    else
+        if (thirdperson_state_crouching) then
+            idle_contribution_target = 0;
+            walk_contribution_target = 0;
+            running_contribution_target = 0;
+            crouch_contribution_target = 1;
+            crouchWalk_contribution_target = 0;
+        else
+            idle_contribution_target = 1;
+            walk_contribution_target = 0;
+            running_contribution_target = 0;
+            crouch_contribution_target = 0;
+            crouchWalk_contribution_target = 0;
+        end
+    end
+
+    thirdperson_controller_anim_idle_contribution = ALIVE_NumberLerp(thirdperson_controller_anim_idle_contribution, idle_contribution_target, frameTime * animationFadeTime);
+    thirdperson_controller_anim_walk_contribution = ALIVE_NumberLerp(thirdperson_controller_anim_walk_contribution, walk_contribution_target, frameTime * animationFadeTime);
+    thirdperson_controller_anim_running_contribution = ALIVE_NumberLerp(thirdperson_controller_anim_running_contribution, running_contribution_target, frameTime * animationFadeTime);
+    thirdperson_controller_anim_crouch_contribution = ALIVE_NumberLerp(thirdperson_controller_anim_crouch_contribution, crouch_contribution_target, frameTime * animationFadeTime);
+    thirdperson_controller_anim_crouchWalk_contribution = ALIVE_NumberLerp(thirdperson_controller_anim_crouchWalk_contribution, crouchWalk_contribution_target, frameTime * animationFadeTime);
+
+    ControllerSetContribution(thirdperson_controller_anim_idle, thirdperson_controller_anim_idle_contribution);
+    ControllerSetContribution(thirdperson_controller_anim_walking, thirdperson_controller_anim_walk_contribution);
+    ControllerSetContribution(thirdperson_controller_anim_running, thirdperson_controller_anim_running_contribution);
+    ControllerSetContribution(thirdperson_controller_anim_crouchIdle, thirdperson_controller_anim_crouch_contribution);
+    ControllerSetContribution(thirdperson_controller_anim_crouchMoving, thirdperson_controller_anim_crouchWalk_contribution);
+
+    ajBlinkTick = ajBlinkTick + 1;
+
+    if (ajBlinkTick > ajBlinkMaxTick) then
+        PlayBlinkAnimation();
+        ajBlinkTick = 0;
+    end
+end
+
+--|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - CAMERA ANIMATION ||||||||||||||||||||||||||||||||||||||||||||||
+--|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - CAMERA ANIMATION ||||||||||||||||||||||||||||||||||||||||||||||
+--|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - CAMERA ANIMATION ||||||||||||||||||||||||||||||||||||||||||||||
+
+ALIVE_Gameplay_UpdateThirdPerson_CameraAnimation = function()
+    local frameTime = GetFrameTime();
+
+    if (thirdperson_state_dying) then do return end end
+
+    ------------------------------FOV KICK------------------------------
+    if (thirdperson_state_running) then
+        thirdperson_camera_currentCameraFOV = ALIVE_NumberLerp(thirdperson_camera_currentCameraFOV, thirdperson_camera_runningFOV, frameTime * 2.5);
+    else
+        thirdperson_camera_currentCameraFOV = ALIVE_NumberLerp(thirdperson_camera_currentCameraFOV, thirdperson_camera_defaultFOV, frameTime * 2.5);
+    end
+
+    ALIVE_AgentSetProperty(thirdperson_name_camera, "Field Of View", thirdperson_camera_currentCameraFOV, ThirdPerson_kScene);
+
+    ------------------------------CAMERA BOBBING------------------------------
+    local newCamRotX = 0.0;
+
+    if (thirdperson_state_moving) then
+        if (thirdperson_state_running) then
+            thirdperson_camera_bobbingX = thirdperson_camera_bobbingX + (GetFrameTime() * thirdperson_camera_bobbingXSpeed_Run);
+            newCamRotX = math.sin(thirdperson_camera_bobbingX) * thirdperson_camera_bobbingXAmount_Run;
+        else
+            thirdperson_camera_bobbingX = thirdperson_camera_bobbingX + (GetFrameTime() * thirdperson_camera_bobbingXSpeed_Walk);
+            newCamRotX = math.sin(thirdperson_camera_bobbingX) * thirdperson_camera_bobbingXAmount_Walk;
+        end
+    else
+        thirdperson_camera_bobbingX = 0.0;
+        newCamRotX = 0.0;
+    end
+
+    thirdperson_camera_desiredRotation = Vector(newCamRotX, thirdperson_camera_desiredRotation.y, thirdperson_camera_desiredRotation.z);
+
+    ALIVE_SetAgentRotation(thirdperson_name_animGroupCamera, thirdperson_camera_desiredRotation, ThirdPerson_kScene);
+end
+
+--|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - DEATH STATE ||||||||||||||||||||||||||||||||||||||||||||||
+--|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - DEATH STATE ||||||||||||||||||||||||||||||||||||||||||||||
+--|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - DEATH STATE ||||||||||||||||||||||||||||||||||||||||||||||
+
+local deathAnimationTick = 0;
+local fxColorOpacity = 0;
+
+ALIVE_Gameplay_UpdateThirdPerson_DeathState = function()
+    local frameTime = GetFrameTime();
+
+    if (thirdperson_state_dying) then
+        ControllerSetContribution(thirdperson_controller_anim_idle, 0);
+        ControllerSetContribution(thirdperson_controller_anim_walking, 0);
+        ControllerSetContribution(thirdperson_controller_anim_running, 0);
+        ControllerSetContribution(thirdperson_controller_anim_crouchIdle, 0);
+        ControllerSetContribution(thirdperson_controller_anim_crouchMoving, 0);
+
+        if(deathAnimationTick == 0) then
+            RenderDelay(2);
+
+            local agent_character = AgentFindInScene(thirdperson_name_character, ThirdPerson_kScene); --Agent type
+            local agent_zombie = AgentFindInScene("ZombieAI", ThirdPerson_kScene); --Agent type
+            local agent_zombieParent = AgentFindInScene("ZombieAI_Parent", ThirdPerson_kScene); --Agent type
+
+            local vector_character_position = AgentGetWorldPos(agent_character); --Vector type
+            local vector_zombie_position = AgentGetWorldPos(agent_zombieParent); --Vector type
+            local vector_zombie_rotation = AgentGetWorldRot(agent_zombieParent); --Vector type
+            local vector_zombie_forward = AgentGetForwardVec(agent_zombieParent, true); --Vector type
+            local vector_zombie_right = AgentGetRightVec(agent_zombieParent, true); --Vector type
+            
+            local zombieControllers = AgentGetControllers(agent_zombie);
+
+            for i, cnt in ipairs(zombieControllers) do
+                ControllerKill(cnt);
+            end
+
+            local character_anim_controller = PlayAnimation(agent_character, "sk56_action_clementine200KilledZombieFrontA.anm");
+            local zombie_anim_controller = PlayAnimation(agent_zombie, "sk54_zombieAverage200_sk56_action_clementine200KilledZombieFrontA.anm");
+
+            ControllerSetLooping(character_anim_controller, false);
+            ControllerSetLooping(zombie_anim_controller, false);
+
+            ControllerSetPriority(character_anim_controller, 100);
+            ControllerSetPriority(zombie_anim_controller, 100);
+
+            AgentSetPos(agent_character, Vector(0, 0, 0));
+            AgentSetRot(agent_character, vector_zombie_rotation);
+
+            local character_deathPos = vector_zombie_position;
+            character_deathPos = character_deathPos + (vector_zombie_forward * 1.0);
+            character_deathPos = character_deathPos + (vector_zombie_right * 0.2);
+            character_deathPos = character_deathPos + Vector(0, 0.245, 0);
+
+            ALIVE_SetAgentWorldPosition(thirdperson_name_characterParent, character_deathPos, ThirdPerson_kScene);
+            ALIVE_SetAgentWorldRotation(thirdperson_name_characterParent, vector_zombie_rotation, ThirdPerson_kScene);
+
+            ALIVE_SetAgentPosition(thirdperson_name_camera, Vector(0,0,0), ThirdPerson_kScene);
+            ALIVE_SetAgentPosition(thirdperson_name_groupCamera, vector_zombie_position + Vector(0.2, 0.85, -0.18), ThirdPerson_kScene);
+            ALIVE_SetAgentRotation(thirdperson_name_groupCamera, Vector(-15, -15, 15), ThirdPerson_kScene);
+
+            ALIVE_AgentSetProperty(thirdperson_name_camera, "Field Of View", 60, ThirdPerson_kScene);
+        end
+
+        if (deathAnimationTick == 1) then
+            SoundPlay("mus_sting_shock_13.wav");
+            SoundPlay("mus_sting_eerie_03.wav");
+        end
+
+        if (deathAnimationTick == 2) then
+            SoundPlay("vox_zomb_seanF_oneshot_attack_bigger_4.wav");
+            SoundPlay("396539353.wav");
+        end
+
+        if (deathAnimationTick == 20) then
+            SoundPlay("comp_violence_zombie_10.wav");
+        end
+
+        if (deathAnimationTick == 89) then
+            SoundPlay("fol_bodyfall_dirt_09.wav");
+        end
+
+        if (deathAnimationTick == 95) then
+            SoundPlay("396523117.wav");
+        end
+
+        if (deathAnimationTick == 119) then
+            SoundPlay("mus_sting_shock_13.wav");
+            SoundPlay("fol_bodyfall_02.wav");
+        end
+
+        if (deathAnimationTick == 170) then
+            SoundPlay("vox_zomb_seanF_oneshot_attack_bigger_3.wav");
+        end
+
+        if (deathAnimationTick == 230) then
+            SoundPlay("comp_violence_zombie_10.wav");
+        end
+
+        if (deathAnimationTick > 70) then
+            fxColorOpacity = ALIVE_NumberLerp(fxColorOpacity, 1.0, frameTime * 2.5);
+            ALIVE_AgentSetProperty(thirdperson_name_camera, "FX Color Enabled", true, ThirdPerson_kScene);
+            ALIVE_AgentSetProperty(thirdperson_name_camera, "FX Color Opacity", fxColorOpacity, ThirdPerson_kScene);
+            ALIVE_AgentSetProperty(thirdperson_name_camera, "FX Color Tint", Color(1, 0, 0, 1), ThirdPerson_kScene);
+        end
+        deathAnimationTick = deathAnimationTick + 1;
+    end
 end

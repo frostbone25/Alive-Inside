@@ -15,6 +15,7 @@ require("ALIVE_Gameplay_AI_Zombies.lua");
 
 ResourceSetEnable("ProjectSeason4");
 ResourceSetEnable("WalkingDead402");
+ResourceSetEnable("WalkingDead403");
 ResourceSetEnable("WalkingDead404");
 ResourceSetEnable("WalkingDead201");
 
@@ -23,14 +24,14 @@ ResourceSetEnable("WalkingDead201");
 --|||||||||||||||||||||||||||||||||||||||||||||| SCRIPT VARIABLES ||||||||||||||||||||||||||||||||||||||||||||||
 
 --main level variables
-local kScript = "ALIVE_Level_Sandbox";
-local kScene = "adv_boardingSchoolExterior";
+local kScript = "ALIVE_Level_Flashback";
+local kScene = "adv_trainTile";
 
 ThirdPerson_kScene = kScene;
 ZombieAI_kScene = kScene;
 
 --scene agent name variable
-local agent_name_scene = "adv_boardingSchoolExterior.scene"; 
+local agent_name_scene = "adv_trainTile.scene"; 
 
 ALIVE_Development_SceneObject = kScene;
 ALIVE_Development_SceneObjectAgentName = agent_name_scene;
@@ -104,89 +105,83 @@ Scene_CleanUpOriginalScene = function()
     
     --ALIVE_SetPropertyOnAgentsWithPrefix(kScene, "Zombie", "Runtime: Visible", true)
     --ALIVE_SetPropertyOnAgentsWithPrefix(kScene, "Zombie", "Runtime: Visible", false)
+
+    ALIVE_SetPropertyOnAgentsWithPrefix(kScene, "adv_", "Runtime: Visible", true)
+    ALIVE_SetPropertyOnAgentsWithPrefix(kScene, "obj_", "Runtime: Visible", true)
     --ALIVE_RemovingAgentsWithPrefix(kScene, "Zombie");
     
     --ALIVE_AgentSetProperty("group_tile1", "Group - Visible", false, kScene);
 
+    ALIVE_AgentSetProperty("Clementine", "Runtime: Visible", true, kScene);
+    ALIVE_AgentSetProperty("AJ", "Runtime: Visible", true, kScene);
+
     ALIVE_RemoveAgent("module_post_effect", kScene);
-    --ALIVE_RemoveAgent("AJ", kScene);
-    ALIVE_RemoveAgent("Aasim", kScene);
+    ALIVE_RemoveAgent("Lee", kScene);
+    ALIVE_RemoveAgent("ClementineFlashback", kScene);
     --ALIVE_RemoveAgent("Clementine", kScene);
-    ALIVE_RemoveAgent("Louis", kScene);
-    ALIVE_RemoveAgent("Omar", kScene);
-    ALIVE_RemoveAgent("Rosie", kScene);
-    ALIVE_RemoveAgent("Ruby", kScene);
-    ALIVE_RemoveAgent("Tennyson", kScene);
-    ALIVE_RemoveAgent("Violet", kScene);
-    ALIVE_RemoveAgent("Willy", kScene);
-    ALIVE_RemoveAgent("module_environment_med", kScene);
-    ALIVE_RemoveAgent("Hare", kScene);
-    ALIVE_RemoveAgent("Horse", kScene);
-    ALIVE_RemoveAgent("light_ENV_ambFill", kScene);
+    --ALIVE_RemoveAgent("AJ", kScene);
+    ALIVE_RemoveAgent("light_ENV_roadTile", kScene);
+    --ALIVE_RemoveAgent("light_SKY_amb", kScene);
+    --ALIVE_RemoveAgent("light_SKY_horizonSpot", kScene);
+    --ALIVE_RemoveAgent("light_SKY_sunPoint", kScene);
+    --ALIVE_RemoveAgent("light_SKY_sunBroadLight", kScene);
+    --ALIVE_RemoveAgent("light_ENV_ambFill", kScene);
     --ALIVE_RemoveAgent("light_ENV_D_SunKey", kScene);
-    ALIVE_RemoveAgent("keylight_node_exterior", kScene);
-    --ALIVE_RemoveAgent("light_AMB_0", kScene);
     --ALIVE_RemoveAgent("light_AMB_grassIvy", kScene);
     --ALIVE_RemoveAgent("light_AMB_MatteTrees", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingStripe", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingStripe01", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingStripe02", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill01", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill02", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill03", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill04", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill05", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill06", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill07", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill08", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill09", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill10", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill11", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce01", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingStripe03", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingStripe04", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce02", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce03", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill12", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill13", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill14", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill15", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill16", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce04", kScene);
-    ALIVE_RemoveAgent("light_ENV_C_characterBacklight01", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingLeafy01", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingLeafyInvert", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill17", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill18", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce06", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce07", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce08", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingStripe05", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingLeafyInvertStripes", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingLeafyInvertStripes01", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingLeafyInvertStripes02", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce09", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce10", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce11", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill19", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill20", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingLeafy02", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill21", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill22", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill23", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill24", kScene);
-    --ALIVE_RemoveAgent("light_SKY_amb", kScene);
-    ALIVE_RemoveAgent("light_SKY_horizonSpot", kScene);
-    ALIVE_RemoveAgent("light_SKY_sunPoint", kScene);
-    ALIVE_RemoveAgent("light_SKY_sunBroadLight", kScene);
-    ALIVE_RemoveAgent("light_SKY_sunPoint01", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingStripe06", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingStripe07", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingLeafy03", kScene);
-    ALIVE_RemoveAgent("light_SKY_sunPointNX", kScene);
-    ALIVE_RemoveAgent("light_ENV_D_sunKeyNX", kScene);
+    ALIVE_RemoveAgent("light_NODE_roadTile", kScene);
+    ALIVE_RemoveAgent("module_post_effect", kScene);
+    --ALIVE_RemoveAgent("module_environment", kScene);
+    ALIVE_RemoveAgent("group_dormRoom", kScene);
+    ALIVE_RemoveAgent("group_train", kScene);
+    ALIVE_RemoveAgent("group_tileParent", kScene);
+    ALIVE_RemoveAgent("group_tileGrandParent", kScene);
+    ALIVE_RemoveAgent("obj_matteForestTileRing", kScene);
+    --ALIVE_RemoveAgent("obj_skydomeOverheadClouds", kScene);
+    ALIVE_RemoveAgent("obj_trainEngineFlashbackInnerWalls", kScene);
+    ALIVE_RemoveAgent("obj_trainEngineFlashbackJunk", kScene);
+    ALIVE_RemoveAgent("obj_trainEngineFlashbackOuterWalls", kScene);
+    ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAClem", kScene);
+    ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAClemFurniture", kScene);
+    ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAClemCloth", kScene);
+    ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAClemCobwebs", kScene);
+    ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAClemPipes", kScene);
+    ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAClemCeiling", kScene);
+    ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAClemFloor", kScene);
+    ALIVE_RemoveAgent("obj_doorClemBoardingSchoolDorm", kScene);
+    ALIVE_RemoveAgent("obj_doorClosetClemABoardingSchoolDorm", kScene);
+    ALIVE_RemoveAgent("obj_drawingAJ", kScene);
+    ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAWalls", kScene);
+    ALIVE_RemoveAgent("obj_drawerBoardingSchoolDorm", kScene);
+    ALIVE_RemoveAgent("obj_drawerDeskABoardingSchoolDorm", kScene);
+    ALIVE_RemoveAgent("obj_pillowDormA", kScene);
+    ALIVE_RemoveAgent("obj_capClementine400", kScene);
+    ALIVE_RemoveAgent("obj_trainBoxCar", kScene);
+    ALIVE_RemoveAgent("obj_trainCoalCar", kScene);
+    ALIVE_RemoveAgent("obj_trainCoalCar01", kScene);
+    ALIVE_RemoveAgent("obj_trainBoxCar01", kScene);
+    ALIVE_RemoveAgent("light_NODE_clemsRoomNight", kScene);
+    ALIVE_RemoveAgent("light_ENV_clemsRoomNight_moonKey", kScene);
+    ALIVE_RemoveAgent("light_ENV_clemsRoomNight_moonHotspot", kScene);
+    ALIVE_RemoveAgent("light_ENV_clemsRoomNight_moonBounceDoor", kScene);
+    ALIVE_RemoveAgent("light_ENV_clemsRoomNight_moonBounceWindow", kScene);
+    ALIVE_RemoveAgent("light_ENV_clemsRoomNight", kScene);
+    ALIVE_RemoveAgent("light_ENV_clemsRoomNight_moonBounceWindow01", kScene);
+    ALIVE_RemoveAgent("fx_lightShaft402", kScene);
+    ALIVE_RemoveAgent("light_SKY_ambRoomB", kScene);
+    ALIVE_RemoveAgent("light_SKY_horizonSpotRoomB", kScene);
+    ALIVE_RemoveAgent("group_skydomeRoomB", kScene);
+    ALIVE_RemoveAgent("group_moonRoomB", kScene);
+    ALIVE_RemoveAgent("obj_skydomeStars", kScene);
+    ALIVE_RemoveAgent("obj_skydomeOverheadCloudsRoomB", kScene);
+    ALIVE_RemoveAgent("obj_skydomeMoonRoomB", kScene);
+    ALIVE_RemoveAgent("obj_matteForestTileRingRoomB", kScene);
+    ALIVE_RemoveAgent("light_NODE_roadTileKey", kScene);
+    ALIVE_RemoveAgent("light_ENV_P_leeSpecial01", kScene);
+    ALIVE_RemoveAgent("light_ENV_P_leeSpecial02", kScene);
+    --ALIVE_RemoveAgent("light_AMB_Trees01", kScene);
+
+    ALIVE_RemoveAgent("fx_forceBackBufferStaticObj", kScene);
 end
 
 Scene_RelightScene = function()
@@ -351,34 +346,36 @@ HideCusorInGame = function()
     CursorEnable(true);
 end
 
-ALIVE_Level_Sandbox = function()
+ALIVE_Level_Flashback = function()
     SetProjectSettings();
     Scene_CleanUpOriginalScene();
-    Scene_RelightScene();
+    --Scene_RelightScene();
 
     HideCusorInGame();
 
-    --ALIVE_PrintSceneListToTXT(kScene, "adv_boardingSchoolExterior.txt");
+    --ALIVE_PrintSceneListToTXT(kScene, "adv_trainTile403.txt");
 
-    if (EnableFreecam == true) then
-        ALIVE_Development_CreateFreeCamera();
-        ALIVE_Development_InitalizeCutsceneTools();
+    --if (EnableFreecam == true) then
+        --ALIVE_Development_CreateFreeCamera();
+        --ALIVE_Development_InitalizeCutsceneTools();
 
-        Callback_OnPostUpdate:Add(ALIVE_Development_UpdateFreeCamera);
-        Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Input);
-        Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Main);
-    else
+        --Callback_OnPostUpdate:Add(ALIVE_Development_UpdateFreeCamera);
+
         ALIVE_Gameplay_CreateThirdPersonController(true, Vector(0, 0, 11));
+        --Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Input);
+        --Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Main);
+    --else
+        --ALIVE_Gameplay_CreateThirdPersonController(true, Vector(0, 0, 11));
         --Callback_OnPostUpdate:Add(ALIVE_Gameplay_UpdateThirdPerson_Input);
         --Callback_OnPostUpdate:Add(ALIVE_Gameplay_UpdateThirdPerson_Camera);
         --Callback_OnPostUpdate:Add(ALIVE_Gameplay_UpdateThirdPerson_Character);
         --Callback_OnPostUpdate:Add(ALIVE_Gameplay_UpdateThirdPerson_CharacterAnimation);
         --Callback_OnPostUpdate:Add(ALIVE_Gameplay_UpdateThirdPerson_CameraAnimation);
 
-        ALIVE_Gameplay_AI_CreateZombie(Vector(0, 0, 17));
-        Callback_OnPostUpdate:Add(ALIVE_Gameplay_AI_UpdateZombie_Character);
-        Callback_OnPostUpdate:Add(ALIVE_Gameplay_AI_UpdateZombie_CharacterAnimation);
-    end
+        --ALIVE_Gameplay_AI_CreateZombie(Vector(0, 0, 17));
+        --Callback_OnPostUpdate:Add(ALIVE_Gameplay_AI_UpdateZombie_Character);
+        --Callback_OnPostUpdate:Add(ALIVE_Gameplay_AI_UpdateZombie_CharacterAnimation);
+    --end
 end
 
 SceneOpen(kScene, kScript)
