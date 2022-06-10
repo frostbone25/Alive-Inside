@@ -1,22 +1,25 @@
---[[
-
-]]--
-
-require("ALIVE_Utilities.lua");
-require("ALIVE_AgentExtensions.lua");
-require("ALIVE_Color.lua");
-require("ALIVE_Printing.lua");
-require("ALIVE_PropertyKeys.lua");
+require("ALIVE_Core_Utilities.lua");
+require("ALIVE_Core_AgentExtensions_Properties.lua");
+require("ALIVE_Core_AgentExtensions_Transform.lua");
+require("ALIVE_Core_AgentExtensions_Utillity.lua");
+require("ALIVE_Core_Color.lua");
+require("ALIVE_Core_Strings.lua");
+require("ALIVE_Core_Printing.lua");
+require("ALIVE_Core_PropertyKeys.lua");
 require("ALIVE_Development_Freecam.lua");
 require("ALIVE_Development_AgentBrowser.lua");
-require("ALIVE_DepthOfFieldAutofocus.lua");
-require("ALIVE_Gameplay_Player_ThirdPerson.lua");
+require("ALIVE_Camera_DepthOfFieldAutofocus.lua");
+require("ALIVE_Gameplay_Shared.lua");
+require("ALIVE_Gameplay_Player_ThirdPerson_Base.lua");
 require("ALIVE_Gameplay_AI_Zombies.lua");
-
-ResourceSetEnable("ProjectSeason4");
-ResourceSetEnable("WalkingDead402");
-ResourceSetEnable("WalkingDead404");
-ResourceSetEnable("WalkingDead201");
+require("ALIVE_Scene_LevelCleanup_305_RichmondOverpass.lua");
+require("ALIVE_Scene_LevelCleanup_305_RichmondStreetTile.lua");
+require("ALIVE_Scene_LevelCleanup_403_BoardingSchoolExterior.lua");
+require("ALIVE_Scene_LevelRelight_305_RichmondOverpass.lua");
+require("ALIVE_Scene_LevelRelight_305_RichmondStreetTile.lua");
+require("ALIVE_Scene_LevelRelight_403_BoardingSchoolExterior.lua");
+require("ALIVE_Scene_CharacterStates.lua");
+require("ALIVE_Project.lua");
 
 --|||||||||||||||||||||||||||||||||||||||||||||| SCRIPT VARIABLES ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| SCRIPT VARIABLES ||||||||||||||||||||||||||||||||||||||||||||||
@@ -24,13 +27,15 @@ ResourceSetEnable("WalkingDead201");
 
 --main level variables
 local kScript = "ALIVE_Level_Sandbox";
-local kScene = "adv_boardingSchoolExterior";
+--local kScene = "adv_boardingSchoolExterior";
+--local agent_name_scene = "adv_boardingSchoolExterior.scene"; 
+local kScene = "adv_richmondOverpass";
+local agent_name_scene = "adv_richmondOverpass.scene"; 
+--local kScene = "adv_richmondStreetTile";
+--local agent_name_scene = "adv_richmondStreetTile.scene"; 
 
 ThirdPerson_kScene = kScene;
 ZombieAI_kScene = kScene;
-
---scene agent name variable
-local agent_name_scene = "adv_boardingSchoolExterior.scene"; 
 
 ALIVE_Development_SceneObject = kScene;
 ALIVE_Development_SceneObjectAgentName = agent_name_scene;
@@ -42,343 +47,250 @@ local EnableFreecam = false;
 --dof autofocus variables
 ALIVE_DOF_AUTOFOCUS_SceneObject = kScene;
 ALIVE_DOF_AUTOFOCUS_SceneObjectAgentName = agent_name_scene;
-ALIVE_DOF_AUTOFOCUS_UseCameraDOF = true;
+ALIVE_DOF_AUTOFOCUS_UseCameraDOF = false;
 
 --list of gameplay camera agent names, putting a camera name in here means that DOF will be disabled since its a gameplay camera, and we dont want DOF during gameplay.
 ALIVE_DOF_AUTOFOCUS_GameplayCameraNames = 
 {
-    "test"
+    "nil"
 };
 
 --list of objects in the scene that are our targets for depth of field autofocusing
 ALIVE_DOF_AUTOFOCUS_ObjectEntries =
 {
-    "AJ"
+    "AJ_Parent"
 };
 
-local SetProjectSettings = function()
-    local prefs = GetPreferences();
-    PropertySet(prefs, "Enable Graphic Black", false);
-    PropertySet(prefs, "Render - Graphic Black Enabled", false);
-    PropertySet(prefs, "Camera Lens Engine", false);
-    PropertySet(prefs, "Enable Dialog System 2.0", true);
-    PropertySet(prefs, "Enable LipSync 2.0", true);
-    PropertySet(prefs, "Legacy Light Limits", false);
-    PropertySet(prefs, "Render - Feature Level", 1);
-    PropertySet(prefs, "Use Legacy DOF", true);
-    PropertySet(prefs, "Animated Lookats Active", true);
-    PropertySet(prefs, "Camera Lens Engine", false);
-    PropertySet(prefs, "Chore End Lipsync Buffer Time", -1);
-    PropertySet(prefs, "Enable Callbacks For Unchanged Key Sets", true);
-    PropertySet(prefs, "Enable Lipsync Line Buffers", false);
-    PropertySet(prefs, "Fix Pop In Additive Idle Transitions", false);
-    PropertySet(prefs, "Fix Recursive Animation Contribution (set to false before Thrones)", true);
-    PropertySet(prefs, "Legacy Use Default Lighting Group", true);
-    PropertySet(prefs, "Lipsync Line End Buffer", 0);
-    PropertySet(prefs, "Lipsync Line Start Buffer", 0);
-    PropertySet(prefs, "Mirror Non-skeletal Animations", true);
-    PropertySet(prefs, "Project Generates Procedural Look At Targets", true);
-    PropertySet(prefs, "Remap bad bones", true);
-    PropertySet(prefs, "Set Default Intensity", false);
-    PropertySet(prefs, "Strip action lines", true);
-    PropertySet(prefs, "Text Leading Fix", true);
-end
-
 --|||||||||||||||||||||||||||||||||||||||||||||| SCENE SETUP ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| SCENE SETUP ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| SCENE SETUP ||||||||||||||||||||||||||||||||||||||||||||||
 
-Scene_CleanUpOriginalScene = function()
-    --local test1 = AgentCreate("zombs", "sk61_zombie400.prop", Vector(0,0,0), Vector(0,0,0), kScene, false, false);
-    --local test1 = AgentCreate("zombs", "zombie.prop", Vector(0,0,0), Vector(0,0,0), kScene, false, false);
-    --local test1 = AgentCreate("zombs", "sk61_zombie400Sherak.prop", Vector(0,0,0), Vector(0,0,0), kScene, false, false);
-    --ALIVE_AgentSetProperty("zombs", "Runtime: Visible", true, kScene);
+--ResourceSetEnable("UISeason4");
+--ResourceSetEnable("ProjectSeason4");
+ResourceSetEnable("WalkingDead401");
+ResourceSetEnable("WalkingDead402");
+ResourceSetEnable("WalkingDead403");
+ResourceSetEnable("WalkingDead404");
 
-    ALIVE_RemovingAgentsWithPrefix(kScene, "light_CHAR_CC");
-    ALIVE_RemovingAgentsWithPrefix(kScene, "lightrig");
-    ALIVE_RemovingAgentsWithPrefix(kScene, "audio_");
-    ALIVE_RemovingAgentsWithPrefix(kScene, "fx_");
-    ALIVE_RemovingAgentsWithPrefix(kScene, "fxg_");
-    ALIVE_RemovingAgentsWithPrefix(kScene, "fxa_");
-    ALIVE_RemovingAgentsWithPrefix(kScene, "obj_lookAt");
-    
-    --ALIVE_SetPropertyOnAgentsWithPrefix(kScene, "Zombie", "Runtime: Visible", true)
-    --ALIVE_SetPropertyOnAgentsWithPrefix(kScene, "Zombie", "Runtime: Visible", false)
-    --ALIVE_RemovingAgentsWithPrefix(kScene, "Zombie");
-    
-    --ALIVE_AgentSetProperty("group_tile1", "Group - Visible", false, kScene);
-
-    ALIVE_RemoveAgent("module_post_effect", kScene);
-    --ALIVE_RemoveAgent("AJ", kScene);
-    ALIVE_RemoveAgent("Aasim", kScene);
-    --ALIVE_RemoveAgent("Clementine", kScene);
-    ALIVE_RemoveAgent("Louis", kScene);
-    ALIVE_RemoveAgent("Omar", kScene);
-    ALIVE_RemoveAgent("Rosie", kScene);
-    ALIVE_RemoveAgent("Ruby", kScene);
-    ALIVE_RemoveAgent("Tennyson", kScene);
-    ALIVE_RemoveAgent("Violet", kScene);
-    ALIVE_RemoveAgent("Willy", kScene);
-    ALIVE_RemoveAgent("module_environment_med", kScene);
-    ALIVE_RemoveAgent("Hare", kScene);
-    ALIVE_RemoveAgent("Horse", kScene);
-    ALIVE_RemoveAgent("light_ENV_ambFill", kScene);
-    --ALIVE_RemoveAgent("light_ENV_D_SunKey", kScene);
-    ALIVE_RemoveAgent("keylight_node_exterior", kScene);
-    --ALIVE_RemoveAgent("light_AMB_0", kScene);
-    --ALIVE_RemoveAgent("light_AMB_grassIvy", kScene);
-    --ALIVE_RemoveAgent("light_AMB_MatteTrees", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingStripe", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingStripe01", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingStripe02", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill01", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill02", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill03", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill04", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill05", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill06", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill07", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill08", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill09", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill10", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill11", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce01", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingStripe03", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingStripe04", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce02", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce03", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill12", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill13", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill14", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill15", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill16", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce04", kScene);
-    ALIVE_RemoveAgent("light_ENV_C_characterBacklight01", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingLeafy01", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingLeafyInvert", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill17", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill18", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce06", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce07", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce08", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingStripe05", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingLeafyInvertStripes", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingLeafyInvertStripes01", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingLeafyInvertStripes02", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce09", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce10", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointSunBounce11", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill19", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill20", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingLeafy02", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill21", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill22", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill23", kScene);
-    ALIVE_RemoveAgent("light_ENV_pointFill24", kScene);
-    --ALIVE_RemoveAgent("light_SKY_amb", kScene);
-    ALIVE_RemoveAgent("light_SKY_horizonSpot", kScene);
-    ALIVE_RemoveAgent("light_SKY_sunPoint", kScene);
-    ALIVE_RemoveAgent("light_SKY_sunBroadLight", kScene);
-    ALIVE_RemoveAgent("light_SKY_sunPoint01", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingStripe06", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingStripe07", kScene);
-    ALIVE_RemoveAgent("light_gobo_trainStation_buildingLeafy03", kScene);
-    ALIVE_RemoveAgent("light_SKY_sunPointNX", kScene);
-    ALIVE_RemoveAgent("light_ENV_D_sunKeyNX", kScene);
-end
-
-Scene_RelightScene = function()
-    --local envlight  = AgentFindInScene("light_ENV_sunKey", kScene);
-    --local envlight_props = AgentGetRuntimeProperties(envlight);
-    --local envlight_groupEnabled = PropertyGet(envlight_props, "EnvLight - Enabled Group");
-    --local envlight_groups = PropertyGet(envlight_props, "EnvLight - Groups");
-    
-    --find the original sky light in the scene (note telltale dev, why do you use a light source for the skybox when you could've just had the sky be an (emmissive/unlit) shader?)
-    --local skyEnvlight  = AgentFindInScene("light_SKY_amb", kScene);
-    --local skyEnvlight_props = AgentGetRuntimeProperties(skyEnvlight);
-    --local skyEnvlight_groupEnabled = PropertyGet(skyEnvlight_props, "EnvLight - Enabled Group");
-    --local skyEnvlight_groups = PropertyGet(skyEnvlight_props, "EnvLight - Groups");
-
-    --the main prop (like a prefab) file for a generic light
-    local envlight_prop = "module_env_light.prop";
-    
-    --calculate some new colors
-    local sunColor     = RGBColor(255, 220, 188, 255);
-    local ambientColor = RGBColor(108, 150, 225, 255);
-    local skyColor     = RGBColor(0, 80, 255, 255);
-    local fogColor     = Desaturate_RGBColor(skyColor, 0.7);
-    
-    --adjust the colors a bit (yes there is a lot of tweaks... would be easier if we had a level editor... but we dont yet)
-    skyColor = Desaturate_RGBColor(skyColor, 0.2);
-    fogColor = Multiplier_RGBColor(fogColor, 0.8);
-    fogColor = Desaturate_RGBColor(fogColor, 0.45);
-    sunColor = Desaturate_RGBColor(sunColor, 0.15);
-    skyColor = Desaturate_RGBColor(skyColor, 0.2);
-    sunColor = Desaturate_RGBColor(sunColor, 0.0);
-    ambientColor = Desaturate_RGBColor(ambientColor, 0.45);
-    ambientColor = Multiplier_RGBColor(ambientColor, 1.0);
-    
-    --set the alpha value of the fog color to be fully opaque
-    local finalFogColor = Color(fogColor.r, fogColor.g, fogColor.b, 1.0);
-    
-    --change the properties of the fog
-    local fogName = "module_environment"
-    ALIVE_AgentSetProperty(fogName, "Env - Fog Color", finalFogColor, kScene);
-    ALIVE_AgentSetProperty(fogName, "Env - Fog Start Distance", 0.25, kScene);
-    ALIVE_AgentSetProperty(fogName, "Env - Fog Height", 3.45, kScene);
-    ALIVE_AgentSetProperty(fogName, "Env - Fog Density", 0.00025, kScene);
-    ALIVE_AgentSetProperty(fogName, "Env - Fog Max Opacity", 0.35, kScene);
-    ALIVE_AgentSetProperty(fogName, "Env - Fog Enabled", true, kScene);
-    ALIVE_AgentSetProperty(fogName, "Env - Enabled", true, kScene);
-    ALIVE_AgentSetProperty(fogName, "Env - Enabled on High", true, kScene);
-    ALIVE_AgentSetProperty(fogName, "Env - Enabled on Medium", true, kScene);
-    ALIVE_AgentSetProperty(fogName, "Env - Enabled on Low", true, kScene);
-    ALIVE_AgentSetProperty(fogName, "Env - Priority", 1000, kScene);
-
-    --create our sunlight and set the properties accordingly
-    --local myLight_Sun = AgentCreate("myLight_Sun", envlight_prop, Vector(0,0,0), Vector(36.666, 113.1561, 0), kScene, false, false);
-    ALIVE_SetAgentWorldRotation("light_ENV_D_SunKey", Vector(36.666, 113.1561, 0), kScene);
-    --ALIVE_AgentSetProperty("light_ENV_D_SunKey", "EnvLight - Type", 2, kScene);
-    ALIVE_AgentSetProperty("light_ENV_D_SunKey", "EnvLight - Intensity", 6, kScene);
-    ALIVE_AgentSetProperty("light_ENV_D_SunKey", "EnvLight - Enlighten Intensity", 0.0, kScene);
-    ALIVE_AgentSetProperty("light_ENV_D_SunKey", "EnvLight - Radius", 1, kScene);
-    --ALIVE_AgentSetProperty("light_ENV_D_SunKey", "EnvLight - Distance Falloff", 1, kScene);
-    --ALIVE_AgentSetProperty("light_ENV_D_SunKey", "EnvLight - Spot Angle Inner", 5, kScene);
-    --ALIVE_AgentSetProperty("light_ENV_D_SunKey", "EnvLight - Spot Angle Outer", 45, kScene);
-    ALIVE_AgentSetProperty("light_ENV_D_SunKey", "EnvLight - Color", sunColor, kScene);
-    --ALIVE_AgentSetProperty("light_ENV_D_SunKey", "EnvLight - Enabled Group", envlight_groupEnabled, kScene);
-    --ALIVE_AgentSetProperty("light_ENV_D_SunKey", "EnvLight - Groups", envlight_groups, kScene);
-    ALIVE_AgentSetProperty("light_ENV_D_SunKey", "EnvLight - Shadow Type", 2, kScene);
-    --ALIVE_AgentSetProperty("light_ENV_D_SunKey", "EnvLight - Wrap", 0.05, kScene);
-    ALIVE_AgentSetProperty("light_ENV_D_SunKey", "EnvLight - Shadow Quality", 3, kScene);
-    ALIVE_AgentSetProperty("light_ENV_D_SunKey", "EnvLight - HBAO Participation Type", 1, kScene);
-    ALIVE_AgentSetProperty("light_ENV_D_SunKey", "EnvLight - Mobility", 2, kScene);
-
-    --sky light/color
-    ALIVE_AgentSetProperty("light_SKY_amb", "EnvLight - Intensity", 4, kScene);
-    ALIVE_AgentSetProperty("light_SKY_amb", "EnvLight - Color", skyColor, kScene);
-    
-    
-    
-    ALIVE_AgentSetProperty("light_AMB_0", "EnvLight - Intensity", 2, kScene);
-    ALIVE_AgentSetProperty("light_AMB_0", "EnvLight - Color", sunColor, kScene);
-    
-    ALIVE_AgentSetProperty("light_AMB_grassIvy", "EnvLight - Intensity", 2, kScene);
-    ALIVE_AgentSetProperty("light_AMB_grassIvy", "EnvLight - Color", sunColor, kScene);
-    
-    ALIVE_AgentSetProperty("light_AMB_MatteTrees", "EnvLight - Intensity", 2, kScene);
-    ALIVE_AgentSetProperty("light_AMB_MatteTrees", "EnvLight - Color", sunColor, kScene);
-    
-    --create a spotlight that emulates the sundisk in the sky
-    --local myLight_SkySun = AgentCreate("myLight_SkySun", envlight_prop, Vector(0,0,0), Vector(36.666 - 180, 113.1561, 0), kScene, false, false);
-    --ALIVE_AgentSetProperty("myLight_SkySun", "EnvLight - Type", 1, kScene);
-    --ALIVE_AgentSetProperty("myLight_SkySun", "EnvLight - Intensity", 25, kScene);
-    --ALIVE_AgentSetProperty("myLight_SkySun", "EnvLight - Enlighten Intensity", 0.0, kScene);
-    --ALIVE_AgentSetProperty("myLight_SkySun", "EnvLight - Radius", 2555, kScene);
-    --ALIVE_AgentSetProperty("myLight_SkySun", "EnvLight - Distance Falloff", 9, kScene);
-    --ALIVE_AgentSetProperty("myLight_SkySun", "EnvLight - Spot Angle Inner", 5, kScene);
-    --ALIVE_AgentSetProperty("myLight_SkySun", "EnvLight - Spot Angle Outer", 65, kScene);
-    --ALIVE_AgentSetProperty("myLight_SkySun", "EnvLight - Color", sunColor, kScene);
-    --ALIVE_AgentSetProperty("myLight_SkySun", "EnvLight - Enabled Group", skyEnvlight_groupEnabled, kScene);
-    --ALIVE_AgentSetProperty("myLight_SkySun", "EnvLight - Groups", skyEnvlight_groups, kScene);
-    --ALIVE_AgentSetProperty("myLight_SkySun", "EnvLight - Shadow Type", 0, kScene);
-    --ALIVE_AgentSetProperty("myLight_SkySun", "EnvLight - Wrap", 0.0, kScene);
-    --ALIVE_AgentSetProperty("myLight_SkySun", "EnvLight - Shadow Quality", 0, kScene);
-    --ALIVE_AgentSetProperty("myLight_SkySun", "EnvLight - HBAO Participation Type", 1, kScene);
-  
-    --remove original sun since we created our own and only needed it for getting the correct lighting groups.
-    --ALIVE_RemoveAgent("light_ENV_D_SunKey", kScene);
-    --ALIVE_RemoveAgent("module_environment", kScene);
-
-    ALIVE_SetPropertyOnAgentsWithPrefix(kScene, "adv_", "Render EnvLight Shadow Cast Enable", true)
-    ALIVE_SetPropertyOnAgentsWithPrefix(kScene, "adv_", "Render Shadow Force Visible", true)
-    ALIVE_SetPropertyOnAgentsWithPrefix(kScene, "adv_", "Render Enlighten Force Visible", true)
-    
-
-    --modify the scene post processing
-    ALIVE_AgentSetProperty(agent_name_scene, "FX anti-aliasing", true, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "FX Sharp Shadows Enabled", true, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "FX Ambient Occlusion Enabled", true, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Intensity", 1.0, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap White Point", 10.0, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Black Point", 0.005, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Toe Intensity", 1.0, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Shoulder Intensity", 0.75, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Type", 2, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Pivot", 0, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Shoulder Intensity", 0.8, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "HBAO Enabled", true, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "HBAO Intensity", 1.0, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "HBAO Radius", 0.5, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "HBAO Max Radius Percent", 0.5, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "HBAO Max Distance", 35.5, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "HBAO Distance Falloff", 1, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "HBAO Hemisphere Bias", 0.1, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "FX Bloom Threshold", -0.45, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "FX Bloom Intensity", 0.45, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "Ambient Color", ambientColor, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "Shadow Color", RGBColor(0, 0, 0, 0), kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "FX Vignette Tint Enabled", true, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "FX Vignette Tint", RGBColor(0, 0, 0, 255), kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "FX Vignette Falloff", 1.0, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "FX Vignette Center", 0, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "FX Vignette Corners", 1.0, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Saturation", 1.0, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Reflection Intensity Shadow", 1.0, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Reflection Intensity", 1.0, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Shadow Max Distance", 40.0, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Dynamic Shadow Max Distance", 45.0, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Shadow Position Offset Bias", 0.0, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Shadow Depth Bias", -1.0, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Shadow Auto Depth Bounds", false, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Shadow Light Bleed Reduction", 0.8, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Shadow Moment Bias", 0.0, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "Specular Multiplier Enabled", true, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "Specular Color Multiplier", 55, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "Specular Intensity Multiplier", 1, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "Specular Exponent Multiplier", 1, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "FX Noise Scale", 1, kScene);
-end
-
---|||||||||||||||||||||||||||||||||||||||||||||| 3RD PERSON CONTROLLER ||||||||||||||||||||||||||||||||||||||||||||||
---|||||||||||||||||||||||||||||||||||||||||||||| 3RD PERSON CONTROLLER ||||||||||||||||||||||||||||||||||||||||||||||
---|||||||||||||||||||||||||||||||||||||||||||||| 3RD PERSON CONTROLLER ||||||||||||||||||||||||||||||||||||||||||||||
+ResourceSetEnable("ProjectSeason3", 1000);
+ResourceSetEnable("WalkingDead301", 1200);
+ResourceSetEnable("WalkingDead302", 1300);
+ResourceSetEnable("WalkingDead303", 1400);
+ResourceSetEnable("WalkingDead304", 1500);
+ResourceSetEnable("WalkingDead305", 1600);
 
 HideCusorInGame = function()
     CursorHide(true);
     CursorEnable(true);
 end
 
+local DoSandraStuff = function()
+
+    ResourceSetEnable("ProjectSeason1");
+    ResourceSetEnable("WalkingDead101");
+
+    local clem100 = AgentCreate("Clementine100", "sk56_clementine.prop", Vector(0,0,0), Vector(0, 0, 0), kScene, false, false);
+    local sandra100 = AgentCreate("Sandra100", "sk62_lilly.prop", Vector(0,0,0), Vector(0, 0, 0), kScene, false, false);
+
+
+
+
+    --local clem_anmClip = "sk63_clementine100_sk62_idle_sandraHugClem.anm";
+    --local sandra_anmClip = "sk62_idle_sandraHugClem.anm";
+
+    local clem_anmClip = "sk63_clementine100_sk62_action_sandraTickleClem.anm";
+    local sandra_anmClip = "sk62_action_sandraTickleClem.anm";
+
+    local clem100_cnt1 = PlayAnimation(clem100, clem_anmClip);
+    local sandra100_cnt1 = PlayAnimation(sandra100, sandra_anmClip);
+
+    ControllerSetLooping(clem100_cnt1, true);
+    ControllerSetLooping(sandra100_cnt1, true);
+
+end
+
+local SetCharacterStates = function()
+    AgentSetState("AJ", "bodyJacketDisco");
+    AgentSetState("Clementine", "bodyLowerLegMissing");
+
+    local myTextureeee = "sk62_clementine400_bodyLowerPantsBittenB.d3dtx";
+    --local myTextureeee = "texture_clementine_bloody_stump.d3dtx";
+    --local myTextureeee = "color_fff0000.d3dtx"; --red
+    --local myTextureeee = "color_fff.d3dtx"; --white
+
+    ALIVE_AgentSetProperty("Clementine", "sk62_clementine400_head_m - Diffuse Texture", "sk62_clementine400_headDyingD.d3dtx", kScene);
+    ALIVE_AgentSetProperty("Clementine", "sk62_clementine400_eyes_m - Diffuse Texture", "sk62_clementine400_eyesDying.d3dtx", kScene);
+    ALIVE_AgentSetProperty("Clementine", "sk62_clementine400_bodyLowerLegMissing_m - Diffuse Texture", myTextureeee, kScene);
+    ALIVE_AgentSetProperty("Clementine", "sk62_clementine400_bodyLowerBitten_m - Diffuse Texture", myTextureeee, kScene);
+    ALIVE_AgentSetProperty("Clementine", "sk62_clementine400_bodyLowerOutfitA_m - Diffuse Texture", myTextureeee, kScene);
+    --texture_clementine_bloody_stump.d3dtx
+    --ALIVE_PrintValidPropertyNames(AgentFindInScene("Clementine", ThirdPerson_kScene));
+    --ALIVE_PrintProperties(AgentFindInScene("Clementine", ThirdPerson_kScene));
+
+    --ALIVE_GetCacheObjectNameFromProperty(AgentFindInScene("Clementine", ThirdPerson_kScene), "sk62_clementine400_head_m - Diffuse Texture");
+    --ALIVE_GetCacheObjectNamesFromProperties(AgentFindInScene("Clementine", ThirdPerson_kScene), "cleanedCacheObjectsList404.txt");
+
+
+
+    --bodyLowerLegMissing
+
+    --[[
+        NOTE TO SELF:
+        for properties with Handle<T3Texture> type, typically they have cached object and then a string of numbers
+        we could try perhaps by taking that single field and running strings.txt through it.
+        basically getting the inital field value, then setting it, then getting the value again and printing it, then repeat
+    ]]--
+
+    --local ajProps = AgentGetProperties(agent_character);
+    --local clemProps = AgentGetProperties(AgentFindInScene("Clementine", ThirdPerson_kScene));
+    --local textureOverride = "color_000.d3dtx"; --black
+
+    --adv_boardingSchoolExterior_module_lightprobe.d3dtx
+    --ALIVE_SetPropertyBySymbol(clemProps, "98822971867575553", textureOverride);
+
+    --local myTexture = "color_fff.d3dtx"; --white
+    --local myTexture = "color_fff0000.d3dtx"; --red
+    --local myTexture = "color_818181.d3dtx"; --grey
+    --local myTexture = "color_666666.d3dtx"; --dark grey
+    --local myTexture = "color_000.d3dtx"; --black
+    --ALIVE_GetCacheObjectNamesFromProperties(AgentFindInScene("AJ", ThirdPerson_kScene), "cleanedCacheObjectsList404.txt");
+
+    --set aj spec
+    --local ajSpecOverride = "color_818181.d3dtx"; --grey
+    --local ajSpecOverride = "color_fff.d3dtx"; --white
+    --local ajSpecOverride = "color_666666.d3dtx"; --dark grey
+    --local ajSpecOverride = "color_000.d3dtx"; --black
+    --ALIVE_AgentSetPropertyBySymbol("AJ", "990463370724338236", ajSpecOverride, ThirdPerson_kScene);
+    --ALIVE_AgentSetPropertyBySymbol("AJ", "1463902169883331120", ajSpecOverride, ThirdPerson_kScene);
+    --ALIVE_AgentSetPropertyBySymbol("AJ", "5661132411227395665", ajSpecOverride, ThirdPerson_kScene);
+    --ALIVE_AgentSetPropertyBySymbol("AJ", "11664515276069663068", ajSpecOverride, ThirdPerson_kScene);
+    --ALIVE_AgentSetPropertyBySymbol("AJ", "13884686417410322160", ajSpecOverride, ThirdPerson_kScene);
+
+    --ALIVE_AgentSetPropertyBySymbol("AJ", "16751189380505258298", myTexture, kScene);
+
+    --ALIVE_AgentSetProperty("AJ", "obj_gunRevolverClothwrap_m - Diffuse Texture", myTexture, ThirdPerson_kScene);
+    --ALIVE_AgentSetProperty("AJ", "obj_gunRevolver_m - Diffuse Texture", myTexture, ThirdPerson_kScene);
+    --ALIVE_AgentSetProperty("AJ", "sk63_aj_bodyLower_m - Diffuse Texture", myTexture, ThirdPerson_kScene);
+    --ALIVE_AgentSetProperty("AJ", "sk63_aj_bodyUpperJacket_m - Diffuse Texture", myTexture, ThirdPerson_kScene);
+    --ALIVE_AgentSetProperty("AJ", "sk63_aj_head_m - Diffuse Texture", myTexture, ThirdPerson_kScene);
+
+    --ALIVE_AgentSetProperty("AJ", "obj_gunRevolverClothwrap_m - Specular Map Texture", myTexture, ThirdPerson_kScene);
+    --ALIVE_AgentSetProperty("AJ", "obj_gunRevolver_m - Specular Map Texture", myTexture, ThirdPerson_kScene);
+    --ALIVE_AgentSetProperty("AJ", "sk63_aj_bodyLower_m - Specular Map Texture", myTexture, ThirdPerson_kScene);
+    --ALIVE_AgentSetProperty("AJ", "sk63_aj_bodyUpperJacket_m - Specular Map Texture", myTexture, ThirdPerson_kScene);
+    --ALIVE_AgentSetProperty("AJ", "sk63_aj_head_m - Specular Map Texture", myTexture, ThirdPerson_kScene);
+    
+    --local ajProps = AgentGetRuntimeProperties(agent_character);
+    --local ajModels = AgentToModels(agent_character);
+    --local testAJ = PropertyGet(ajProps, "Mesh sk63_aj_bodyLower");
+    --local ajMesh = PropertyGet(ajProps, "D3D Mesh");
+    --local ajMeshList = PropertyGet(ajProps, "D3D Mesh List");
+
+    --for x, mesh in ipairs(ajMeshList) do
+    --    MeshSetDiffuseTexture(mesh, "color_fff.d3dtx");
+    --end
+
+
+
+    --for x, mesh in ipairs(ajModels) do
+    --   MeshSetDiffuseTexture(mesh, "color_fff.d3dtx");
+    --end
+
+    --MeshSetDiffuseTexture(ajMesh, "color_fff.d3dtx");
+    --MeshSetDiffuseTexture(testAJ, "color_fff.d3dtx");
+
+    --ShaderSwapTexture
+
+    --PropertySet(ajProps, "", );
+
+    --MeshSetDiffuseTexture
+
+    --D3D Mesh
+    --D3D Mesh List
+
+    --PropertySet(ajProps, "Mesh sk63_aj_bodyLower - Visible", false);
+    --PropertySet(ajProps, "Material sk63_aj_bodyLower - Texture", "color_fff.d3dtx");
+    --PropertySet(ajProps, "sk63_aj_bodyLower - Texture", "color_fff.d3dtx");
+    --PropertySet(ajProps, "material_sk63_aj_bodyLower - Texture", "color_fff.d3dtx");
+    --PropertySet(ajProps, "material_sk63_aj_bodyLower - Diffuse Texture", "color_fff.d3dtx");
+    --ALIVE_PrintProperties(agent_character)
+end
+
+local PlayTempSoundtrack = function()
+    local musicController = SoundPlay("music_temp_action1.wav");
+    --local musicController = SoundPlay("music_temp_action1.wav");
+    ControllerSetLooping(musicController, true);
+    --ControllerSetVolume(musicController, 0.25);
+    ControllerSetSoundVolume(musicController, 0.25);
+
+    --local controller_sound_soundtrack = SoundPlay("custom_soundtrack1.wav");
+    
+    ----set it to loop
+    --ControllerSetLooping(controller_sound_soundtrack, true)
+end
+
 ALIVE_Level_Sandbox = function()
-    SetProjectSettings();
-    Scene_CleanUpOriginalScene();
-    Scene_RelightScene();
+    --ALIVE_PrintSceneListToTXT(kScene, "adv_boardingSchoolExterior.txt");
+    --ALIVE_PrintSceneListToTXT(kScene, "adv_richmondOverpass.txt");
+    --ALIVE_PrintSceneListToTXT(kScene, "adv_richmondStreetTile.txt");
+    --ALIVE_PrintValidPropertyNames("fx_lightShaft01", kScene);
+    --ALIVE_PrintValidPropertyNames("fx_camPollen", kScene);
+    --ALIVE_PrintValidPropertyNames("fxg_bloodBleedDirRad", kScene);
+    --ALIVE_PrintValidPropertyNames("obj_capClementine400", kScene);
+    --ALIVE_PrintValidPropertyNames("AJ", kScene);
+    --ALIVE_PrintValidPropertyNames("Clementine", kScene);
+    --ALIVE_PrintValidPropertyNames("adv_boardingSchoolExterior_meshesABuilding", kScene);
+    --ALIVE_PrintValidPropertyNames("obj_skydome", kScene);
+
+    ALIVE_Project_SetProjectSettings();
+    --ALIVE_Scene_LevelCleanup_403_BoardingSchoolExterior(kScene);
+    --ALIVE_Scene_LevelRelight_403_BoardingSchoolExterior(kScene);
+
+    ALIVE_Scene_LevelCleanup_305_RichmondOverpass(kScene);
+    ALIVE_Scene_LevelRelight_305_RichmondOverpass(kScene);
+
+    --ALIVE_Scene_LevelCleanup_305_RichmondStreetTile(kScene);
+    --ALIVE_Scene_LevelRelight_305_RichmondStreetTile(kScene);
 
     HideCusorInGame();
+    PlayTempSoundtrack();
 
-    --ALIVE_PrintSceneListToTXT(kScene, "adv_boardingSchoolExterior.txt");
+    --ChorePlay("ui_death_show.chore");
 
-    if (EnableFreecam == true) then
-        ALIVE_Development_CreateFreeCamera();
-        ALIVE_Development_InitalizeCutsceneTools();
+    --kUIChoreClose = "UI Scene - Chore Close"
+    --kUIChoreOpen = "UI Scene - Chore Open"
 
-        Callback_OnPostUpdate:Add(ALIVE_Development_UpdateFreeCamera);
-        Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Input);
-        Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Main);
-    else
-        ALIVE_Gameplay_CreateThirdPersonController(true, Vector(0, 0, 11));
-        --Callback_OnPostUpdate:Add(ALIVE_Gameplay_UpdateThirdPerson_Input);
-        --Callback_OnPostUpdate:Add(ALIVE_Gameplay_UpdateThirdPerson_Camera);
-        --Callback_OnPostUpdate:Add(ALIVE_Gameplay_UpdateThirdPerson_Character);
-        --Callback_OnPostUpdate:Add(ALIVE_Gameplay_UpdateThirdPerson_CharacterAnimation);
-        --Callback_OnPostUpdate:Add(ALIVE_Gameplay_UpdateThirdPerson_CameraAnimation);
+    --SceneAdd("ui_death");
+    --ChorePlayAndWait(AgentGetProperty(SceneGetSceneAgent("ui_death"), "UI Scene - Chore Open"));
 
-        ALIVE_Gameplay_AI_CreateZombie(Vector(0, 0, 17));
-        Callback_OnPostUpdate:Add(ALIVE_Gameplay_AI_UpdateZombie_Character);
-        Callback_OnPostUpdate:Add(ALIVE_Gameplay_AI_UpdateZombie_CharacterAnimation);
-    end
+    --Callback_OnPostUpdate:Add(PerformAutofocusDOF);
+
+    --DoSandraStuff();
+
+    --sk62_action_sandraGrabZombieLeg.chore
+    --ALIVE_PrintChoreAgentNames("sk62_action_sandraGrabZombieLeg.chore")
+
+    --if (EnableFreecam == true) then
+        --ALIVE_Development_CreateFreeCamera();
+        --ALIVE_Development_InitalizeCutsceneTools();
+
+        --Callback_OnPostUpdate:Add(ALIVE_Development_UpdateFreeCamera);
+        --Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Input);
+        --Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Main);
+    --else
+        ALIVE_Gameplay_CreateThirdPersonController(Vector(15, 0, 0));
+        --ALIVE_Gameplay_CreateThirdPersonController();
+        --ALIVE_Gameplay_CreateThirdPersonController(Vector(0, 0, 15));
+        --ALIVE_Gameplay_AI_CreateZombies(25, Vector(0, 0, 17), Vector(15, 0, 15));
+        ALIVE_Gameplay_AI_CreateZombies(200, Vector(0, 0, 0), Vector(10, 0, 10));
+    --end
+
+    ALIVE_Scene_SetCharacterState_AJ(kScene);
+    ALIVE_Scene_SetCharacterState_Clementine(kScene);
+
+    --SetCharacterStates();
 end
 
 SceneOpen(kScene, kScript)
+--SceneAdd("ui_death");
+--ChorePlayAndWait(AgentGetProperty(AgentFindInScene("ui_death.scene", "ui_death"), "UI Scene - Chore Open"));

@@ -1,8 +1,5 @@
 --[[
-Custom Relighting Development Tools/Functions script
-This is a script that is basically full of custom systems and functions I created to make my life easier in regards to creating a relight.
-One of the many challenges is that for relighting things I often just had just geuss constantly where lights where, and their placements and settings.
-This aims to basically solve that and alleviate all of that.
+Custom Development Tools/Functions script
 
 THIS SCRIPT IS FOR HANDLING THE MAIN RELIGHT TOOL
 
@@ -10,8 +7,8 @@ KEYCODE VALUES - https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual
 Keycode values are in hexcode, so use this to convert them to decimal - https://www.rapidtables.com/convert/number/hex-to-decimal.html
 
 This script also uses functions from the following lua scripts...
-- ALIVE_AgentExtensions.lua
-- ALIVE_Printing.lua
+- ALIVE_Core_AgentExtensions.lua
+- ALIVE_Core_Printing.lua
 - ALIVE_Development_Freecam.lua
 
 WHEN IMPLEMENTING THIS INTO A LEVEL, YOU MUST DO THE FOLLOWING...

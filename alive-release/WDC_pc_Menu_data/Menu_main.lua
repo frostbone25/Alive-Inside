@@ -1,4 +1,4 @@
-﻿-- Decompiled using luadec 2.2 rev:  for Lua 5.2 from https://github.com/viruscamp/luadec
+-- Decompiled using luadec 2.2 rev:  for Lua 5.2 from https://github.com/viruscamp/luadec
 -- Command line: E:\Work\MODDING\Github\TTDS-FirstCutscene\first-cutscene-release\WDC_pc_Menu_data\Menu_main_temp.lua 
 
 -- params : ...
@@ -88,8 +88,9 @@ end
 Menu_Main = function()
   -- function num : 0_5 , upvalues : _ENV, kKeyArtScene, kScene, bgMain, UpdateLegend
   if not SceneIsActive(kKeyArtScene) then
-    MenuUtils_AddScene(kKeyArtScene)
+    --MenuUtils_AddScene(kKeyArtScene)
   end
+  SceneSetTimeScale(kScene, 10.0);
   SceneHide(kKeyArtScene, false)
   SceneHide("ui_menuMain", false)
   local menu = Menu_Create(ListMenu, "ui_menuMain", kScene)
@@ -156,6 +157,26 @@ Menu_Main = function()
   Menu_Show(menu)
 end
 
+local Custom_DarkenAllSceneCameras = function()
+    --get all agents in the scene
+    local scene_agents = SceneGetAgents(kKeyArtScene);
+
+    --fill out rig agents list
+    for i, agent_object in ipairs(scene_agents) do
+        --grab the camera property set on an agent
+        local agent_camera = AgentGetCamera(agent_object);
+        
+        --if there is infact a camera property set on an agent (meaning that its a camera)
+        if (cameraTest ~= nil) then
+            --get the agent object property set
+            local agent_props = AgentGetRuntimeProperties(agent_object);
+
+            --set the exposure property on the cameras to a really small value
+            PropertySet(agent_props, "Exposure", -100);
+        end
+    end
+end
+
 Menu_Main_Start = function()
   -- function num : 0_6 , upvalues : _ENV
   if Input_UseTouch() then
@@ -171,6 +192,7 @@ Menu_Main_Start = function()
   RenderDelay(1)
   WaitForNextFrame()
   Menu_Main()
+
 end
 
 Menu_Main_GetKeyArtScene = function()
@@ -218,4 +240,3 @@ if ResourceExists("DebugLoader.lua") then
   Callback_OnLoadDebugMenu:Add(OpenDebugMenu)
 end
 SceneOpen(kScene, "Menu_Main_Start")
-

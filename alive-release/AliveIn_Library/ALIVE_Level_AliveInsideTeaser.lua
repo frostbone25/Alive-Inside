@@ -3,14 +3,15 @@
 
 ]]--
 
-require("ALIVE_Utilities.lua");
-require("ALIVE_AgentExtensions.lua");
-require("ALIVE_Color.lua");
-require("ALIVE_Printing.lua");
-require("ALIVE_PropertyKeys.lua");
+require("ALIVE_Core_Utilities.lua");
+require("ALIVE_Core_AgentExtensions.lua");
+require("ALIVE_Core_Color.lua");
+require("ALIVE_Core_Printing.lua");
+require("ALIVE_Core_PropertyKeys.lua");
 require("ALIVE_Development_Freecam.lua");
 require("ALIVE_Development_AgentBrowser.lua");
-require("ALIVE_DepthOfFieldAutofocus.lua");
+require("ALIVE_Camera_DepthOfFieldAutofocus.lua");
+require("ALIVE_Scene_LevelCleanup.lua");
 
 ResourceSetEnable("ProjectSeason4");
 ResourceSetEnable("WalkingDead402");
