@@ -1,17 +1,17 @@
 local deathAnimationTick = 0;
 local fxColorOpacity = 0;
 
-ALIVE_Gameplay_UpdateThirdPerson_Death_Main = function()
-    local frameTime = GetFrameTime();
+ResourceSetEnable("WalkingDead201")
 
+ALIVE_Gameplay_Player_ThirdPerson_Death_Main = function()
     if (thirdperson_state_dying) then
 
         if(deathAnimationTick == 0) then
             RenderDelay(1);
 
             local agent_character = AgentFindInScene(thirdperson_name_character, ThirdPerson_kScene); --Agent type
-            local agent_zombie = AgentFindInScene("ZombieAI", ThirdPerson_kScene); --Agent type
-            local agent_zombieParent = AgentFindInScene("ZombieAI_Parent", ThirdPerson_kScene); --Agent type
+            local agent_zombie = AgentFindInScene(ALIVE_Gameplay_AI_Zombies_CurrentStationedZombieObject[zombie_agent_name], ThirdPerson_kScene); --Agent type
+            local agent_zombieParent = AgentFindInScene(ALIVE_Gameplay_AI_Zombies_CurrentStationedZombieObject[zombie_agent_parent_name], ThirdPerson_kScene); --Agent type
 
             local vector_character_position = AgentGetWorldPos(agent_character); --Vector type
             local vector_zombie_position = AgentGetWorldPos(agent_zombieParent); --Vector type
@@ -49,7 +49,7 @@ ALIVE_Gameplay_UpdateThirdPerson_Death_Main = function()
             ALIVE_SetAgentPosition(thirdperson_name_groupCamera, vector_zombie_position + Vector(0.2, 0.85, -0.18), ThirdPerson_kScene);
             ALIVE_SetAgentRotation(thirdperson_name_groupCamera, Vector(-15, -15, 15), ThirdPerson_kScene);
 
-            ALIVE_AgentSetProperty(thirdperson_name_camera, "Field Of View", 60, ThirdPerson_kScene);
+            ALIVE_AgentSetProperty(thirdperson_name_camera, "Field Of View", 160, ThirdPerson_kScene);
         end
 
         if (deathAnimationTick == 1) then
@@ -88,11 +88,12 @@ ALIVE_Gameplay_UpdateThirdPerson_Death_Main = function()
         end
 
         if (deathAnimationTick > 70) then
-            fxColorOpacity = ALIVE_NumberLerp(fxColorOpacity, 1.0, frameTime * 2.5);
+            fxColorOpacity = ALIVE_NumberLerp(fxColorOpacity, 1.0, thirdperson_frameTime * 2.5);
             ALIVE_AgentSetProperty(thirdperson_name_camera, "FX Color Enabled", true, ThirdPerson_kScene);
             ALIVE_AgentSetProperty(thirdperson_name_camera, "FX Color Opacity", fxColorOpacity, ThirdPerson_kScene);
             ALIVE_AgentSetProperty(thirdperson_name_camera, "FX Color Tint", Color(1, 0, 0, 1), ThirdPerson_kScene);
         end
+        
         deathAnimationTick = deathAnimationTick + 1;
     end
 end

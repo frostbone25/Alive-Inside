@@ -27,10 +27,10 @@ require("ALIVE_Project.lua");
 
 --main level variables
 local kScript = "ALIVE_Level_Sandbox";
---local kScene = "adv_boardingSchoolExterior";
---local agent_name_scene = "adv_boardingSchoolExterior.scene"; 
-local kScene = "adv_richmondOverpass";
-local agent_name_scene = "adv_richmondOverpass.scene"; 
+local kScene = "adv_boardingSchoolExterior";
+local agent_name_scene = "adv_boardingSchoolExterior.scene"; 
+--local kScene = "adv_richmondOverpass";
+--local agent_name_scene = "adv_richmondOverpass.scene"; 
 --local kScene = "adv_richmondStreetTile";
 --local agent_name_scene = "adv_richmondStreetTile.scene"; 
 
@@ -72,12 +72,12 @@ ResourceSetEnable("WalkingDead402");
 ResourceSetEnable("WalkingDead403");
 ResourceSetEnable("WalkingDead404");
 
-ResourceSetEnable("ProjectSeason3", 1000);
-ResourceSetEnable("WalkingDead301", 1200);
-ResourceSetEnable("WalkingDead302", 1300);
-ResourceSetEnable("WalkingDead303", 1400);
-ResourceSetEnable("WalkingDead304", 1500);
-ResourceSetEnable("WalkingDead305", 1600);
+--ResourceSetEnable("ProjectSeason3", 1000);
+--ResourceSetEnable("WalkingDead301", 1200);
+--ResourceSetEnable("WalkingDead302", 1300);
+--ResourceSetEnable("WalkingDead303", 1400);
+--ResourceSetEnable("WalkingDead304", 1500);
+--ResourceSetEnable("WalkingDead305", 1600);
 
 HideCusorInGame = function()
     CursorHide(true);
@@ -243,11 +243,11 @@ ALIVE_Level_Sandbox = function()
     --ALIVE_PrintValidPropertyNames("obj_skydome", kScene);
 
     ALIVE_Project_SetProjectSettings();
-    --ALIVE_Scene_LevelCleanup_403_BoardingSchoolExterior(kScene);
-    --ALIVE_Scene_LevelRelight_403_BoardingSchoolExterior(kScene);
+    ALIVE_Scene_LevelCleanup_403_BoardingSchoolExterior(kScene);
+    ALIVE_Scene_LevelRelight_403_BoardingSchoolExterior(kScene);
 
-    ALIVE_Scene_LevelCleanup_305_RichmondOverpass(kScene);
-    ALIVE_Scene_LevelRelight_305_RichmondOverpass(kScene);
+    --ALIVE_Scene_LevelCleanup_305_RichmondOverpass(kScene);
+    --ALIVE_Scene_LevelRelight_305_RichmondOverpass(kScene);
 
     --ALIVE_Scene_LevelCleanup_305_RichmondStreetTile(kScene);
     --ALIVE_Scene_LevelRelight_305_RichmondStreetTile(kScene);
@@ -281,8 +281,8 @@ ALIVE_Level_Sandbox = function()
         ALIVE_Gameplay_CreateThirdPersonController(Vector(15, 0, 0));
         --ALIVE_Gameplay_CreateThirdPersonController();
         --ALIVE_Gameplay_CreateThirdPersonController(Vector(0, 0, 15));
-        --ALIVE_Gameplay_AI_CreateZombies(25, Vector(0, 0, 17), Vector(15, 0, 15));
-        ALIVE_Gameplay_AI_CreateZombies(200, Vector(0, 0, 0), Vector(10, 0, 10));
+        ALIVE_Gameplay_AI_CreateZombies(5, Vector(0, 0, 17), Vector(15, 0, 15));
+        --ALIVE_Gameplay_AI_CreateZombies(200, Vector(0, 0, 0), Vector(10, 0, 10));
     --end
 
     ALIVE_Scene_SetCharacterState_AJ(kScene);

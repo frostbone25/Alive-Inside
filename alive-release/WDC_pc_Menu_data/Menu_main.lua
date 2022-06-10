@@ -88,7 +88,7 @@ end
 Menu_Main = function()
   -- function num : 0_5 , upvalues : _ENV, kKeyArtScene, kScene, bgMain, UpdateLegend
   if not SceneIsActive(kKeyArtScene) then
-    --MenuUtils_AddScene(kKeyArtScene)
+    MenuUtils_AddScene(kKeyArtScene)
   end
   SceneSetTimeScale(kScene, 10.0);
   SceneHide(kKeyArtScene, false)
@@ -155,26 +155,6 @@ Menu_Main = function()
   end
 
   Menu_Show(menu)
-end
-
-local Custom_DarkenAllSceneCameras = function()
-    --get all agents in the scene
-    local scene_agents = SceneGetAgents(kKeyArtScene);
-
-    --fill out rig agents list
-    for i, agent_object in ipairs(scene_agents) do
-        --grab the camera property set on an agent
-        local agent_camera = AgentGetCamera(agent_object);
-        
-        --if there is infact a camera property set on an agent (meaning that its a camera)
-        if (cameraTest ~= nil) then
-            --get the agent object property set
-            local agent_props = AgentGetRuntimeProperties(agent_object);
-
-            --set the exposure property on the cameras to a really small value
-            PropertySet(agent_props, "Exposure", -100);
-        end
-    end
 end
 
 Menu_Main_Start = function()
