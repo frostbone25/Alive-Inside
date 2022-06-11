@@ -1,3 +1,28 @@
+ALIVE_Scene_SetCharacterState_AJ_KennyHat = function(kScene)
+    ALIVE_AgentSetProperty("AJ", "Mesh sk63_aj_hair - Visible", false, kScene);
+
+    ResourceSetEnable("WalkingDead301");
+
+    local agent_kennyHat = AgentCreate("KennyHat", "obj_hatKennyWellington.prop", Vector(0,0,0), Vector(0,0,0), ThirdPerson_kScene, false, false);
+    ALIVE_AgentSetProperty("KennyHat", "Render Global Scale", 1, ThirdPerson_kScene);
+    ALIVE_AgentSetProperty("KennyHat", "Render Cull", false, ThirdPerson_kScene);
+    ALIVE_AgentSetProperty("KennyHat", "Runtime: Visible", true, ThirdPerson_kScene);
+
+    --head
+    --Head
+    --HEAD
+    local nodeName = "head";
+
+    local charAgento = AgentFindInScene("AJ", ThirdPerson_kScene);
+
+    if AgentHasNode(charAgento, nodeName) then
+        AgentAttachToNode(agent_kennyHat, charAgento, nodeName);
+
+        AgentSetPos(agent_kennyHat, Vector(0, 0.095, 0.055));
+        AgentSetRot(agent_kennyHat, Vector(0, 0, 0));
+    end
+end
+
 ALIVE_Scene_SetCharacterState_AJ = function(kScene)
     AgentSetState("AJ", "bodyJacketDisco");
 
@@ -126,4 +151,8 @@ ALIVE_Scene_SetCharacterState_Clementine = function(kScene)
     --local myTexture = "color_000.d3dtx"; --black
 
     --ALIVE_PrintProperties(agent_character)
+end
+
+ALIVE_Scene_SetCharacterState_AJ_Teaser = function(kScene)
+    AgentSetState("AJ", "bodyJacketDisco");
 end

@@ -26,15 +26,6 @@ ResourceSetEnable("WalkingDead403");
 ResourceSetEnable("WalkingDead404");
 ResourceSetEnable("WalkingDead201");
 
---ResourceSetEnable("ProjectSeason3", 1000);
---ResourceSetEnable("WalkingDead301", 1200);
---ResourceSetEnable("WalkingDead302", 1300);
---ResourceSetEnable("WalkingDead303", 1400);
---ResourceSetEnable("WalkingDead304", 1500);
---ResourceSetEnable("WalkingDead305", 1600);
-
-
-
 --|||||||||||||||||||||||||||||||||||||||||||||| SCRIPT VARIABLES ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| SCRIPT VARIABLES ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| SCRIPT VARIABLES ||||||||||||||||||||||||||||||||||||||||||||||

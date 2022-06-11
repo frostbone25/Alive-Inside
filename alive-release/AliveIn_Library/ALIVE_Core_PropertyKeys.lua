@@ -7,25 +7,6 @@
 --This still works, but you have to know the property by its symbol.
 --I have a tool that one can use to identify and mess around with properties by symbol, but its not included here in the relight mod
 
---gets the key and if it's a symbol it removes the symbol: tag and quotations
-local ALIVE_KeyToString = function(key)
-    --convert the key to a string
-    local keyAsString = tostring(key);
-    
-    --if the string contains symbol: then remove it, otherwise keep the string as is
-    if (string.match)(keyAsString, "symbol: ") then
-        keyAsString = (string.sub)(keyAsString, 9);
-    else
-        keyAsString = keyAsString;
-    end
-    
-    --remove any leftover quotations from the string
-    keyAsString = keyAsString:gsub('"','');
-
-    --return the final result
-    return keyAsString;
-end
-
 --gets and sets a property value using a symbol key string
 ALIVE_SetPropertyBySymbol = function(properties, symbolString, newValue)
     --check if the properties isn't null

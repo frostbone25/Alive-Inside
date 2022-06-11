@@ -19,6 +19,8 @@ end
 ALIVE_Gameplay_Player_ThirdPerson_Zombat_Main = function()
     if (ALIVE_Gameplay_AI_Zombies_CurrentStationedZombieObject == nil) then do return end end
 
+    local zombieObject = ALIVE_Gameplay_AI_Zombies_CurrentStationedZombieObject;
+
     local zombieObject_agent = zombieObject[zombie_agent];
     local zombieObject_agentParent = zombieObject[zombie_agent_parent];
     local zombieObject_agentName = zombieObject[zombie_agent_name];

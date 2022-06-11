@@ -1,7 +1,3 @@
---|||||||||||||||||||||||||||||||||||||||||||||| RICHMOND STREET TILE S3 ||||||||||||||||||||||||||||||||||||||||||||||
---|||||||||||||||||||||||||||||||||||||||||||||| RICHMOND STREET TILE S3 ||||||||||||||||||||||||||||||||||||||||||||||
---|||||||||||||||||||||||||||||||||||||||||||||| RICHMOND STREET TILE S3 ||||||||||||||||||||||||||||||||||||||||||||||
-
 ALIVE_Scene_LevelCleanup_305_RichmondStreetTile = function(kScene)
     ALIVE_RemovingAgentsWithPrefix(kScene, "light_CHAR_CC");
     ALIVE_RemovingAgentsWithPrefix(kScene, "lightrig");

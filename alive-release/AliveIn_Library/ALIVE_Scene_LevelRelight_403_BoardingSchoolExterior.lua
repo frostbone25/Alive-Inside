@@ -1,7 +1,3 @@
---|||||||||||||||||||||||||||||||||||||||||||||| BOARDING SCHOOL EXTERIOR 403 ||||||||||||||||||||||||||||||||||||||||||||||
---|||||||||||||||||||||||||||||||||||||||||||||| BOARDING SCHOOL EXTERIOR 403 ||||||||||||||||||||||||||||||||||||||||||||||
---|||||||||||||||||||||||||||||||||||||||||||||| BOARDING SCHOOL EXTERIOR 403 ||||||||||||||||||||||||||||||||||||||||||||||
-
 ALIVE_Scene_LevelRelight_403_BoardingSchoolExterior = function(kScene)
     local agent_name_scene = kScene .. ".scene";
 

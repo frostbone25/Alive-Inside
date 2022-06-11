@@ -1,7 +1,3 @@
---|||||||||||||||||||||||||||||||||||||||||||||| RICHMOND OVERPASS S3 ||||||||||||||||||||||||||||||||||||||||||||||
---|||||||||||||||||||||||||||||||||||||||||||||| RICHMOND OVERPASS S3 ||||||||||||||||||||||||||||||||||||||||||||||
---|||||||||||||||||||||||||||||||||||||||||||||| RICHMOND OVERPASS S3 ||||||||||||||||||||||||||||||||||||||||||||||
-
 ALIVE_Scene_LevelCleanup_305_RichmondOverpass = function(kScene)
     ALIVE_RemovingAgentsWithPrefix(kScene, "light_CHAR_CC");
     ALIVE_RemovingAgentsWithPrefix(kScene, "lightrig");

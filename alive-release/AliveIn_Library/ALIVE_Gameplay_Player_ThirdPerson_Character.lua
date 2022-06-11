@@ -90,7 +90,7 @@ ALIVE_Gameplay_Player_ThirdPerson_Character_CreateCharacter = function(startingP
     
     -----------------------------------------------
     thirdperson_controller_anim_idle = PlayAnimation(agent_character, "sk63_idle_ajStandA.anm");
-    thirdperson_controller_anim_walking = PlayAnimation(agent_character, "sk63_aj_walk.anm");
+    --thirdperson_controller_anim_walking = PlayAnimation(agent_character, "sk63_aj_walk.anm");
     thirdperson_controller_anim_running = PlayAnimation(agent_character, "sk63_aj_run.anm");
     thirdperson_controller_anim_crouchIdle = PlayAnimation(agent_character, "sk63_idle_ajCrouch.anm");
     thirdperson_controller_anim_crouchMoving = PlayAnimation(agent_character, "sk62_clementine400_crouchWalk.anm");
@@ -102,7 +102,7 @@ ALIVE_Gameplay_Player_ThirdPerson_Character_CreateCharacter = function(startingP
     --thirdperson_controller_anim_idle = PlayAnimation(agent_character, "sk62_idle_clementine400StandAHoldKnife.anm");
     --thirdperson_controller_anim_idle = PlayAnimation(agent_character, "sk62_idle_clementineHoldKnifeReady.anm");
     --thirdperson_controller_anim_idle = PlayAnimation(agent_character, "sk63_idle_ajActionHoldKnife.anm");
-    --thirdperson_controller_anim_walking = PlayAnimation(agent_character, "sk63_aj_walk.anm");
+    thirdperson_controller_anim_walking = PlayAnimation(agent_character, "sk63_aj_walk.anm");
     --thirdperson_controller_anim_running = PlayAnimation(agent_character, "sk62_clementine400_runHoldPackKnife.anm");
     --thirdperson_controller_anim_crouchIdle = PlayAnimation(agent_character, "sk63_idle_ajCrouch.anm");
     --thirdperson_controller_anim_crouchMoving = PlayAnimation(agent_character, "sk62_clementine400_crouchWalk.anm");

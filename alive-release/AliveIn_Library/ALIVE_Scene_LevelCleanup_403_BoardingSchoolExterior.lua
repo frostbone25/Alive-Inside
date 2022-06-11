@@ -1,7 +1,3 @@
---|||||||||||||||||||||||||||||||||||||||||||||| BOARDING SCHOOL EXTERIOR 403 ||||||||||||||||||||||||||||||||||||||||||||||
---|||||||||||||||||||||||||||||||||||||||||||||| BOARDING SCHOOL EXTERIOR 403 ||||||||||||||||||||||||||||||||||||||||||||||
---|||||||||||||||||||||||||||||||||||||||||||||| BOARDING SCHOOL EXTERIOR 403 ||||||||||||||||||||||||||||||||||||||||||||||
-
 ALIVE_Scene_LevelCleanup_403_BoardingSchoolExterior = function(kScene)
     ALIVE_RemovingAgentsWithPrefix(kScene, "light_CHAR_CC");
     ALIVE_RemovingAgentsWithPrefix(kScene, "lightrig");
@@ -57,7 +53,7 @@ ALIVE_Scene_LevelCleanup_403_BoardingSchoolExterior = function(kScene)
     ALIVE_RemoveAgent("module_environment_med", kScene);
     ALIVE_RemoveAgent("module_post_effect", kScene);
     ALIVE_RemoveAgent("light_ENV_ambFill", kScene);
-    ALIVE_RemoveAgent("light_ENV_D_SunKey", kScene);
+    --ALIVE_RemoveAgent("light_ENV_D_SunKey", kScene);
     ALIVE_RemoveAgent("keylight_node_exterior", kScene);
     --ALIVE_RemoveAgent("light_AMB_0", kScene);
     --ALIVE_RemoveAgent("light_AMB_grassIvy", kScene);

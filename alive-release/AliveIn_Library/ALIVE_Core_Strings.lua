@@ -338,7 +338,7 @@ ALIVE_PropertiesListToStringList = function(agentName, givenPropertyNamesList)
 end
 
 --gets the key and if it's a symbol it removes the symbol: tag and quotations
-local ALIVE_KeyToString = function(key)
+ALIVE_KeyToString = function(key)
     --convert the key to a string
     local keyAsString = tostring(key)
     

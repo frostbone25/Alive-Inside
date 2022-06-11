@@ -1,7 +1,3 @@
---|||||||||||||||||||||||||||||||||||||||||||||| RICHMOND STREET TILE S3 ||||||||||||||||||||||||||||||||||||||||||||||
---|||||||||||||||||||||||||||||||||||||||||||||| RICHMOND STREET TILE S3 ||||||||||||||||||||||||||||||||||||||||||||||
---|||||||||||||||||||||||||||||||||||||||||||||| RICHMOND STREET TILE S3 ||||||||||||||||||||||||||||||||||||||||||||||
-
 ALIVE_Scene_LevelRelight_305_RichmondStreetTile = function(kScene)
     local agent_name_scene = kScene .. ".scene";
 

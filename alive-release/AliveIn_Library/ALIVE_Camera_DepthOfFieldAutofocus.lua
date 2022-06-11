@@ -30,7 +30,18 @@ This is important as this will disable DOF during gameplay segments
 This needs to be a STRING ARRAY that will contain all of the objects/characters that the autofocus will target.
 This is VERY important.
 
-7. Lastly in the main function of the level script you add the functionality like so...
+7. The other last bit is a table for configuring the autofocusing settings for the scene.
+
+ALIVE_DOF_AUTOFOCUS_Settings =
+{
+    TargetValidation_IsOnScreen = false,
+    TargetValidation_IsVisible = false,
+    TargetValidation_IsWithinDistance = false,
+    TargetValidation_IsFacingCamera = false,
+    TargetValidation_IsOccluded = false
+}
+
+8. Lastly in the main function of the level script you add the functionality like so...
 
 Callback_OnPostUpdate:Add(PerformAutofocusDOF)
 ]]--
@@ -113,19 +124,19 @@ PerformAutofocusDOF = function()
             local isValidTarget = true;
 
             --check if the target is on the screen
-            --if (isValidTarget == true) and (object_isOnScreen == false) then isValidTarget = false; end
+            if (isValidTarget == true) and (ALIVE_DOF_AUTOFOCUS_Settings["TargetValidation_IsOnScreen"]) and (object_isOnScreen == false) then isValidTarget = false; end
             
             --check if the target's visibillity is disabled
-            --if (isValidTarget == true) and (object_isVisible == false) then isValidTarget = false; end
+            if (isValidTarget == true) and (ALIVE_DOF_AUTOFOCUS_Settings["TargetValidation_IsVisible"]) and (object_isVisible == false) then isValidTarget = false; end
             
             --check if the target is too far from camera
-            --if (isValidTarget == true) and (object_distance > rejectionDistance) then isValidTarget = false; end
+            if (isValidTarget == true) and (ALIVE_DOF_AUTOFOCUS_Settings["TargetValidation_IsWithinDistance"]) and (object_distance > rejectionDistance) then isValidTarget = false; end
 
             --check if the target is not within the rejection angle relative to the camera
-            --if (isValidTarget == true) and (object_vector_dot > rejectionAngle) then isValidTarget = false; end
+            if (isValidTarget == true) and (ALIVE_DOF_AUTOFOCUS_Settings["TargetValidation_IsFacingCamera"]) and (object_vector_dot > rejectionAngle) then isValidTarget = false; end
             
             --perform a raycast, if the ray intersects with the scene then the target is occluded and therefore, not valid.
-            --if (isValidTarget == true) and (ALIVE_RaycastFromAgentToAgent(object_agent, currentCamera_agent) == true) then isValidTarget = false; end
+            if (isValidTarget == true) and (ALIVE_DOF_AUTOFOCUS_Settings["TargetValidation_IsOccluded"]) and (ALIVE_RaycastFromAgentToAgent(object_agent, currentCamera_agent) == true) then isValidTarget = false; end
             
             --if the target is valid and passed all of our checks
             if (isValidTarget == true) then

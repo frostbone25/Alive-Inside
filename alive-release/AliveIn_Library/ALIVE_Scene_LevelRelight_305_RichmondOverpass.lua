@@ -1,7 +1,3 @@
---|||||||||||||||||||||||||||||||||||||||||||||| RICHMOND OVERPASS S3 ||||||||||||||||||||||||||||||||||||||||||||||
---|||||||||||||||||||||||||||||||||||||||||||||| RICHMOND OVERPASS S3 ||||||||||||||||||||||||||||||||||||||||||||||
---|||||||||||||||||||||||||||||||||||||||||||||| RICHMOND OVERPASS S3 ||||||||||||||||||||||||||||||||||||||||||||||
-
 ALIVE_Scene_LevelRelight_305_RichmondOverpass = function(kScene)
     local agent_name_scene = kScene .. ".scene";
     local maxDistance = 50.0;
