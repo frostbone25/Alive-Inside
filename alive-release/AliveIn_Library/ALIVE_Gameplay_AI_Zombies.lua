@@ -2,7 +2,8 @@
 --|||||||||||||||||||||||||||||||||||||||||||||| AI ZOMBIE ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| AI ZOMBIE ||||||||||||||||||||||||||||||||||||||||||||||
 
---note to self: agent raycast function is very expensive, agent find in scene is also rather expensive
+--note to self: agent raycast function is very expensive
+--note to self: agent find in scene is also rather expensive
 
 -------------------------- ZOMBIES - GLOBAL --------------------------
 local ai_zombie_name_character = "ZombieAI";
@@ -127,26 +128,27 @@ local zombie_walkProfiles =
 local zombie_walkProfilesCount = 11;
 
 -------------------------- ZOMBIE OBJECT - VARIABLE NAMES --------------------------
-zombie_agent_name = "Agent Name";
-zombie_agent_parent_name = "Agent Parent Name";
-zombie_agent_target_name = "Target Agent Name";
-zombie_agent = "Agent";
-zombie_agent_parent = "Agent Parent";
-zombie_agent_target = "Target Agent";
-zombie_controller_anim_walk = "Controller Animation Walk";
-zombie_controller_anim_idle = "Controller Animation Idle";
+zombie_agent_name =                        "Agent Name";
+zombie_agent_parent_name =                 "Agent Name Parent";
+zombie_agent =                             "Agent";
+zombie_agent_parent =                      "Agent Parent";
+zombie_agent_target =                      "Target Agent";
+zombie_agent_target_name =                 "Target Agent Name";
+zombie_controller_anim_walk =              "Controller Animation Walk";
+zombie_controller_anim_idle =              "Controller Animation Idle";
 zombie_controller_anim_walk_contribution = "Controller Animation Walk Contribution";
 zombie_controller_anim_idle_contribution = "Controller Animation Idle Contribution";
-zombie_state_moving = "Zombie State Moving";
-zombie_state_blockedPath = "Zombie State Path Blocked";
-zombie_state_stationedWithPlayer = "Zombie State Stationed With Player"
-zombie_state_killingPlayer = "Zombie State Killing Player";
-zombie_distance_stopping = "Zombie Stopping Distance";
-zombie_distance_stoppingTeam = "Zombie Stopping Distance For Other Zombies";
-zombie_profile_walk = "Zombie Walk Speed";
-zombie_profile_walk_animation = "Zombie Walk Animation";
-zombie_profile_idle_animation = "Zombie Idle Animation";
-zombie_look_position = "Zombie Look Position";
+zombie_distance_stopping =                 "Zombie Stopping Distance";
+zombie_distance_stoppingTeam =             "Zombie Stopping Distance For Other Zombies";
+zombie_profile_walk =                      "Zombie Speed Walk";
+zombie_profile_walk_animation =            "Zombie Animation Walk";
+zombie_profile_idle_animation =            "Zombie Animation Idle";
+zombie_look_position =                     "Zombie Look Position";
+zombie_state_moving =                      "Zombie State Moving";
+zombie_state_blockedPath =                 "Zombie State Path Blocked";
+zombie_state_stationedWithPlayer =         "Zombie State Stationed With Player"
+zombie_state_killingPlayer =               "Zombie State Killing Player";
+zombie_state_dead =                        "Zombie State Dead";
 
 ALIVE_Gameplay_AI_ZombiesArray = {}; --Zombie Object Array
 
@@ -241,6 +243,7 @@ ALIVE_Gameplay_AI_CreateZombies = function(zombieCount, startingPosition, starti
         newZombieObject[zombie_state_moving] = false;
         newZombieObject[zombie_state_blockedPath] = false;
         newZombieObject[zombie_state_stationedWithPlayer] = false;
+        newZombieObject[zombie_state_dead] = false;
         newZombieObject[zombie_distance_stopping] = ai_zombie_stoppingDistance;
         newZombieObject[zombie_distance_stoppingTeam] = ai_zombie_stoppingDistanceSameTeam;
         --newZombieObject[zombie_distance_stopping] = 0.55;
@@ -281,6 +284,11 @@ local CheckIfZombieIsInStation = function()
         local zombieObject_state_blockedPath = zombieObject[zombie_state_blockedPath];
         local zombieObject_state_stationedWithPlayer = zombieObject[zombie_state_stationedWithPlayer];
         local zombieObject_state_killingPlayer = zombieObject[zombie_state_killingPlayer];
+        local zombieObject_state_dead = zombieObject[zombie_state_dead];
+
+        if(zombieObject_state_dead == true) then
+            ifZombieIsCurrentlyInStation = false;
+        end
 
         if (zombieObject_state_stationedWithPlayer == true) then
             ifZombieIsCurrentlyInStation = true;
@@ -305,97 +313,101 @@ ALIVE_Gameplay_AI_UpdateZombies_Character = function()
         local zombieObject_state_blockedPath = zombieObject[zombie_state_blockedPath];
         local zombieObject_state_stationedWithPlayer = zombieObject[zombie_state_stationedWithPlayer];
         local zombieObject_state_killingPlayer = zombieObject[zombie_state_killingPlayer];
+        local zombieObject_state_dead = zombieObject[zombie_state_dead];
 
         CheckIfZombieIsInStation();
 
-        -----------------------------------------------
-        local agent_zombie = zombieObject[zombie_agent]; --Agent type
-        local agent_zombieParent = zombieObject[zombie_agent_parent]; --Agent type
-        local agent_target = zombieObject[zombie_agent_target]; --Agent type
+        if (zombieObject_state_dead == false) then
+
+            -----------------------------------------------
+            local agent_zombie = zombieObject[zombie_agent]; --Agent type
+            local agent_zombieParent = zombieObject[zombie_agent_parent]; --Agent type
+            local agent_target = zombieObject[zombie_agent_target]; --Agent type
 
 
-        if (zombieObject_state_stationedWithPlayer == true) then
+            if (zombieObject_state_stationedWithPlayer == true) then
+            
+            else
+                --local nearestZombieAgent = nil;
 
-        else
-            --local nearestZombieAgent = nil;
+                --for x, zombie in ipairs(ALIVE_Gameplay_AI_ZombiesArray) do
+                    --local nearestZombieAgentObject = ALIVE_Gameplay_AI_ZombiesArray[x];
+                    --local nearestZombieAgentObject_agentName = nearestZombieAgentObject[zombie_agent_name];
 
-            --for x, zombie in ipairs(ALIVE_Gameplay_AI_ZombiesArray) do
-                --local nearestZombieAgentObject = ALIVE_Gameplay_AI_ZombiesArray[x];
-                --local nearestZombieAgentObject_agentName = nearestZombieAgentObject[zombie_agent_name];
+                    --local nearestZombieAgentContender = AgentFindInScene(nearestZombieAgentObject_agentName, ZombieAI_kScene);
 
-                --local nearestZombieAgentContender = AgentFindInScene(nearestZombieAgentObject_agentName, ZombieAI_kScene);
-
-                --if (zombieObject_agentName ~= nearestZombieAgentObject_agentName) then
-                    --if (nearestZombieAgent == nil) then
-                        --nearestZombieAgent = nearestZombieAgentContender;
-                    --else
-                        --nearestZombieAgent = ALIVE_GetNearestAgent(agent_zombie, nearestZombieAgent, nearestZombieAgentContender);
+                    --if (zombieObject_agentName ~= nearestZombieAgentObject_agentName) then
+                        --if (nearestZombieAgent == nil) then
+                            --nearestZombieAgent = nearestZombieAgentContender;
+                        --else
+                            --nearestZombieAgent = ALIVE_GetNearestAgent(agent_zombie, nearestZombieAgent, nearestZombieAgentContender);
+                        --end
                     --end
                 --end
-            --end
 
-            AgentFacePos(agent_zombieParent, zombieObject[zombie_look_position]);
+                AgentFacePos(agent_zombieParent, zombieObject[zombie_look_position]);
 
-            local vector_target_position = AgentGetWorldPos(agent_target); --Vector type
-            local vector_zombie_position = AgentGetWorldPos(agent_zombieParent); --Vector type
-            local vector_zombie_forward = AgentGetForwardVec(agent_zombieParent); --Vector type
-            local vector_target_direction = VectorNormalize(vector_target_position - vector_zombie_position);
+                local vector_target_position = AgentGetWorldPos(agent_target); --Vector type
+                local vector_zombie_position = AgentGetWorldPos(agent_zombieParent); --Vector type
+                local vector_zombie_forward = AgentGetForwardVec(agent_zombieParent); --Vector type
+                local vector_target_direction = VectorNormalize(vector_target_position - vector_zombie_position);
 
-            local distance_target = VectorDistance(vector_target_position, vector_zombie_position);
+                local distance_target = VectorDistance(vector_target_position, vector_zombie_position);
 
-            --local movementVector = Vector(vector_target_direction.x, vector_target_position.y, vector_target_direction.z);
-            local movementVector = vector_zombie_forward * zombieObject_walkSpeed * frameTime;
-            local newLookPosition = Vector(vector_target_position.x, vector_zombie_position.y, vector_target_position.z);
+                --local movementVector = Vector(vector_target_direction.x, vector_target_position.y, vector_target_direction.z);
+                local movementVector = vector_zombie_forward * zombieObject_walkSpeed * frameTime;
+                local newLookPosition = Vector(vector_target_position.x, vector_zombie_position.y, vector_target_position.z);
 
-            local lockedPos = VectorScale(Vector(0,0,0), AgentGetForwardAnimVelocity(agent_zombie));
-            local newCharacterPosition = vector_zombie_position;
+                local lockedPos = VectorScale(Vector(0,0,0), AgentGetForwardAnimVelocity(agent_zombie));
+                local newCharacterPosition = vector_zombie_position;
 
-            local case1_targetDistance = distance_target > zombieObject_distanceStop;
-            --local case1_targetDistance = distance_target > thirdperson_player_zombieStationZombie;
+                local case1_targetDistance = distance_target > zombieObject_distanceStop;
+                --local case1_targetDistance = distance_target > thirdperson_player_zombieStationZombie;
 
-            zombieObject[zombie_state_blockedPath] = false;
+                zombieObject[zombie_state_blockedPath] = false;
 
-            if (case1_targetDistance) then
-                --if too far from target
+                if (case1_targetDistance) then
+                    --if too far from target
 
-                if(zombieObject[zombie_state_blockedPath] == false) then
-                    --if our path isn't blocked, then move towards target
-                    zombieObject[zombie_state_moving] = true;
+                    if(zombieObject[zombie_state_blockedPath] == false) then
+                        --if our path isn't blocked, then move towards target
+                        zombieObject[zombie_state_moving] = true;
 
-                    newCharacterPosition = newCharacterPosition + movementVector;
+                        newCharacterPosition = newCharacterPosition + movementVector;
 
-                    PhysicsEnableCollision(agent_zombieParent, true)
+                        PhysicsEnableCollision(agent_zombieParent, true)
 
-                    zombieObject[zombie_look_position] = ALIVE_VectorLerp(zombieObject[zombie_look_position], newLookPosition, frameTime * 2.0);
+                        zombieObject[zombie_look_position] = ALIVE_VectorLerp(zombieObject[zombie_look_position], newLookPosition, frameTime * 2.0);
+                    else
+                        --if our path is blocked, then spin around
+
+                        zombieObject[zombie_state_moving] = false;
+
+                        --local rightVec = AgentGetRightVec(agent_zombieParent);
+
+                        --newLookPosition = vector_zombie_position + rightVec;
+
+                        zombieObject[zombie_look_position] = ALIVE_VectorLerp(zombieObject[zombie_look_position], newLookPosition, frameTime * 2.0);
+                    end
+
+                    --zombieObject[zombie_look_position] = ALIVE_VectorLerp(zombieObject[zombie_look_position], newLookPosition, frameTime * 2.0);
+                    --zombieObject[zombie_look_position] = newLookPosition;
                 else
-                    --if our path is blocked, then spin around
-
+                    --if within target stopping distance
                     zombieObject[zombie_state_moving] = false;
 
-                    --local rightVec = AgentGetRightVec(agent_zombieParent);
-
-                    --newLookPosition = vector_zombie_position + rightVec;
-
-                    zombieObject[zombie_look_position] = ALIVE_VectorLerp(zombieObject[zombie_look_position], newLookPosition, frameTime * 2.0);
+                    if (ifZombieIsCurrentlyInStation == false) then
+                        zombieObject[zombie_state_stationedWithPlayer] = true;
+                    end
                 end
 
-                --zombieObject[zombie_look_position] = ALIVE_VectorLerp(zombieObject[zombie_look_position], newLookPosition, frameTime * 2.0);
-                --zombieObject[zombie_look_position] = newLookPosition;
-            else
-                --if within target stopping distance
-                zombieObject[zombie_state_moving] = false;
-
-                if (ifZombieIsCurrentlyInStation == false) then
-                    zombieObject[zombie_state_stationedWithPlayer] = true;
+                if (ai_zombie_constrainToWBOX) then
+                    newCharacterPosition = WalkBoxesPosOnWalkBoxes(newCharacterPosition, 0, ai_zombie_sceneWbox, 1);
                 end
-            end
 
-            if (ai_zombie_constrainToWBOX) then
-                newCharacterPosition = WalkBoxesPosOnWalkBoxes(newCharacterPosition, 0, ai_zombie_sceneWbox, 1);
+                ALIVE_SetAgentPosition(zombieObject_agentName, lockedPos, ThirdPerson_kScene);
+                ALIVE_SetAgentPosition(zombieObject_agentParentName, newCharacterPosition, ZombieAI_kScene);
             end
-
-            ALIVE_SetAgentPosition(zombieObject_agentName, lockedPos, ThirdPerson_kScene);
-            ALIVE_SetAgentPosition(zombieObject_agentParentName, newCharacterPosition, ZombieAI_kScene);
         end
     end
 end
@@ -415,7 +427,9 @@ ALIVE_Gameplay_AI_UpdateZombies_CharacterAnimation = function()
         local zombieObject_agentName = zombieObject[zombie_agent_name];
         local zombieObject_agentParentName = zombieObject[zombie_agent_parent_name];
         local zombieObject_agentTargetName = zombieObject[zombie_agent_target_name];
-        local zombieObject_stateMoving = zombieObject[zombie_state_moving];
+        local zombieObject_state_moving = zombieObject[zombie_state_moving];
+        local zombieObject_state_stationedWithPlayer = zombieObject[zombie_state_stationedWithPlayer];
+        local zombieObject_state_dead = zombieObject[zombie_state_dead];
         local zombieObject_cntIdle = zombieObject[zombie_controller_anim_idle];
         local zombieObject_cntWalk = zombieObject[zombie_controller_anim_walk];
         local zombieObject_cntIdleAmount = zombieObject[zombie_controller_anim_idle_contribution];
@@ -425,22 +439,30 @@ ALIVE_Gameplay_AI_UpdateZombies_CharacterAnimation = function()
         local idle_contribution_target = 1;
         local walk_contribution_target = 0;
 
-        if (zombieObject_stateMoving) then
-            idle_contribution_target = 0;
-            walk_contribution_target = 1;
+        if (zombieObject_state_stationedWithPlayer) or (zombieObject_state_dead) then
+            ControllerSetContribution(zombieObject_cntIdle, 0);
+            ControllerSetContribution(zombieObject_cntWalk, 0);
+
+            zombieObject[zombie_controller_anim_idle_contribution] = 0;
+            zombieObject[zombie_controller_anim_walk_contribution] = 0;
         else
-            idle_contribution_target = 1;
-            walk_contribution_target = 0;
+            if (zombieObject_state_moving) then
+                idle_contribution_target = 0;
+                walk_contribution_target = 1;
+            else
+                idle_contribution_target = 1;
+                walk_contribution_target = 0;
+            end
+
+            zombieObject_cntIdleAmount = ALIVE_NumberLerp(zombieObject_cntIdleAmount, idle_contribution_target, frameTime * animationFadeTime);
+            zombieObject_cntWalkAmount = ALIVE_NumberLerp(zombieObject_cntWalkAmount, walk_contribution_target, frameTime * animationFadeTime);
+
+            ControllerSetContribution(zombieObject_cntIdle, zombieObject_cntIdleAmount);
+            ControllerSetContribution(zombieObject_cntWalk, zombieObject_cntWalkAmount);
+
+            -----------------------------------------------
+            zombieObject[zombie_controller_anim_idle_contribution] = zombieObject_cntIdleAmount;
+            zombieObject[zombie_controller_anim_walk_contribution] = zombieObject_cntWalkAmount;
         end
-
-        zombieObject_cntIdleAmount = ALIVE_NumberLerp(zombieObject_cntIdleAmount, idle_contribution_target, frameTime * animationFadeTime);
-        zombieObject_cntWalkAmount = ALIVE_NumberLerp(zombieObject_cntWalkAmount, walk_contribution_target, frameTime * animationFadeTime);
-
-        ControllerSetContribution(zombieObject_cntIdle, zombieObject_cntIdleAmount);
-        ControllerSetContribution(zombieObject_cntWalk, zombieObject_cntWalkAmount);
-
-        -----------------------------------------------
-        zombieObject[zombie_controller_anim_idle_contribution] = zombieObject_cntIdleAmount;
-        zombieObject[zombie_controller_anim_walk_contribution] = zombieObject_cntWalkAmount;
     end
 end

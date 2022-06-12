@@ -50,9 +50,20 @@ ALIVE_Gameplay_Player_ThirdPerson_Camera_CreateCamera = function()
     CameraPush(thirdperson_name_camera);
 
     -----------------------------------------------
+    local cameraDummyHipAgent = AgentCreate(thirdperson_name_dummyObjectHip, group_prop, Vector(0,0,0), Vector(0,0,0), ThirdPerson_kScene, false, false);
+
+    if AgentHasNode(thirdperson_agent_character, "pelvis") then
+        AgentAttachToNode(cameraDummyHipAgent, thirdperson_agent_character, "pelvis");
+
+        AgentSetPos(cameraDummyHipAgent, Vector(0.0, 0.0, 0.0));
+        AgentSetRot(cameraDummyHipAgent, Vector(0.0, 0.0, 0.0));
+    end
+
+    -----------------------------------------------
     thirdperson_agent_camera = AgentFindInScene(thirdperson_name_camera, ThirdPerson_kScene); --Agent type
     thirdperson_agent_cameraParent = AgentFindInScene(thirdperson_name_groupCamera, ThirdPerson_kScene); --Agent type
     thirdperson_agent_cameraDummy = AgentFindInScene(thirdperson_name_dummyObject, ThirdPerson_kScene); --Agent type
+    thirdperson_agent_cameraHipDummy = AgentFindInScene(thirdperson_name_dummyObjectHip, ThirdPerson_kScene); --Agent type
 
     ALIVE_AgentSetProperty(ThirdPerson_kScene .. ".scene", "Active Camera", thirdperson_agent_camera, ThirdPerson_kScene);
     ALIVE_AgentSetProperty(ThirdPerson_kScene .. ".scene", "Scene - Camera Idle", thirdperson_agent_camera, ThirdPerson_kScene);
@@ -110,26 +121,31 @@ ALIVE_Gameplay_Player_ThirdPerson_Camera_UpdateCamera = function()
     local camRotLerpFactor = thirdperson_cameraRotLerp;
     local localLerpPosFactor = 2.0;
 
-    if (thirdperson_state_crouching) then --crouching
-        if(thirdperson_state_moving) then --moving
-            vector_character_position = vector_character_position + Vector(-0.0, 0.6, 0.0);
-            thirdperson_camera_localPosition = ALIVE_VectorLerp(thirdperson_camera_localPosition, Vector(-0.25, 0.0, -1.0), thirdperson_frameTime * localLerpPosFactor);
-        else --idle
-            vector_character_position = vector_character_position + Vector(-0.0, 0.45, 0.0);
-            thirdperson_camera_localPosition = ALIVE_VectorLerp(thirdperson_camera_localPosition, Vector(-0.25, 0.0, -0.9), thirdperson_frameTime * localLerpPosFactor);
-        end
-    else --not crouching
-        if (thirdperson_state_moving) then --moving
-            if(thirdperson_state_running) then --running
-                vector_character_position = vector_character_position + Vector(-0.0, 0.9, 0.0);
+    if (thirdperson_state_zombieStation) then
+        vector_character_position = AgentGetWorldPos(thirdperson_agent_cameraHipDummy) + Vector(0.0, 0.35, 0.0);
+        thirdperson_camera_localPosition = ALIVE_VectorLerp(thirdperson_camera_localPosition,  Vector(-0.25, 0.0, -0.9), thirdperson_frameTime * localLerpPosFactor);
+    else
+        if (thirdperson_state_crouching) then --crouching
+            if(thirdperson_state_moving) then --moving
+                vector_character_position = vector_character_position + Vector(-0.0, 0.6, 0.0);
+                thirdperson_camera_localPosition = ALIVE_VectorLerp(thirdperson_camera_localPosition, Vector(-0.25, 0.0, -1.0), thirdperson_frameTime * localLerpPosFactor);
+            else --idle
+                vector_character_position = vector_character_position + Vector(-0.0, 0.45, 0.0);
                 thirdperson_camera_localPosition = ALIVE_VectorLerp(thirdperson_camera_localPosition, Vector(-0.25, 0.0, -0.9), thirdperson_frameTime * localLerpPosFactor);
-            else --walking
+            end
+        else --not crouching
+            if (thirdperson_state_moving) then --moving
+                if(thirdperson_state_running) then --running
+                    vector_character_position = vector_character_position + Vector(-0.0, 0.9, 0.0);
+                    thirdperson_camera_localPosition = ALIVE_VectorLerp(thirdperson_camera_localPosition, Vector(-0.25, 0.0, -0.9), thirdperson_frameTime * localLerpPosFactor);
+                else --walking
+                    vector_character_position = vector_character_position + Vector(-0.0, 0.9, 0.0);
+                    thirdperson_camera_localPosition = ALIVE_VectorLerp(thirdperson_camera_localPosition, Vector(-0.25, 0.0, -0.9), thirdperson_frameTime * localLerpPosFactor);
+                end
+            else --idle
                 vector_character_position = vector_character_position + Vector(-0.0, 0.9, 0.0);
                 thirdperson_camera_localPosition = ALIVE_VectorLerp(thirdperson_camera_localPosition, Vector(-0.25, 0.0, -0.9), thirdperson_frameTime * localLerpPosFactor);
             end
-        else --idle
-            vector_character_position = vector_character_position + Vector(-0.0, 0.9, 0.0);
-            thirdperson_camera_localPosition = ALIVE_VectorLerp(thirdperson_camera_localPosition, Vector(-0.25, 0.0, -0.9), thirdperson_frameTime * localLerpPosFactor);
         end
     end
     

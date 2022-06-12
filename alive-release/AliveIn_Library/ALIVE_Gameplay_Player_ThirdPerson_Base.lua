@@ -2,10 +2,11 @@
 --|||||||||||||||||||||||||||||||||||||||||||||| 3RD PERSON CONTROLLER ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| 3RD PERSON CONTROLLER ||||||||||||||||||||||||||||||||||||||||||||||
 
-require("ALIVE_Gameplay_Player_ThirdPerson_Camera.lua")
-require("ALIVE_Gameplay_Player_ThirdPerson_Character.lua")
-require("ALIVE_Gameplay_Player_ThirdPerson_Death.lua")
-require("ALIVE_Gameplay_Player_ThirdPerson_Zombat.lua")
+require("ALIVE_Gameplay_Player_ThirdPerson_Camera.lua");
+require("ALIVE_Gameplay_Player_ThirdPerson_Character.lua");
+require("ALIVE_Gameplay_Player_ThirdPerson_Death.lua");
+require("ALIVE_Gameplay_Player_ThirdPerson_Zombat.lua");
+require("ALIVE_Gameplay_Player_ThirdPerson_UI.lua");
 
 -------------------------- PROPERTIES - OBJECT NAMES --------------------------
 thirdperson_name_character = "AJ";
@@ -16,6 +17,7 @@ thirdperson_name_groupCamera = "Player_ThirdPersonParentCamera";
 thirdperson_name_animGroupCamera = "Player_ThirdPersonAnimationParentCamera";
 thirdperson_name_desiredCameraPositionObject = "Player_ThirdPersonDesiredCameraObject";
 thirdperson_name_dummyObject = "Player_ThirdPersonDummyObject";
+thirdperson_name_dummyObjectHip = "Player_ThirdPersonDummyHipObject";
 thirdperson_name_knife = "Player_KnifeObject";
 thirdperson_sceneWbox = "customWBOX.wbox";
 
@@ -28,7 +30,7 @@ thirdperson_state_dying = false;
 thirdperson_state_zombatReady = false;
 
 -------------------------- PROPERTIES - THIRD PERSON CONTROLLER --------------------------
-thirdperson_constrainToWBOX = true;
+thirdperson_constrainToWBOX = false;
 
 -------------------------- PROPERTIES - AGENTS --------------------------
 --to reduce the amount of AgentFindInScene calls we make, which can be expensive
@@ -38,11 +40,13 @@ thirdperson_agent_camera = nil;
 thirdperson_agent_cameraParent = nil;
 thirdperson_agent_cameraAnimParent = nil;
 thirdperson_agent_cameraDummy = nil;
+thirdperson_agent_cameraHipDummy = nil;
 thirdperson_agent_knife = nil;
 
 -------------------------- PROPERTIES - SHARED VARIABLES --------------------------
 thirdperson_frameTime = 0.0;
-thirdperson_movementVector = Vector(0,0,0);
+thirdperson_movementVector = Vector(0, 0, 0);
+thirdperson_characterDirection = Vector(0, 0, 0);
 ALIVE_Gameplay_AI_Zombies_CurrentStationedZombieObject = nil;
 
 --|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER SETUP ||||||||||||||||||||||||||||||||||||||||||||||
@@ -50,14 +54,6 @@ ALIVE_Gameplay_AI_Zombies_CurrentStationedZombieObject = nil;
 --|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER SETUP ||||||||||||||||||||||||||||||||||||||||||||||
 
 ALIVE_Gameplay_CreateThirdPersonController = function(startingPosition)
-    -----------------------------------------------
-    --base camera
-    ALIVE_Gameplay_Player_ThirdPerson_Camera_CreateCamera();
-
-    Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_Camera_UpdateInput);
-    Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_Camera_UpdateCamera);
-    Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_Camera_UpdateCameraAnimation);
-
     -----------------------------------------------
     --base character
     ALIVE_Gameplay_Player_ThirdPerson_Character_CreateCharacter(startingPosition)
@@ -67,8 +63,22 @@ ALIVE_Gameplay_CreateThirdPersonController = function(startingPosition)
     Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_Character_UpdateCharacterAnimation);
 
     -----------------------------------------------
+    --base camera
+    ALIVE_Gameplay_Player_ThirdPerson_Camera_CreateCamera();
+
+    Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_Camera_UpdateInput);
+    Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_Camera_UpdateCamera);
+    Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_Camera_UpdateCameraAnimation);
+
+    -----------------------------------------------
+    --base UI
+    ALIVE_Gameplay_Player_ThirdPerson_UI_CreateUI();
+
+    Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_UI_UpdateUI);
+
+    -----------------------------------------------
     --extra components
     Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_Zombat_SetZombieStation);
-    --Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_Zombat_Main);
+    Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_Zombat_Main);
     Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_Death_Main);
 end

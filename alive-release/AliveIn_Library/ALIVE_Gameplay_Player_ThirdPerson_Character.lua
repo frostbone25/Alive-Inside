@@ -18,13 +18,7 @@ local thirdperson_controller_anim_crouchWalk_contribution = 0;
 local thirdperson_controller_anim_zombat_idle = nil;
 local thirdperson_controller_anim_zombat_idle_contribution = 0;
 
--------------------------- PROPERTIES - INPUT --------------------------
-local thirdperson_inputHorizontalValue = 0;
-local thirdperson_inputVerticalValue = 0;
-local thirdperson_inputHeightValue = 0;
-
 -------------------------- PROPERTIES - CONTROLLER --------------------------
-local thirdperson_characterDirection = Vector(0, 0, 0);
 local thirdperson_characterOffset = Vector(0, 0, 0);
 local thirdperson_movementSpeed = 0.0;
 local prevFinalPlayerMovement = Vector(0,0,0);
@@ -131,6 +125,18 @@ ALIVE_Gameplay_Player_ThirdPerson_Character_CreateCharacter = function(startingP
     thirdperson_agent_character = AgentFindInScene(thirdperson_name_character, ThirdPerson_kScene); --Agent type
     thirdperson_agent_characterParent = AgentFindInScene(thirdperson_name_characterParent, ThirdPerson_kScene); --Agent type
     thirdperson_agent_knife = AgentFindInScene(thirdperson_name_knife, ThirdPerson_kScene); --Agent type
+
+
+
+
+
+
+
+
+
+
+
+    local uiTest = AgentCreate("UITEST1", "ui_vignette.prop", Vector(0,0,0), Vector(0,0,0), ThirdPerson_kScene, false, false);
 end
 
 --|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - INPUT ||||||||||||||||||||||||||||||||||||||||||||||
@@ -209,7 +215,7 @@ ALIVE_Gameplay_Player_ThirdPerson_Character_UpdateInput = function()
     if key_zombatToggle then
         zombatKeyTimeLag = zombatKeyTimeLag + GetFrameTime();
 
-        if(zombatKeyTimeLag > 0.25) then
+        if(zombatKeyTimeLag > 0.25) and (thirdperson_state_zombieStation == false) then
             thirdperson_state_zombatReady = not thirdperson_state_zombatReady;
             zombatKeyTimeLag = 0;
         end
@@ -221,7 +227,16 @@ end
 --|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - CHARACTER ||||||||||||||||||||||||||||||||||||||||||||||
 
 ALIVE_Gameplay_Player_ThirdPerson_Character_UpdateCharacter = function()
-    if (thirdperson_state_dying) or (thirdperson_state_zombieStation) then do return end end
+    if (thirdperson_state_dying) then do return end end
+
+    if (thirdperson_state_zombieStation) then
+        thirdperson_characterDirection = Vector(0, 0, 0);
+        thirdperson_characterOffset = Vector(0, 0, 0);
+        thirdperson_movementSpeed = 0.0;
+        prevFinalPlayerMovement = Vector(0,0,0);
+        
+        do return end
+    end
 
     thirdperson_agent_cameraDummy = AgentFindInScene(thirdperson_name_dummyObject, ThirdPerson_kScene);
     --local newRotation = Vector(thirdperson_inputMouseAmountY - 90, thirdperson_inputMouseAmountX, 0);
@@ -310,6 +325,13 @@ ALIVE_Gameplay_Player_ThirdPerson_Character_UpdateCharacterAnimation = function(
         ControllerSetContribution(thirdperson_controller_anim_crouchIdle, 0);
         ControllerSetContribution(thirdperson_controller_anim_crouchMoving, 0);
         
+        thirdperson_controller_anim_idle_contribution = 0;
+        thirdperson_controller_anim_walk_contribution = 0;
+        thirdperson_controller_anim_running_contribution = 0;
+        thirdperson_controller_anim_crouch_contribution = 0;
+        thirdperson_controller_anim_crouchWalk_contribution = 0;
+        thirdperson_controller_anim_zombat_idle_contribution = 0;
+
         do return end 
     end
 

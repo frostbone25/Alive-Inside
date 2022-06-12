@@ -48,8 +48,8 @@ local EnableFreecam = false;
 --|||||||||||||||||||||||||||||||||||||||||||||| SCENE SETUP ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| SCENE SETUP ||||||||||||||||||||||||||||||||||||||||||||||
 
---ResourceSetEnable("UISeason4");
---ResourceSetEnable("ProjectSeason4");
+ResourceSetEnable("UISeason4");
+ResourceSetEnable("ProjectSeason4");
 ResourceSetEnable("WalkingDead401");
 ResourceSetEnable("WalkingDead402");
 ResourceSetEnable("WalkingDead403");
@@ -124,10 +124,11 @@ ALIVE_Level_Sandbox = function()
         Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Input);
         Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Main);
     else
+        SceneAdd(ThirdPerson_UI_kScene);
         ALIVE_Gameplay_CreateThirdPersonController(Vector(15, 0, 0));
         --ALIVE_Gameplay_CreateThirdPersonController();
         --ALIVE_Gameplay_CreateThirdPersonController(Vector(0, 0, 15));
-        ALIVE_Gameplay_AI_CreateZombies(5, Vector(0, 0, 17), Vector(15, 0, 15));
+        ALIVE_Gameplay_AI_CreateZombies(10, Vector(0, 0, 17), Vector(15, 0, 15));
         --ALIVE_Gameplay_AI_CreateZombies(200, Vector(0, 0, 0), Vector(10, 0, 10));
     end
 
@@ -138,4 +139,7 @@ end
 
 SceneOpen(kScene, kScript)
 --SceneAdd("ui_death");
+--SceneAdd("ui_vignette.scene");
+--SceneAdd("ui_panicMeter.scene");
+--SceneAdd("ui_crosshair.scene");
 --ChorePlayAndWait(AgentGetProperty(AgentFindInScene("ui_death.scene", "ui_death"), "UI Scene - Chore Open"));
