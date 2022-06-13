@@ -26,7 +26,7 @@ require("ALIVE_Project.lua");
 --|||||||||||||||||||||||||||||||||||||||||||||| SCRIPT VARIABLES ||||||||||||||||||||||||||||||||||||||||||||||
 
 --main level variables
-local kScript = "ALIVE_Level_Sandbox";
+local kScript = "ALIVE_Level_Gameplay_Sandbox";
 local kScene = "adv_boardingSchoolExterior";
 local agent_name_scene = "adv_boardingSchoolExterior.scene"; 
 --local kScene = "adv_richmondOverpass";
@@ -75,7 +75,7 @@ local PlayTempSoundtrack = function()
     --ControllerSetLooping(controller_sound_soundtrack, true)
 end
 
-ALIVE_Level_Sandbox = function()
+ALIVE_Level_Gameplay_Sandbox = function()
     --ALIVE_PrintSceneListToTXT(kScene, "adv_boardingSchoolExterior.txt");
     --ALIVE_PrintSceneListToTXT(kScene, "adv_richmondOverpass.txt");
     --ALIVE_PrintSceneListToTXT(kScene, "adv_richmondStreetTile.txt");

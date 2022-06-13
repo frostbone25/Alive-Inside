@@ -27,7 +27,7 @@ ResourceSetEnable("WalkingDead201");
 --|||||||||||||||||||||||||||||||||||||||||||||| SCRIPT VARIABLES ||||||||||||||||||||||||||||||||||||||||||||||
 
 --main level variables
-local kScript = "ALIVE_Level_Teaser1";
+local kScript = "ALIVE_Level_Cutscene_Teaser1";
 local kScene = "adv_forestBarn";
 
 --scene agent name variable
@@ -1108,7 +1108,7 @@ end
 
 --main level script, this function gets called when the scene loads
 --its important we call everything here and set up everything so our work doesn't go to waste
-ALIVE_Level_Teaser1 = function()
+ALIVE_Level_Cutscene_Teaser1 = function()
     ----------------------------------------------------------------
     --scene setup (call all of our scene setup functions)
     ALIVE_Project_SetProjectSettings();

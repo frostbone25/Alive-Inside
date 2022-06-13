@@ -95,7 +95,9 @@ ALIVE_PrintSceneListToTXT = function(SceneObject, txtName)
         if printOnlyName == false then
             main_txt_file:write(i, "\n")
         end
-        main_txt_file:write(i .. " Agent Name: " .. agent_name, "\n")
+
+        --main_txt_file:write(i .. " Agent Name: " .. agent_name, "\n")
+        main_txt_file:write("[Agent Name]: " .. agent_name, "\n")
         
         if printOnlyName == false then
             main_txt_file:write(i .. " Agent Type: " .. agent_type, "\n")

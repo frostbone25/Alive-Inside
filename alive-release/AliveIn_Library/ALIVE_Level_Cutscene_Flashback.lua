@@ -1,7 +1,3 @@
---[[
-
-]]--
-
 require("ALIVE_Core_Utilities.lua");
 require("ALIVE_Core_AgentExtensions_Properties.lua");
 require("ALIVE_Core_AgentExtensions_Transform.lua");
@@ -31,7 +27,7 @@ ResourceSetEnable("WalkingDead201");
 --|||||||||||||||||||||||||||||||||||||||||||||| SCRIPT VARIABLES ||||||||||||||||||||||||||||||||||||||||||||||
 
 --main level variables
-local kScript = "ALIVE_Level_Flashback";
+local kScript = "ALIVE_Level_Cutscene_Flashback";
 local kScene = "adv_trainTile";
 --local kScene = "adv_virginiaRailroad";
 
@@ -54,38 +50,12 @@ ALIVE_DOF_AUTOFOCUS_SceneObjectAgentName = agent_name_scene;
 ALIVE_DOF_AUTOFOCUS_UseCameraDOF = true;
 
 --list of gameplay camera agent names, putting a camera name in here means that DOF will be disabled since its a gameplay camera, and we dont want DOF during gameplay.
-ALIVE_DOF_AUTOFOCUS_GameplayCameraNames = 
-{
-    "test"
-};
+ALIVE_DOF_AUTOFOCUS_GameplayCameraNames = { "test" };
 
 --list of objects in the scene that are our targets for depth of field autofocusing
-ALIVE_DOF_AUTOFOCUS_ObjectEntries =
-{
-    "AJ"
-};
+ALIVE_DOF_AUTOFOCUS_ObjectEntries = { "AJ" };
 
-Custom_DarkenAllSceneCameras = function()
-    --get all agents in the scene
-    local scene_agents = SceneGetAgents(kScene);
-
-    --fill out rig agents list
-    for i, agent_object in ipairs(scene_agents) do
-        --grab the camera property set on an agent
-        local agent_camera = AgentGetCamera(agent_object);
-        
-        --if there is infact a camera property set on an agent (meaning that its a camera)
-        if (cameraTest ~= nil) then
-            --get the agent object property set
-            local agent_props = AgentGetRuntimeProperties(agent_object);
-
-            --set the exposure property on the cameras to a really small value
-            PropertySet(agent_props, "Exposure", -100);
-        end
-    end
-end
-
-ALIVE_Level_Flashback = function()
+ALIVE_Level_Cutscene_Flashback = function()
     ALIVE_Project_SetProjectSettings();
     
     ALIVE_Scene_LevelCleanup_403_TrainTile(kScene);
