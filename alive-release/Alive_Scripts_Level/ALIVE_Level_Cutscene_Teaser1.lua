@@ -14,8 +14,9 @@ require("ALIVE_Gameplay_Shared.lua");
 require("ALIVE_Gameplay_AI_Zombies.lua");
 require("ALIVE_Scene_LevelCleanup_404_ForestBarn_Teaser.lua");
 require("ALIVE_Scene_LevelRelight_404_ForestBarn_Teaser.lua");
-require("ALIVE_Scene_CharacterStates.lua");
-require("ALIVE_Project.lua");
+require("ALIVE_Character_AJ.lua");
+require("ALIVE_Character_Clementine.lua");
+require("ALIVE_Core_Project.lua");
 
 ResourceSetEnable("ProjectSeason4");
 ResourceSetEnable("WalkingDead402");
@@ -1119,7 +1120,8 @@ ALIVE_Level_Cutscene_Teaser1 = function()
 
     GetExistingZombieAgents();
     SetupClementineAndAJ();
-    ALIVE_Scene_SetCharacterState_AJ_Teaser(kScene);
+    ALIVE_Character_AJ_Teaser(kScene);
+    ALIVE_Character_Clementine_Sick(kScene);
     
 
     --cutscene setup (start calling our cutscene setup functions)

@@ -10,7 +10,9 @@ require("ALIVE_Gameplay_Player_ThirdPerson_UI.lua");
 
 -------------------------- PROPERTIES - OBJECT NAMES --------------------------
 thirdperson_name_character = "AJ";
+--thirdperson_name_character = "ClemYoung";
 thirdperson_name_characterProp = "sk63_aj.prop";
+--thirdperson_name_characterProp = "sk63_clementineFlashback.prop";
 thirdperson_name_characterParent = thirdperson_name_character .. "_Parent"; 
 thirdperson_name_camera = "Player_ThirdPersonCamera";
 thirdperson_name_groupCamera = "Player_ThirdPersonParentCamera";
@@ -30,7 +32,7 @@ thirdperson_state_dying = false;
 thirdperson_state_zombatReady = false;
 
 -------------------------- PROPERTIES - THIRD PERSON CONTROLLER --------------------------
-thirdperson_constrainToWBOX = false;
+thirdperson_constrainToWBOX = true;
 
 -------------------------- PROPERTIES - AGENTS --------------------------
 --to reduce the amount of AgentFindInScene calls we make, which can be expensive
@@ -72,9 +74,9 @@ ALIVE_Gameplay_CreateThirdPersonController = function(startingPosition)
 
     -----------------------------------------------
     --base UI
-    ALIVE_Gameplay_Player_ThirdPerson_UI_CreateUI();
+    --ALIVE_Gameplay_Player_ThirdPerson_UI_CreateUI();
 
-    Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_UI_UpdateUI);
+    --Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_UI_UpdateUI);
 
     -----------------------------------------------
     --extra components

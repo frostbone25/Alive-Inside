@@ -10,10 +10,11 @@ require("ALIVE_Development_Freecam.lua");
 require("ALIVE_Development_AgentBrowser.lua");
 require("ALIVE_Camera_DepthOfFieldAutofocus.lua");
 require("ALIVE_Gameplay_Shared.lua");
-require("ALIVE_Scene_CharacterStates.lua");
+require("ALIVE_Character_AJ.lua");
+require("ALIVE_Character_Clementine.lua");
 require("ALIVE_Scene_LevelCleanup_403_TrainTile.lua");
 require("ALIVE_Scene_LevelRelight_403_TrainTile.lua");
-require("ALIVE_Project.lua");
+require("ALIVE_Core_Project.lua");
 
 ResourceSetEnable("ProjectSeason4");
 ResourceSetEnable("WalkingDead401");

@@ -16,6 +16,7 @@ local ai_zombie_name_character = "ZombieAI";
 --local ai_zombie_name_characterProp = "sk61_zombie400EyeStab.prop";
 --local ai_zombie_name_characterProp = "sk61_zombie400Incapacitated.prop";
 
+
 local zombie_props = 
 {
     "sk61_zombie400Sherak.prop",
@@ -26,6 +27,13 @@ local zombie_props =
     "sk61_zombie400DeathByRosie.prop",
     "sk61_zombie400Incapacitated.prop"
 };
+
+--[[
+local zombie_props = 
+{
+    "sk62_clementine400.prop"
+};
+]]--
 
 --local ai_zombie_name_characterProp = "sk62_brodyZombie.prop";
 --local ai_zombie_name_characterProp = "sk61_aasim.prop";
@@ -45,6 +53,7 @@ local zombie_props =
 local ai_zombie_name_characterParent = ai_zombie_name_character .. "_Parent";
 local ai_zombie_sceneWbox = "adv_boardingSchoolExterior.wbox";
 local ai_zombie_name_target = "AJ";
+--local ai_zombie_name_target = "ClemYoung";
 local ai_zombie_constrainToWBOX = false;
 
 local zombie_idleAnimations = 
@@ -185,6 +194,9 @@ ALIVE_Gameplay_AI_CreateZombies = function(zombieCount, startingPosition, starti
         --PropertyAddGlobal(agent_zombieParentProps, "module_path_to");
         --PropertyAddGlobal(agent_zombieParent.mProps, "module_physicsobject");
         --PhysicsEnableCollision(agent_zombieParent, true);
+
+        --ALIVE_AgentSetProperty(newZombieName, "Render Global Scale", 1.31, ThirdPerson_kScene);
+        ALIVE_AgentSetProperty(newZombieName, "Render Global Scale", 1.0, ThirdPerson_kScene);
     
         -----------------------------------------------
         local controllers_array_zombie = AgentGetControllers(agent_zombie);

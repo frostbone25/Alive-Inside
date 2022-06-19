@@ -41,6 +41,8 @@ ALIVE_Gameplay_Player_ThirdPerson_Character_CreateCharacter = function(startingP
     local agent_characterGroup = AgentCreate(thirdperson_name_characterParent, group_prop, Vector(0,0,0), Vector(0,0,0), ThirdPerson_kScene, false, false);
     
     AgentAttach(agent_character, agent_characterGroup);
+
+    --ALIVE_AgentSetProperty(thirdperson_name_character, "Render Global Scale", 0.9, ThirdPerson_kScene);
     
     ALIVE_SetAgentWorldPosition(thirdperson_name_character, Vector(0, 0, 0), ThirdPerson_kScene);
     ALIVE_SetAgentWorldRotation(thirdperson_name_character, Vector(0, 0, 0), ThirdPerson_kScene);
@@ -73,6 +75,8 @@ ALIVE_Gameplay_Player_ThirdPerson_Character_CreateCharacter = function(startingP
         --kabar holding at base
         AgentSetPos(agent_knife, Vector(-0.00, -0.025, 0.045)); --x (palm forward) y (palm distance) z (object height)
         AgentSetRot(agent_knife, Vector(0, -90, 90));
+        --AgentSetPos(agent_knife, Vector(-0.00, -0.095, 0.085)); --x (palm forward) y (palm distance) z (object height)
+        --AgentSetRot(agent_knife, Vector(0, -90, 90));
     end
 
     -----------------------------------------------
@@ -84,7 +88,7 @@ ALIVE_Gameplay_Player_ThirdPerson_Character_CreateCharacter = function(startingP
     
     -----------------------------------------------
     thirdperson_controller_anim_idle = PlayAnimation(agent_character, "sk63_idle_ajStandA.anm");
-    --thirdperson_controller_anim_walking = PlayAnimation(agent_character, "sk63_aj_walk.anm");
+    thirdperson_controller_anim_walking = PlayAnimation(agent_character, "sk63_aj_walk.anm");
     thirdperson_controller_anim_running = PlayAnimation(agent_character, "sk63_aj_run.anm");
     thirdperson_controller_anim_crouchIdle = PlayAnimation(agent_character, "sk63_idle_ajCrouch.anm");
     thirdperson_controller_anim_crouchMoving = PlayAnimation(agent_character, "sk62_clementine400_crouchWalk.anm");
@@ -96,7 +100,9 @@ ALIVE_Gameplay_Player_ThirdPerson_Character_CreateCharacter = function(startingP
     --thirdperson_controller_anim_idle = PlayAnimation(agent_character, "sk62_idle_clementine400StandAHoldKnife.anm");
     --thirdperson_controller_anim_idle = PlayAnimation(agent_character, "sk62_idle_clementineHoldKnifeReady.anm");
     --thirdperson_controller_anim_idle = PlayAnimation(agent_character, "sk63_idle_ajActionHoldKnife.anm");
-    thirdperson_controller_anim_walking = PlayAnimation(agent_character, "sk63_aj_walk.anm");
+    --thirdperson_controller_anim_walking = PlayAnimation(agent_character, "sk63_aj_walk.anm");
+    --thirdperson_controller_anim_walking = PlayAnimation(agent_character, "sk54_gerryRun_jump.anm");
+    --thirdperson_controller_anim_walking = PlayAnimation(agent_character, "sk54_gerryAction_jumpDown.anm");
     --thirdperson_controller_anim_running = PlayAnimation(agent_character, "sk62_clementine400_runHoldPackKnife.anm");
     --thirdperson_controller_anim_crouchIdle = PlayAnimation(agent_character, "sk63_idle_ajCrouch.anm");
     --thirdperson_controller_anim_crouchMoving = PlayAnimation(agent_character, "sk62_clementine400_crouchWalk.anm");
@@ -317,14 +323,21 @@ end
 ALIVE_Gameplay_Player_ThirdPerson_Character_UpdateCharacterAnimation = function()
     local animationFadeTime = 7.5;
 
+    local idle_contribution_target = 1;
+    local idle_zombat_contribution_target = 0;
+    local walk_contribution_target = 0;
+    local running_contribution_target = 0;
+    local crouch_contribution_target = 0;
+    local crouchWalk_contribution_target = 0;
+
     if (thirdperson_state_dying) or (thirdperson_state_zombieStation) then 
-        ControllerSetContribution(thirdperson_controller_anim_idle, 0);
-        ControllerSetContribution(thirdperson_controller_anim_zombat_idle, 0);
-        ControllerSetContribution(thirdperson_controller_anim_walking, 0);
-        ControllerSetContribution(thirdperson_controller_anim_running, 0);
-        ControllerSetContribution(thirdperson_controller_anim_crouchIdle, 0);
-        ControllerSetContribution(thirdperson_controller_anim_crouchMoving, 0);
-        
+        idle_contribution_target = 0;
+        idle_zombat_contribution_target = 0;
+        walk_contribution_target = 0;
+        running_contribution_target = 0;
+        crouch_contribution_target = 0;
+        crouchWalk_contribution_target = 0;
+
         thirdperson_controller_anim_idle_contribution = 0;
         thirdperson_controller_anim_walk_contribution = 0;
         thirdperson_controller_anim_running_contribution = 0;
@@ -332,62 +345,62 @@ ALIVE_Gameplay_Player_ThirdPerson_Character_UpdateCharacterAnimation = function(
         thirdperson_controller_anim_crouchWalk_contribution = 0;
         thirdperson_controller_anim_zombat_idle_contribution = 0;
 
-        do return end 
-    end
+        ControllerSetContribution(thirdperson_controller_anim_idle, thirdperson_controller_anim_idle_contribution);
+        ControllerSetContribution(thirdperson_controller_anim_walking, thirdperson_controller_anim_walk_contribution);
+        ControllerSetContribution(thirdperson_controller_anim_running, thirdperson_controller_anim_running_contribution);
+        ControllerSetContribution(thirdperson_controller_anim_crouchIdle, thirdperson_controller_anim_crouch_contribution);
+        ControllerSetContribution(thirdperson_controller_anim_crouchMoving, thirdperson_controller_anim_crouchWalk_contribution);
+        ControllerSetContribution(thirdperson_controller_anim_zombat_idle, thirdperson_controller_anim_zombat_idle_contribution);
 
-    local idle_contribution_target = 1;
-    local idle_zombat_contribution_target = 0;
-    local walk_contribution_target = 0;
-    local running_contribution_target = 0;
-    local crouch_contribution_target = 0;
-    local crouchWalk_contribution_target = 0;
-    
-    if (thirdperson_state_moving) then
-        if (thirdperson_state_running) then
-            idle_contribution_target = 0;
-            idle_zombat_contribution_target = 0;
-            walk_contribution_target = 0;
-            running_contribution_target = 1;
-            crouch_contribution_target = 0;
-            crouchWalk_contribution_target = 0;
+        do return end
+    else
+        if (thirdperson_state_moving) then
+            if (thirdperson_state_running) then
+                idle_contribution_target = 0;
+                idle_zombat_contribution_target = 0;
+                walk_contribution_target = 0;
+                running_contribution_target = 1;
+                crouch_contribution_target = 0;
+                crouchWalk_contribution_target = 0;
+            else
+                if(thirdperson_state_crouching) then
+                    idle_contribution_target = 0;
+                    idle_zombat_contribution_target = 0;
+                    walk_contribution_target = 0;
+                    running_contribution_target = 0;
+                    crouch_contribution_target = 0;
+                    crouchWalk_contribution_target = 1;
+                else
+                    idle_contribution_target = 0;
+                    idle_zombat_contribution_target = 0;
+                    walk_contribution_target = 1;
+                    running_contribution_target = 0;
+                    crouch_contribution_target = 0;
+                    crouchWalk_contribution_target = 0;
+                end
+            end
         else
-            if(thirdperson_state_crouching) then
+            if (thirdperson_state_crouching) then
                 idle_contribution_target = 0;
                 idle_zombat_contribution_target = 0;
                 walk_contribution_target = 0;
                 running_contribution_target = 0;
-                crouch_contribution_target = 0;
-                crouchWalk_contribution_target = 1;
+                crouch_contribution_target = 1;
+                crouchWalk_contribution_target = 0;
             else
-                idle_contribution_target = 0;
-                idle_zombat_contribution_target = 0;
-                walk_contribution_target = 1;
+                if (thirdperson_state_zombatReady) then
+                    idle_contribution_target = 0;
+                    idle_zombat_contribution_target = 1;
+                else
+                    idle_contribution_target = 1;
+                    idle_zombat_contribution_target = 0;
+                end
+
+                walk_contribution_target = 0;
                 running_contribution_target = 0;
                 crouch_contribution_target = 0;
                 crouchWalk_contribution_target = 0;
             end
-        end
-    else
-        if (thirdperson_state_crouching) then
-            idle_contribution_target = 0;
-            idle_zombat_contribution_target = 0;
-            walk_contribution_target = 0;
-            running_contribution_target = 0;
-            crouch_contribution_target = 1;
-            crouchWalk_contribution_target = 0;
-        else
-            if (thirdperson_state_zombatReady) then
-                idle_contribution_target = 0;
-                idle_zombat_contribution_target = 1;
-            else
-                idle_contribution_target = 1;
-                idle_zombat_contribution_target = 0;
-            end
-
-            walk_contribution_target = 0;
-            running_contribution_target = 0;
-            crouch_contribution_target = 0;
-            crouchWalk_contribution_target = 0;
         end
     end
 
@@ -396,14 +409,13 @@ ALIVE_Gameplay_Player_ThirdPerson_Character_UpdateCharacterAnimation = function(
     thirdperson_controller_anim_running_contribution = ALIVE_NumberLerp(thirdperson_controller_anim_running_contribution, running_contribution_target, thirdperson_frameTime * animationFadeTime);
     thirdperson_controller_anim_crouch_contribution = ALIVE_NumberLerp(thirdperson_controller_anim_crouch_contribution, crouch_contribution_target, thirdperson_frameTime * animationFadeTime);
     thirdperson_controller_anim_crouchWalk_contribution = ALIVE_NumberLerp(thirdperson_controller_anim_crouchWalk_contribution, crouchWalk_contribution_target, thirdperson_frameTime * animationFadeTime);
+    thirdperson_controller_anim_zombat_idle_contribution = ALIVE_NumberLerp(thirdperson_controller_anim_zombat_idle_contribution, idle_zombat_contribution_target, thirdperson_frameTime * animationFadeTime);
 
     ControllerSetContribution(thirdperson_controller_anim_idle, thirdperson_controller_anim_idle_contribution);
     ControllerSetContribution(thirdperson_controller_anim_walking, thirdperson_controller_anim_walk_contribution);
     ControllerSetContribution(thirdperson_controller_anim_running, thirdperson_controller_anim_running_contribution);
     ControllerSetContribution(thirdperson_controller_anim_crouchIdle, thirdperson_controller_anim_crouch_contribution);
     ControllerSetContribution(thirdperson_controller_anim_crouchMoving, thirdperson_controller_anim_crouchWalk_contribution);
-
-    thirdperson_controller_anim_zombat_idle_contribution = ALIVE_NumberLerp(thirdperson_controller_anim_zombat_idle_contribution, idle_zombat_contribution_target, thirdperson_frameTime * animationFadeTime);
     ControllerSetContribution(thirdperson_controller_anim_zombat_idle, thirdperson_controller_anim_zombat_idle_contribution);
 
     --ajBlinkTick = ajBlinkTick + 1;

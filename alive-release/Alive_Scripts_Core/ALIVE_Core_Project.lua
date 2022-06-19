@@ -1,4 +1,4 @@
-ALIVE_Project_SetProjectSettings = function()
+ALIVE_Core_Project_SetProjectSettings = function()
     local prefs = GetPreferences();
     
     PropertySet(prefs, "Enable Graphic Black", false);

@@ -18,8 +18,9 @@ require("ALIVE_Scene_LevelCleanup_403_BoardingSchoolExterior.lua");
 require("ALIVE_Scene_LevelRelight_305_RichmondOverpass.lua");
 require("ALIVE_Scene_LevelRelight_305_RichmondStreetTile.lua");
 require("ALIVE_Scene_LevelRelight_403_BoardingSchoolExterior.lua");
-require("ALIVE_Scene_CharacterStates.lua");
-require("ALIVE_Project.lua");
+require("ALIVE_Character_AJ.lua");
+require("ALIVE_Character_Clementine.lua");
+require("ALIVE_Core_Project.lua");
 
 --|||||||||||||||||||||||||||||||||||||||||||||| SCRIPT VARIABLES ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| SCRIPT VARIABLES ||||||||||||||||||||||||||||||||||||||||||||||
@@ -33,6 +34,17 @@ local agent_name_scene = "adv_boardingSchoolExterior.scene";
 --local agent_name_scene = "adv_richmondOverpass.scene"; 
 --local kScene = "adv_richmondStreetTile";
 --local agent_name_scene = "adv_richmondStreetTile.scene"; 
+--local kScene = "adv_boardingSchoolInterior"; --401/402/403
+--local agent_name_scene = "adv_boardingSchoolInterior.scene";  --401/402/403
+--local kScene = "adv_boardingSchoolInteriorNight"; --402
+--local agent_name_scene = "adv_boardingSchoolInteriorNight.scene";  --402
+--local kScene = "adv_dormRoom"; --402
+--local agent_name_scene = "adv_dormRoom.scene";  --402
+--local kScene = "adv_bellTower"; --402
+--local agent_name_scene = "adv_bellTower.scene";  --402
+--local kScene = "adv_boardingSchoolExteriorGate"; --401/402/404
+--local agent_name_scene = "adv_boardingSchoolExteriorGate.scene";  --401/402/404
+
 
 ThirdPerson_kScene = kScene;
 ZombieAI_kScene = kScene;
@@ -50,7 +62,8 @@ local EnableFreecam = false;
 
 ResourceSetEnable("UISeason4");
 ResourceSetEnable("ProjectSeason4");
-ResourceSetEnable("WalkingDead401");
+ResourceSetEnable("ProjectSeason1");
+ResourceSetEnable("WalkingDead401", 950);
 ResourceSetEnable("WalkingDead402");
 ResourceSetEnable("WalkingDead403");
 ResourceSetEnable("WalkingDead404");
@@ -64,31 +77,21 @@ ResourceSetEnable("WalkingDead404");
 
 local PlayTempSoundtrack = function()
     local musicController = SoundPlay("music_temp_action1.wav");
-    --local musicController = SoundPlay("music_temp_action1.wav");
     ControllerSetLooping(musicController, true);
-    --ControllerSetVolume(musicController, 0.25);
     ControllerSetSoundVolume(musicController, 0.25);
+end
 
-    --local controller_sound_soundtrack = SoundPlay("custom_soundtrack1.wav");
-    
-    ----set it to loop
-    --ControllerSetLooping(controller_sound_soundtrack, true)
+local WheelBarrowSpawn = function()
+    --local wheelBarrow = AgentCreate("wheelBarrow", "obj_wheelBarrow.prop", Vector(0,0,0), Vector(0,0,0), kScene, false, false);
+    local objectTest1 = AgentCreate("objectTest1", "obj_trowel.prop", Vector(0,0,0), Vector(0,0,0), kScene, false, false);
+    --local objectTest2 = AgentCreate("objectTest2", "obj_pullCartA.prop", Vector(0,0,0), Vector(0,0,0), kScene, false, false);
 end
 
 ALIVE_Level_Gameplay_Sandbox = function()
     --ALIVE_PrintSceneListToTXT(kScene, "adv_boardingSchoolExterior.txt");
-    --ALIVE_PrintSceneListToTXT(kScene, "adv_richmondOverpass.txt");
-    --ALIVE_PrintSceneListToTXT(kScene, "adv_richmondStreetTile.txt");
     --ALIVE_PrintValidPropertyNames("fx_lightShaft01", kScene);
-    --ALIVE_PrintValidPropertyNames("fx_camPollen", kScene);
-    --ALIVE_PrintValidPropertyNames("fxg_bloodBleedDirRad", kScene);
-    --ALIVE_PrintValidPropertyNames("obj_capClementine400", kScene);
-    --ALIVE_PrintValidPropertyNames("AJ", kScene);
-    --ALIVE_PrintValidPropertyNames("Clementine", kScene);
-    --ALIVE_PrintValidPropertyNames("adv_boardingSchoolExterior_meshesABuilding", kScene);
-    --ALIVE_PrintValidPropertyNames("obj_skydome", kScene);
 
-    ALIVE_Project_SetProjectSettings();
+    ALIVE_Core_Project_SetProjectSettings();
     ALIVE_Scene_LevelCleanup_403_BoardingSchoolExterior(kScene);
     ALIVE_Scene_LevelRelight_403_BoardingSchoolExterior(kScene);
 
@@ -98,23 +101,10 @@ ALIVE_Level_Gameplay_Sandbox = function()
     --ALIVE_Scene_LevelCleanup_305_RichmondStreetTile(kScene);
     --ALIVE_Scene_LevelRelight_305_RichmondStreetTile(kScene);
 
+    WheelBarrowSpawn();
+
     ALIVE_Gameplay_Shared_HideCusorInGame();
-    PlayTempSoundtrack();
-
-    --ChorePlay("ui_death_show.chore");
-
-    --kUIChoreClose = "UI Scene - Chore Close"
-    --kUIChoreOpen = "UI Scene - Chore Open"
-
-    --SceneAdd("ui_death");
-    --ChorePlayAndWait(AgentGetProperty(SceneGetSceneAgent("ui_death"), "UI Scene - Chore Open"));
-
-    --Callback_OnPostUpdate:Add(PerformAutofocusDOF);
-
-    --DoSandraStuff();
-
-    --sk62_action_sandraGrabZombieLeg.chore
-    --ALIVE_PrintChoreAgentNames("sk62_action_sandraGrabZombieLeg.chore")
+    --PlayTempSoundtrack(); 
 
     if (EnableFreecam == true) then
         ALIVE_Development_CreateFreeCamera();
@@ -126,20 +116,13 @@ ALIVE_Level_Gameplay_Sandbox = function()
     else
         SceneAdd(ThirdPerson_UI_kScene);
         ALIVE_Gameplay_CreateThirdPersonController(Vector(15, 0, 0));
-        --ALIVE_Gameplay_CreateThirdPersonController();
-        --ALIVE_Gameplay_CreateThirdPersonController(Vector(0, 0, 15));
         ALIVE_Gameplay_AI_CreateZombies(10, Vector(0, 0, 17), Vector(15, 0, 15));
-        --ALIVE_Gameplay_AI_CreateZombies(200, Vector(0, 0, 0), Vector(10, 0, 10));
     end
 
-    ALIVE_Scene_SetCharacterState_AJ(kScene);
-    ALIVE_Scene_SetCharacterState_AJ_KennyHat(kScene);
-    ALIVE_Scene_SetCharacterState_Clementine(kScene);
+    ALIVE_Character_AJ_Jackets(kScene);
+    --ALIVE_Character_AJ_KennyHat(kScene);
+    ALIVE_Character_AJ_ClementineHat(kScene);
+    ALIVE_Character_Clementine_Sick(kScene);
 end
 
 SceneOpen(kScene, kScript)
---SceneAdd("ui_death");
---SceneAdd("ui_vignette.scene");
---SceneAdd("ui_panicMeter.scene");
---SceneAdd("ui_crosshair.scene");
---ChorePlayAndWait(AgentGetProperty(AgentFindInScene("ui_death.scene", "ui_death"), "UI Scene - Chore Open"));
