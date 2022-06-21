@@ -26,7 +26,7 @@ ALIVE_Development_SceneObjectAgentName = kSceneObj;
 ALIVE_Development_UseSeasonOneAPI = false;
 ALIVE_Development_FreecamUseFOVScale = false;
 
-local EnableFreecamTools = true;
+local EnableFreecamTools = false;
 
 --DOF Autofocus Variables
 ALIVE_DOF_AUTOFOCUS_SceneObject = kScene;
@@ -45,7 +45,7 @@ ALIVE_DOF_AUTOFOCUS_ObjectEntries =
 
 ALIVE_MainMenu_PrepareCamera = function()
     local camProp = "module_camera.prop";
-    local camPosition = Vector(15.05, 1.13, -4.32);
+    local camPosition = Vector(15.05, 1, -4.32);
     local camRotation = Vector(0, 90, 0);
 
     local menuCamera = AgentCreate("ALIVE_MainMenuCamera", camProp, camPosition, camRotation, kScene, false, false);
@@ -61,7 +61,7 @@ end
 ALIVE_MainMenu_PrepareAgents = function()
     --Prepare all scene agents
     
-    local clemHat = AgentCreate("ALIVE_MainMenuClemHat", "obj_capClementine400.prop", Vector(16.05, 0.55, -4.32), Vector(0, 0, 0), kScene, false, false)
+    local clemHat = AgentCreate("ALIVE_MainMenuClemHat", "obj_capClementine400.prop", Vector(17.12, 0.83, -4.32), Vector(10, -79.7, 0), kScene, false, false)
 end
 
 ALIVE_Level_MainMenu = function()
