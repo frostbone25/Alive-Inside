@@ -1,8 +1,9 @@
 --Enable requisite ResourceSets
-ResourceSetEnable("ProjectSeason4");
 ResourceSetEnable("Project");
-ResourceSetEnable("Menu");
+ResourceSetEnable("ProjectSeason1");
+ResourceSetEnable("ProjectSeason4");
 ResourceSetEnable("WalkingDead404");
+ResourceSetEnable("Menu");
 
 require("ALIVE_Core_Math.lua");
 require("ALIVE_Core_Utilities.lua");
@@ -21,7 +22,6 @@ require("ALIVE_Core_MenuUtils.lua");
 require("ALIVE_Scene_LevelCleanup_404_BoardingSchoolDorm.lua");
 require("ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm.lua");
 
---Project//Menu
 require("UI_ListButton.lua")
 require("UI_ListButtonLite.lua")
 require("UI_Legend.lua")
@@ -34,7 +34,7 @@ require("AspectRatio.lua")
 --Engine Scene Variables
 local kScript = "ALIVE_Level_MainMenu"
 local kScene = "ui_menuMain.scene" --adv_boardingSchoolDorm
-local keyArtScene = "adv_boardingSchoolDorm"
+local keyArtScene = "adv_boardingSchoolDorm.scene"
 local kSceneObj = kScene .. ".scene"
 
 local menuCamera = nil;
@@ -113,6 +113,8 @@ end
 
 ALIVE_MainMenu_PrepareAgents = function()
     local clemHat = AgentCreate("ALIVE_MainMenuClemHat", "obj_capClementine400.prop", Vector(17.12, 0.82, -4.32), Vector(-5, -65.7, 0), keyArtScene, false, false)
+    local bgMusic = SoundPlay("mus_loop_clementine_04.wav");
+    ControllerSetLooping(bgMusic, true);
 end
 
 ALIVE_MainMenu_CreateAndPopulateMenu = function()
