@@ -212,6 +212,7 @@ local CreateTextAgent = function(name, text, posx, posy, posz, halign, valign)
     TextSet(textAgent, text)
     
     AgentSetProperty(textAgent, "Text Render Layer", 99)
+    AgentSetProperty(textAgent, "Text Render After Post-Effects", true)
     
     return textAgent
 end

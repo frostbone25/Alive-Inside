@@ -13,10 +13,13 @@ require("ALIVE_Core_Color.lua");
 require("ALIVE_Core_Strings.lua");
 require("ALIVE_Core_Printing.lua");
 require("ALIVE_Core_PropertyKeys.lua");
+require("ALIVE_Core_DepthOfFieldAutofocus.lua");
 require("ALIVE_Development_Freecam.lua");
 require("ALIVE_Development_AgentBrowser.lua");
 require("ALIVE_Core_Project.lua");
-require("ALIVE_Core_MenuUtils.lua")
+require("ALIVE_Core_MenuUtils.lua");
+require("ALIVE_Scene_LevelCleanup_404_BoardingSchoolDorm.lua");
+require("ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm.lua");
 
 --Project//Menu
 require("UI_ListButton.lua")
@@ -37,17 +40,19 @@ local kSceneObj = kScene .. ".scene"
 local menuCamera = nil;
 
 --Cutscene Development Variables
-ALIVE_Development_SceneObject = kScene;
-ALIVE_Development_SceneObjectAgentName = kSceneObj;
+ALIVE_Development_SceneObject = keyArtScene;
+ALIVE_Development_SceneObjectAgentName = keyArtScene .. ".scene";
 ALIVE_Development_UseSeasonOneAPI = false;
 ALIVE_Development_FreecamUseFOVScale = false;
 
 local EnableFreecamTools = false;
 
 --DOF Autofocus Variables
-ALIVE_DOF_AUTOFOCUS_SceneObject = kScene;
-ALIVE_DOF_AUTOFOCUS_SceneObjectAgentName = kSceneObj;
-ALIVE_DOF_AUTOFOCUS_UseCameraDOF = false;
+ALIVE_DOF_AUTOFOCUS_SceneObject = keyArtScene;
+ALIVE_DOF_AUTOFOCUS_SceneObjectAgentName = keyArtScene .. ".scene";
+ALIVE_DOF_AUTOFOCUS_UseCameraDOF = true;
+ALIVE_DOF_AUTOFOCUS_UseLegacyDOF = false;
+ALIVE_DOF_AUTOFOCUS_UseHighQualityDOF = true;
 
 ALIVE_DOF_AUTOFOCUS_GameplayCameraNames = 
 {
@@ -56,7 +61,39 @@ ALIVE_DOF_AUTOFOCUS_GameplayCameraNames =
 
 ALIVE_DOF_AUTOFOCUS_ObjectEntries =
 {
-    "FuckinDontRemoveThis"
+    "ALIVE_MainMenuClemHat"
+};
+
+ALIVE_DOF_AUTOFOCUS_Settings =
+{
+    TargetValidation_IsOnScreen = false,
+    TargetValidation_IsVisible = true,
+    TargetValidation_IsWithinDistance = false,
+    TargetValidation_IsFacingCamera = false,
+    TargetValidation_IsOccluded = false
+};
+
+ALIVE_DOF_AUTOFOCUS_BokehSettings =
+{
+    BokehBrightnessDeltaThreshold = 0.1,
+    BokehBrightnessThreshold = 0.1,
+    BokehBlurThreshold = 0.1,
+    BokehMinSize = 0.0,
+    BokehMaxSize = 0.05,
+    BokehFalloff = 0.30,
+    MaxBokehBufferAmount = 1.0,
+    BokehPatternTexture = "bokeh_circle5.d3dtx"
+};
+
+ALIVE_DOF_AUTOFOCUS_ManualSettings =
+{
+    ManualOnly = true,
+    NearFocusDistance = 2.0,
+    NearFallof = 0.25,
+    NearMax = 0.5,
+    FarFocusDistance = 2.25,
+    FarFalloff = 0.25,
+    FarMax = 0.25
 };
 
 ALIVE_MainMenu_PrepareCamera = function()
@@ -144,18 +181,38 @@ ALIVE_MainMenu_PrepareMenu = function() --Boilerplate to ensure there are no sca
 end
 
 ALIVE_Level_MainMenu = function()
+    ALIVE_Core_Project_SetProjectSettings();
+
     if (ALIVE_Core_Project_IsDebugMode) and (EnableFreecamTools) then
+        MenuUtils_AddScene(keyArtScene);
+        --ALIVE_PrintSceneListToTXT(keyArtScene, "adv_boardingSchoolDorm404.txt");
+
+        ALIVE_MainMenu_PrepareAgents();
+
+        ALIVE_Scene_LevelCleanup_404_BoardingSchoolDorm(keyArtScene);
+        ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu(keyArtScene);
+
         --Initialize tools
         ALIVE_Development_CreateFreeCamera();
         ALIVE_Development_InitalizeCutsceneTools();
+
         --Add required callbacks
         Callback_OnPostUpdate:Add(ALIVE_Development_UpdateFreeCamera);
         Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Input);
         Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Main);
+
+        --ALIVE_Camera_DepthOfFieldAutofocus_SetupDOF(keyArtScene);
+        --Callback_OnPostUpdate:Add(ALIVE_Camera_DepthOfFieldAutofocus_PerformAutofocus);
     else --Build menu as normal.
         ALIVE_MainMenu_PrepareMenu();
         ALIVE_MainMenu_PrepareAgents();
         ALIVE_MainMenu_PrepareCamera();
+
+        ALIVE_Scene_LevelCleanup_404_BoardingSchoolDorm(keyArtScene);
+        ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu(keyArtScene);
+
+        ALIVE_Camera_DepthOfFieldAutofocus_SetupDOF(keyArtScene);
+        Callback_OnPostUpdate:Add(ALIVE_Camera_DepthOfFieldAutofocus_PerformAutofocus);
     end
 end
 

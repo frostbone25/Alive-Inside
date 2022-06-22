@@ -44,6 +44,22 @@ local agent_name_scene = "adv_boardingSchoolExterior.scene";
 --local agent_name_scene = "adv_bellTower.scene";  --402
 --local kScene = "adv_boardingSchoolExteriorGate"; --401/402/404
 --local agent_name_scene = "adv_boardingSchoolExteriorGate.scene";  --401/402/404
+--local kScene = "adv_boardingSchoolDorm"; --401/402/403/404
+--local agent_name_scene = "adv_boardingSchoolDorm.scene";  --401/402/403/404
+--local kScene = "adv_greenHouse"; --402
+--local agent_name_scene = "adv_greenHouse.scene";  --402
+
+--season 3
+--local kScene = "adv_richmondMedical"; --303
+--local agent_name_scene = "adv_richmondMedical.scene"; --303
+--local kScene = "adv_richmondArmoryInterior"; --304
+--local agent_name_scene = "adv_richmondArmoryInterior.scene"; --304
+--local kScene = "adv_richmondQuarantineInterior"; --303
+--local agent_name_scene = "adv_richmondQuarantineInterior.scene"; --303
+--local kScene = "adv_richmondApartment"; --304
+--local agent_name_scene = "adv_richmondApartment.scene"; --304
+--local kScene = "adv_richmondMedical304"; --304
+--local agent_name_scene = "adv_richmondMedical304.scene"; --304
 
 
 ThirdPerson_kScene = kScene;
@@ -54,7 +70,7 @@ ALIVE_Development_SceneObjectAgentName = agent_name_scene;
 ALIVE_Development_UseSeasonOneAPI = false;
 ALIVE_Development_FreecamUseFOVScale = false;
 
-local EnableFreecam = false;
+local EnableFreecam = true;
 
 --|||||||||||||||||||||||||||||||||||||||||||||| SCENE SETUP ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| SCENE SETUP ||||||||||||||||||||||||||||||||||||||||||||||
@@ -82,8 +98,8 @@ local PlayTempSoundtrack = function()
 end
 
 local WheelBarrowSpawn = function()
-    --local wheelBarrow = AgentCreate("wheelBarrow", "obj_wheelBarrow.prop", Vector(0,0,0), Vector(0,0,0), kScene, false, false);
-    local objectTest1 = AgentCreate("objectTest1", "obj_trowel.prop", Vector(0,0,0), Vector(0,0,0), kScene, false, false);
+    local wheelBarrow = AgentCreate("wheelBarrow", "obj_wheelBarrow.prop", Vector(0,0,0), Vector(0,0,0), kScene, false, false);
+    --local objectTest1 = AgentCreate("objectTest1", "obj_trowel.prop", Vector(0,0,0), Vector(0,0,0), kScene, false, false);
     --local objectTest2 = AgentCreate("objectTest2", "obj_pullCartA.prop", Vector(0,0,0), Vector(0,0,0), kScene, false, false);
 end
 
@@ -101,18 +117,18 @@ ALIVE_Level_Gameplay_Sandbox = function()
     --ALIVE_Scene_LevelCleanup_305_RichmondStreetTile(kScene);
     --ALIVE_Scene_LevelRelight_305_RichmondStreetTile(kScene);
 
-    WheelBarrowSpawn();
+    --WheelBarrowSpawn();
 
     ALIVE_Gameplay_Shared_HideCusorInGame();
     --PlayTempSoundtrack(); 
 
     if (EnableFreecam == true) then
         ALIVE_Development_CreateFreeCamera();
-        ALIVE_Development_InitalizeCutsceneTools();
+        --ALIVE_Development_InitalizeCutsceneTools();
 
         Callback_OnPostUpdate:Add(ALIVE_Development_UpdateFreeCamera);
-        Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Input);
-        Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Main);
+        --Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Input);
+        --Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Main);
     else
         SceneAdd(ThirdPerson_UI_kScene);
         ALIVE_Gameplay_CreateThirdPersonController(Vector(15, 0, 0));

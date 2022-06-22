@@ -2,7 +2,9 @@
 Custom Depth of Field Autofocusing system.
 
 This script uses functions from the following lua scripts...
-- ALIVE_Core_AgentExtensions.lua
+- ALIVE_Core_AgentExtensions_Properties.lua
+- ALIVE_Core_AgentExtensions_Transform.lua
+- ALIVE_Core_AgentExtensions_Utillity.lua
 
 WHEN IMPLEMENTING THIS INTO A LEVEL, YOU MUST DO THE FOLLOWING...
 
@@ -20,17 +22,29 @@ This is a boolean value.
 If the value is set to true, then the DOF autofocusing system will use the depth of field built in the cameras.
 If the value is set to false, then the DOF autofocusing system will use the depth of field built in the scene post processing.
 
-5. Also at the top of the script, you must have a variable that is named
+5. Once again at the top of the script, you must have a variable that is named
+- ALIVE_DOF_AUTOFOCUS_UseLegacyDOF
+This is a boolean value. 
+If the value is set to true, then the DOF autofocusing system will use the legacy depth of field implementation
+If the value is set to false, then the DOF autofocusing system will use the new depth of field implementation
+
+6. Once again at the top of the script, you must have a variable that is named
+- ALIVE_DOF_AUTOFOCUS_UseHighQualityDOF
+This is a boolean value. 
+If the value is set to true, then the DOF autofocusing system will use high quality dof with bokeh
+If the value is set to false, then the DOF autofocusing system will use regular quality dof with no bokeh
+
+7. Also at the top of the script, you must have a variable that is named
 - ALIVE_DOF_AUTOFOCUS_GameplayCameraNames
 This needs to be a STRING ARRAY that will contain all of the gameplay camera agent names in the scene.
 This is important as this will disable DOF during gameplay segments
 
-6. Again the top of the script, you must have a variable that is named
+8. Again the top of the script, you must have a variable that is named
 - ALIVE_DOF_AUTOFOCUS_ObjectEntries
 This needs to be a STRING ARRAY that will contain all of the objects/characters that the autofocus will target.
 This is VERY important.
 
-7. The other last bit is a table for configuring the autofocusing settings for the scene.
+9. The other last bit is a table for configuring the autofocusing settings for the scene.
 
 ALIVE_DOF_AUTOFOCUS_Settings =
 {
@@ -41,9 +55,36 @@ ALIVE_DOF_AUTOFOCUS_Settings =
     TargetValidation_IsOccluded = false
 }
 
-8. Lastly in the main function of the level script you add the functionality like so...
+10. BokehSettings
 
-Callback_OnPostUpdate:Add(PerformAutofocusDOF)
+ALIVE_DOF_AUTOFOCUS_BokehSettings =
+{
+    BokehBrightnessDeltaThreshold = 0.015,
+    BokehBrightnessThreshold = 0.005,
+    BokehBlurThreshold = 0.005,
+    BokehMinSize = 0.0,
+    BokehMaxSize = 0.08,
+    BokehFalloff = 0.25,
+    MaxBokehBufferAmount = 1.0,
+    BokehPatternTexture = "bokeh_circle5.d3dtx"
+}
+
+11. ManualSettings
+
+ALIVE_DOF_AUTOFOCUS_ManualSettings =
+{
+    ManualOnly = false,
+    NearFocusDistance = 0.0,
+    NearFallof = 1.0,
+    NearMax = 1.0,
+    FarFocusDistance = 2.5,
+    FarFalloff = 1.0,
+    FarMax = 1.0
+}
+
+12. Lastly in the main function of the level script you add the functionality like so...
+
+Callback_OnPostUpdate:Add(ALIVE_Camera_DepthOfFieldAutofocus_PerformAutofocus)
 ]]--
 
 --previous variable values
@@ -59,7 +100,20 @@ local prev_farMax = 0;
 --fix 1: this will keep the DOF turned on with the previous values if there are no longer valid targets in frame despite there being before while on the same camera.
 local enable_fix1 = true; 
 
-PerformAutofocusDOF = function()
+--disables cel shaded outlines in a scene
+ALIVE_Camera_DepthOfFieldAutofocus_SetupDOF = function(kScene)
+    RenderSetFeatureEnabled("dof", true);
+
+    if(ALIVE_DOF_AUTOFOCUS_UseLegacyDOF == true) then
+        PropertySet(GetPreferences(), "Use Legacy DOF", true);
+        RenderSetFeatureEnabled("bokeh", false);
+    else
+        PropertySet(GetPreferences(), "Use Legacy DOF", false);
+        RenderSetFeatureEnabled("bokeh", true);
+    end
+end
+
+ALIVE_Camera_DepthOfFieldAutofocus_PerformAutofocus = function()
     --FUTURE ADDITION: would be nice to add smooth interpolation to the DOF so focus doesn't snap constantly if an object appears/dissapears offscreen
 
     -------------------------------------------------------------
@@ -71,7 +125,63 @@ PerformAutofocusDOF = function()
     local currentCamera_near_plane = ALIVE_AgentGetProperty(currentCamera_name, "Clip Plane - Near", ALIVE_DOF_AUTOFOCUS_SceneObject); --Number type
     local currentCamera_position_vector = AgentGetWorldPos(currentCamera_agent); --Vector type
     local currentCamera_forward_vector = AgentGetForwardVec(currentCamera_agent); --Vector type
-    
+
+    -------------------------------------------------------------
+    if(ALIVE_DOF_AUTOFOCUS_ManualSettings.ManualOnly) then
+        local current_nearFocusDistance = ALIVE_DOF_AUTOFOCUS_ManualSettings.NearFocusDistance;
+        local current_nearFallof = ALIVE_DOF_AUTOFOCUS_ManualSettings.NearFallof;
+        local current_nearMax = ALIVE_DOF_AUTOFOCUS_ManualSettings.NearMax;
+        local current_farFocusDistance = ALIVE_DOF_AUTOFOCUS_ManualSettings.FarFocusDistance;
+        local current_farFalloff = ALIVE_DOF_AUTOFOCUS_ManualSettings.FarFalloff;
+        local current_farMax = ALIVE_DOF_AUTOFOCUS_ManualSettings.FarMax;
+
+        if (ALIVE_DOF_AUTOFOCUS_UseCameraDOF == true) then
+            --Use the DOF properties on the camera itself
+            ALIVE_AgentSetProperty(currentCamera_name, "Depth Of Field Enabled", true, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            ALIVE_AgentSetProperty(currentCamera_name, "Use High Quality DOF", true, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            ALIVE_AgentSetProperty(currentCamera_name, "Depth Of Field Type", 1, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            ALIVE_AgentSetProperty(currentCamera_name, "Depth Of Field Blur Strength", 3, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            ALIVE_AgentSetProperty(currentCamera_name, "Depth Of Field Coverage Boost", 1, ALIVE_DOF_AUTOFOCUS_SceneObject)
+
+            if(ALIVE_DOF_AUTOFOCUS_UseHighQualityDOF == true) then
+                ALIVE_AgentSetProperty(currentCamera_name, "Use Bokeh", true, ALIVE_DOF_AUTOFOCUS_SceneObject)
+
+                ALIVE_AgentSetProperty(currentCamera_name, "Bokeh Brightness Delta Threshold", ALIVE_DOF_AUTOFOCUS_BokehSettings.BokehBrightnessDeltaThreshold, ALIVE_DOF_AUTOFOCUS_SceneObject)
+                ALIVE_AgentSetProperty(currentCamera_name, "Bokeh Brightness Threshold", ALIVE_DOF_AUTOFOCUS_BokehSettings.BokehBrightnessThreshold, ALIVE_DOF_AUTOFOCUS_SceneObject)
+                ALIVE_AgentSetProperty(currentCamera_name, "Bokeh Blur Threshold", ALIVE_DOF_AUTOFOCUS_BokehSettings.BokehBlurThreshold, ALIVE_DOF_AUTOFOCUS_SceneObject)
+                ALIVE_AgentSetProperty(currentCamera_name, "Bokeh Min Size", ALIVE_DOF_AUTOFOCUS_BokehSettings.BokehMinSize, ALIVE_DOF_AUTOFOCUS_SceneObject)
+                ALIVE_AgentSetProperty(currentCamera_name, "Bokeh Max Size", ALIVE_DOF_AUTOFOCUS_BokehSettings.BokehMaxSize, ALIVE_DOF_AUTOFOCUS_SceneObject)
+                ALIVE_AgentSetProperty(currentCamera_name, "Bokeh Falloff", ALIVE_DOF_AUTOFOCUS_BokehSettings.BokehFalloff, ALIVE_DOF_AUTOFOCUS_SceneObject)
+                ALIVE_AgentSetProperty(currentCamera_name, "Max Bokeh Buffer Amount", ALIVE_DOF_AUTOFOCUS_BokehSettings.MaxBokehBufferAmount, ALIVE_DOF_AUTOFOCUS_SceneObject)
+                ALIVE_AgentSetProperty(currentCamera_name, "Bokeh Pattern Texture", ALIVE_DOF_AUTOFOCUS_BokehSettings.BokehPatternTexture, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            else
+                ALIVE_AgentSetProperty(currentCamera_name, "Use Bokeh", false, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            end
+
+            ALIVE_AgentSetProperty(currentCamera_name, "Depth Of Field - Far", current_farFocusDistance, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            ALIVE_AgentSetProperty(currentCamera_name, "Depth Of Field Fall Off - Far", current_farFalloff, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            ALIVE_AgentSetProperty(currentCamera_name, "Depth Of Field Max - Far", current_farMax, ALIVE_DOF_AUTOFOCUS_SceneObject)
+        
+            ALIVE_AgentSetProperty(currentCamera_name, "Depth Of Field - Near", current_nearFocusDistance, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            ALIVE_AgentSetProperty(currentCamera_name, "Depth Of Field Fall Off - Near", current_nearFallof, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            ALIVE_AgentSetProperty(currentCamera_name, "Depth Of Field Max - Near", current_nearMax, ALIVE_DOF_AUTOFOCUS_SceneObject)
+        else
+            --Use the DOF properties on the scene post processing itself
+            ALIVE_AgentSetProperty(ALIVE_DOF_AUTOFOCUS_SceneObjectAgentName, "FX DOF Enabled", true, ALIVE_DOF_AUTOFOCUS_SceneObject)
+        
+            ALIVE_AgentSetProperty(ALIVE_DOF_AUTOFOCUS_SceneObjectAgentName, "FX DOF Far", current_farFocusDistance, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            ALIVE_AgentSetProperty(ALIVE_DOF_AUTOFOCUS_SceneObjectAgentName, "FX DOF Far Falloff", current_farFalloff, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            ALIVE_AgentSetProperty(ALIVE_DOF_AUTOFOCUS_SceneObjectAgentName, "FX DOF Far Max", current_farMax, ALIVE_DOF_AUTOFOCUS_SceneObject)
+        
+            ALIVE_AgentSetProperty(ALIVE_DOF_AUTOFOCUS_SceneObjectAgentName, "FX DOF Near", current_nearFocusDistance, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            ALIVE_AgentSetProperty(ALIVE_DOF_AUTOFOCUS_SceneObjectAgentName, "FX DOF Near Falloff", current_nearFallof, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            ALIVE_AgentSetProperty(ALIVE_DOF_AUTOFOCUS_SceneObjectAgentName, "FX DOF Near Max", current_nearMax, ALIVE_DOF_AUTOFOCUS_SceneObject)
+        end
+
+        do return end
+    end
+
+    -------------------------------------------------------------
     --create our near target variables that will be filled with data later 
     local nearFocusTarget1_agent = nil; --Agent type (nil until it's assigned)
     local nearFocusTarget1_position_vector = nil; --Vector type (nil until it's assigned)
@@ -321,7 +431,26 @@ PerformAutofocusDOF = function()
     if (ALIVE_DOF_AUTOFOCUS_UseCameraDOF == true) then
         --Use the DOF properties on the camera itself
         ALIVE_AgentSetProperty(currentCamera_name, "Depth Of Field Enabled", current_enabledDOF, ALIVE_DOF_AUTOFOCUS_SceneObject)
-        
+        ALIVE_AgentSetProperty(currentCamera_name, "Use High Quality DOF", true, ALIVE_DOF_AUTOFOCUS_SceneObject)
+        ALIVE_AgentSetProperty(currentCamera_name, "Depth Of Field Type", 1, ALIVE_DOF_AUTOFOCUS_SceneObject)
+        ALIVE_AgentSetProperty(currentCamera_name, "Depth Of Field Blur Strength", 3, ALIVE_DOF_AUTOFOCUS_SceneObject)
+        ALIVE_AgentSetProperty(currentCamera_name, "Depth Of Field Coverage Boost", 1, ALIVE_DOF_AUTOFOCUS_SceneObject)
+
+        if(ALIVE_DOF_AUTOFOCUS_UseHighQualityDOF == true) then
+            ALIVE_AgentSetProperty(currentCamera_name, "Use Bokeh", true, ALIVE_DOF_AUTOFOCUS_SceneObject)
+
+            ALIVE_AgentSetProperty(currentCamera_name, "Bokeh Brightness Delta Threshold", ALIVE_DOF_AUTOFOCUS_BokehSettings.BokehBrightnessDeltaThreshold, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            ALIVE_AgentSetProperty(currentCamera_name, "Bokeh Brightness Threshold", ALIVE_DOF_AUTOFOCUS_BokehSettings.BokehBrightnessThreshold, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            ALIVE_AgentSetProperty(currentCamera_name, "Bokeh Blur Threshold", ALIVE_DOF_AUTOFOCUS_BokehSettings.BokehBlurThreshold, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            ALIVE_AgentSetProperty(currentCamera_name, "Bokeh Min Size", ALIVE_DOF_AUTOFOCUS_BokehSettings.BokehMinSize, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            ALIVE_AgentSetProperty(currentCamera_name, "Bokeh Max Size", ALIVE_DOF_AUTOFOCUS_BokehSettings.BokehMaxSize, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            ALIVE_AgentSetProperty(currentCamera_name, "Bokeh Falloff", ALIVE_DOF_AUTOFOCUS_BokehSettings.BokehFalloff, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            ALIVE_AgentSetProperty(currentCamera_name, "Max Bokeh Buffer Amount", ALIVE_DOF_AUTOFOCUS_BokehSettings.MaxBokehBufferAmount, ALIVE_DOF_AUTOFOCUS_SceneObject)
+            ALIVE_AgentSetProperty(currentCamera_name, "Bokeh Pattern Texture", ALIVE_DOF_AUTOFOCUS_BokehSettings.BokehPatternTexture, ALIVE_DOF_AUTOFOCUS_SceneObject)
+        else
+            ALIVE_AgentSetProperty(currentCamera_name, "Use Bokeh", false, ALIVE_DOF_AUTOFOCUS_SceneObject)
+        end
+
         ALIVE_AgentSetProperty(currentCamera_name, "Depth Of Field - Far", current_farFocusDistance, ALIVE_DOF_AUTOFOCUS_SceneObject)
         ALIVE_AgentSetProperty(currentCamera_name, "Depth Of Field Fall Off - Far", current_farFalloff, ALIVE_DOF_AUTOFOCUS_SceneObject)
         ALIVE_AgentSetProperty(currentCamera_name, "Depth Of Field Max - Far", current_farMax, ALIVE_DOF_AUTOFOCUS_SceneObject)

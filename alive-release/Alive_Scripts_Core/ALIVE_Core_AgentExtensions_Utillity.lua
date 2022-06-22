@@ -41,10 +41,7 @@ end
 ALIVE_RemovingAgentsWithPrefix = function(sceneObject, prefixString)
     --get all agents in the scene
     local scene_agents = SceneGetAgents(sceneObject)
-    
-    --initalize an empty list that will contain all the agents we found by name
-    local agents_names = {}
-    
+
     --fill out rig agents list
     for i, agent_object in pairs(scene_agents) do
         --get the agent name
@@ -52,13 +49,8 @@ ALIVE_RemovingAgentsWithPrefix = function(sceneObject, prefixString)
         
         --check if the agent name contains the prefix, if it does then add it to our agent_names table
         if (string.match)(agent_name, prefixString) then
-            table.insert(agents_names, agent_name)
+            ALIVE_RemoveAgent(agent_name, sceneObject)
         end
-    end
-    
-    --start removing agents in the list
-    for x, list_agent_name in pairs(agents_names) do
-        ALIVE_RemoveAgent(list_agent_name, sceneObject)
     end
 end
 
@@ -66,10 +58,7 @@ end
 ALIVE_ReplaceAgentsWithPrefixWithDummy = function(sceneObject, prefixString)
     --get all agents in the scene
     local scene_agents = SceneGetAgents(sceneObject)
-    
-    --initalize an empty list that will contain all the agents we found by name
-    local agents_names = {}
-    
+
     --fill out rig agents list
     for i, agent_object in pairs(scene_agents) do
         --get the agent name
@@ -77,15 +66,10 @@ ALIVE_ReplaceAgentsWithPrefixWithDummy = function(sceneObject, prefixString)
         
         --check if the agent name contains the prefix, if it does then add it to our agent_names table
         if (string.match)(agent_name, prefixString) then
-            table.insert(agents_names, agent_name)
-        end
-    end
-    
-    --start removing agents in the list
-    for x, list_agent_name in pairs(agents_names) do
-        ALIVE_RemoveAgent(list_agent_name, sceneObject)
+            ALIVE_RemoveAgent(agent_name, sceneObject)
         
-        local dummyAgent = AgentCreate(list_agent_name, "group.prop", Vector(0,0,0), Vector(0,0,0), sceneObject, false, false)
+            local dummyAgent = AgentCreate(agent_name, "group.prop", Vector(0,0,0), Vector(0,0,0), sceneObject, false, false)
+        end
     end
 end
 

@@ -41,10 +41,7 @@ end
 ALIVE_SetPropertyOnAgentsWithPrefix = function(sceneObject, prefixString, propertyString, propertyValue)
     --get all agents in the scene
     local scene_agents = SceneGetAgents(sceneObject)
-    
-    --initalize an empty list that will contain all the agents we found by name
-    local agents_names = {}
-    
+
     --fill out rig agents list
     for i, agent_object in pairs(scene_agents) do
         --get the agent name
@@ -52,13 +49,8 @@ ALIVE_SetPropertyOnAgentsWithPrefix = function(sceneObject, prefixString, proper
         
         --check if the agent name contains the prefix, if it does then add it to our agent_names table
         if (string.match)(agent_name, prefixString) then
-            table.insert(agents_names, agent_name)
+            ALIVE_AgentSetProperty(agent_name, propertyString, propertyValue, sceneObject)
         end
-    end
-    
-    --find each agent in the scene and set the desired property
-    for x, list_agent_name in pairs(agents_names) do
-        ALIVE_AgentSetProperty(list_agent_name, propertyString, propertyValue, sceneObject)
     end
 end
 
@@ -66,10 +58,7 @@ end
 ALIVE_SetPropertyOnAllCameras = function(sceneObject, propertyString, propertyValue)
     --get all agents in the scene
     local scene_agents = SceneGetAgents(sceneObject)
-    
-    --initalize an empty list that will contain all the agents we found by name
-    local agents_names = {}
-    
+
     --fill out rig agents list
     for i, agent_object in pairs(scene_agents) do
         --get the agent name
@@ -77,13 +66,8 @@ ALIVE_SetPropertyOnAllCameras = function(sceneObject, propertyString, propertyVa
         
         --check if the agent name contains the prefix, if it does then add it to our agent_names table
         if (string.match)(agent_name, "cam_") then
-            table.insert(agents_names, agent_name)
+            ALIVE_AgentSetProperty(agent_name, propertyString, propertyValue, sceneObject)
         end
-    end
-    
-    --find each agent in the scene and set the desired property
-    for x, list_agent_name in pairs(agents_names) do
-        ALIVE_AgentSetProperty(list_agent_name, propertyString, propertyValue, sceneObject)
     end
 end
 
