@@ -1,5 +1,5 @@
 ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu = function(kScene)
-    local agent_name_scene = kScene .. ".scene";
+    local agent_name_scene = kScene;
     local maxDistance = 2.75;
 
     local envlight = AgentFindInScene("light_ENV_clemsRoomNoon_sunKey", kScene);

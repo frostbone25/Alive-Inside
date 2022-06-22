@@ -41,7 +41,7 @@ local menuCamera = nil;
 
 --Cutscene Development Variables
 ALIVE_Development_SceneObject = keyArtScene;
-ALIVE_Development_SceneObjectAgentName = keyArtScene .. ".scene";
+ALIVE_Development_SceneObjectAgentName = keyArtScene;
 ALIVE_Development_UseSeasonOneAPI = false;
 ALIVE_Development_FreecamUseFOVScale = false;
 
@@ -49,7 +49,7 @@ local EnableFreecamTools = false;
 
 --DOF Autofocus Variables
 ALIVE_DOF_AUTOFOCUS_SceneObject = keyArtScene;
-ALIVE_DOF_AUTOFOCUS_SceneObjectAgentName = keyArtScene .. ".scene";
+ALIVE_DOF_AUTOFOCUS_SceneObjectAgentName = keyArtScene;
 ALIVE_DOF_AUTOFOCUS_UseCameraDOF = true;
 ALIVE_DOF_AUTOFOCUS_UseLegacyDOF = false;
 ALIVE_DOF_AUTOFOCUS_UseHighQualityDOF = true;
