@@ -113,7 +113,9 @@ end
 
 ALIVE_MainMenu_PrepareAgents = function()
     local clemHat = AgentCreate("ALIVE_MainMenuClemHat", "obj_capClementine400.prop", Vector(17.12, 0.82, -4.32), Vector(-5, -65.7, 0), keyArtScene, false, false)
-    local bgMusic = SoundPlay("mus_loop_clementine_04.wav");
+    --local bgMusic = SoundPlay("mus_loop_clementine_04.wav");
+    local bgMusic = SoundPlay("music_custom1.wav");
+
     ControllerSetLooping(bgMusic, true);
 end
 
