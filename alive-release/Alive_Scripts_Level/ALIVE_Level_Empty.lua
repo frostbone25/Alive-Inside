@@ -28,21 +28,6 @@ ALIVE_Development_FreecamUseFOVScale = false;
 
 local EnableFreecamTools = true;
 
---DOF Autofocus Variables
-ALIVE_DOF_AUTOFOCUS_SceneObject = kScene;
-ALIVE_DOF_AUTOFOCUS_SceneObjectAgentName = kSceneObj;
-ALIVE_DOF_AUTOFOCUS_UseCameraDOF = false;
-
-ALIVE_DOF_AUTOFOCUS_GameplayCameraNames = 
-{
-    "FuckinDontRemoveThis"
-};
-
-ALIVE_DOF_AUTOFOCUS_ObjectEntries =
-{
-    "FuckinDontRemoveThis"
-};
-
 ALIVE_Level_Empty = function()
     if (ALIVE_Core_Project_IsDebugMode) and (EnableFreecamTools) then
         --Initialize tools

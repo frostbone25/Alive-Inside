@@ -241,7 +241,6 @@ ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu = function(kScene)
     ALIVE_AgentSetProperty(agent_name_scene, "Glow Sigma Scale", 1.0, kScene);
     ALIVE_AgentSetProperty(agent_name_scene, "FX Sharp Shadows Enabled", false, kScene);
     ALIVE_AgentSetProperty(agent_name_scene, "Generate NPR Lines", false, kScene)
-    ALIVE_AgentSetProperty(agent_name_scene, "Screen Space Lines - Enabled", false, kScene)
     ALIVE_AgentSetProperty(agent_name_scene, "FX Ambient Occlusion Enabled", true, kScene);
     ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Intensity", 44.25, kScene);
     ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap White Point", 100.0, kScene);
@@ -303,6 +302,18 @@ ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu = function(kScene)
 
     ALIVE_AgentSetProperty(agent_name_scene, "Frame Buffer Scale Override", true, kScene);
     ALIVE_AgentSetProperty(agent_name_scene, "Frame Buffer Scale Factor", 1.0, kScene);
+
+
+
+    ALIVE_AgentSetProperty(agent_name_scene, "Screen Space Lines - Enabled", false, kScene)
+    ALIVE_AgentSetProperty(agent_name_scene, "Screen Space Lines - Color", Color(0,0,0,1), kScene);
+    ALIVE_AgentSetProperty(agent_name_scene, "Screen Space Lines - Thickness", 4, kScene);
+    ALIVE_AgentSetProperty(agent_name_scene, "Screen Space Lines - Depth Fade Near", 0, kScene);
+    ALIVE_AgentSetProperty(agent_name_scene, "Screen Space Lines - Depth Fade Far", 15, kScene);
+    ALIVE_AgentSetProperty(agent_name_scene, "Screen Space Lines - Depth Magnitude", 5000, kScene);
+    ALIVE_AgentSetProperty(agent_name_scene, "Screen Space Lines - Depth Exponent", 1, kScene);
+    ALIVE_AgentSetProperty(agent_name_scene, "Screen Space Lines - Light Magnitude", 1, kScene);
+    ALIVE_AgentSetProperty(agent_name_scene, "Screen Space Lines - Light Exponent", 1, kScene);
 
 
     --add additional dust motes

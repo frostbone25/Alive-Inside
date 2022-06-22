@@ -53,17 +53,8 @@ ALIVE_DOF_AUTOFOCUS_SceneObjectAgentName = keyArtScene;
 ALIVE_DOF_AUTOFOCUS_UseCameraDOF = true;
 ALIVE_DOF_AUTOFOCUS_UseLegacyDOF = false;
 ALIVE_DOF_AUTOFOCUS_UseHighQualityDOF = true;
-
-ALIVE_DOF_AUTOFOCUS_GameplayCameraNames = 
-{
-    "FuckinDontRemoveThis"
-};
-
-ALIVE_DOF_AUTOFOCUS_ObjectEntries =
-{
-    "ALIVE_MainMenuClemHat"
-};
-
+ALIVE_DOF_AUTOFOCUS_GameplayCameraNames = { "FuckinDontRemoveThis" };
+ALIVE_DOF_AUTOFOCUS_ObjectEntries = { "ALIVE_MainMenuClemHat" };
 ALIVE_DOF_AUTOFOCUS_Settings =
 {
     TargetValidation_IsOnScreen = false,
@@ -72,7 +63,6 @@ ALIVE_DOF_AUTOFOCUS_Settings =
     TargetValidation_IsFacingCamera = false,
     TargetValidation_IsOccluded = false
 };
-
 ALIVE_DOF_AUTOFOCUS_BokehSettings =
 {
     BokehBrightnessDeltaThreshold = 0.1,
@@ -84,7 +74,6 @@ ALIVE_DOF_AUTOFOCUS_BokehSettings =
     MaxBokehBufferAmount = 1.0,
     BokehPatternTexture = "bokeh_circle5.d3dtx"
 };
-
 ALIVE_DOF_AUTOFOCUS_ManualSettings =
 {
     ManualOnly = true,
@@ -116,7 +105,7 @@ local cutscene_handheld_z_level4 = 0;
 --worth noting that while it does work, its definetly not perfect and jumps around more than I'd like.
 --if the values are kept low then it works fine
 --procedual handheld camera animation (adds a bit of extra life and motion to the camera throughout the sequence)
-Cutscene_UpdateHandheldCameraValues = function()
+local DoHandheldCameraAnimation = function()
     local totalShakeAmount = 0.15;
     local totalSpeedMultiplier = 0.75;
 
@@ -196,8 +185,10 @@ end
 ALIVE_MainMenu_PrepareAgents = function()
     local clemHat = AgentCreate("ALIVE_MainMenuClemHat", "obj_capClementine400.prop", Vector(17.12, 0.82, -4.32), Vector(-5, -65.7, 0), keyArtScene, false, false)
     --local bgMusic = SoundPlay("mus_loop_clementine_04.wav");
-    --local bgMusic = SoundPlay("music_custom1.wav");
-    local bgMusic = SoundPlay("mus_loop_AJ_01a.wav");
+    --local bgMusic = SoundPlay("mus_loop_clementine_03.wav");
+    --local bgMusic = SoundPlay("mus_loop_clementine_01.wav"); --the real shit
+    --local bgMusic = SoundPlay("music_custom1.wav"); --flashvolts "credits" track
+    local bgMusic = SoundPlay("mus_loop_AJ_01a.wav"); --what it should be
 
     ControllerSetLooping(bgMusic, true);
 end
@@ -271,11 +262,11 @@ ALIVE_Level_MainMenu = function()
     ALIVE_Core_Project_SetProjectSettings();
 
     if (ALIVE_Core_Project_IsDebugMode) and (EnableFreecamTools) then
+        --add the key art scene so we can fly around within it
         MenuUtils_AddScene(keyArtScene);
-        --ALIVE_PrintSceneListToTXT(keyArtScene, "adv_boardingSchoolDorm404.txt");
-
         ALIVE_MainMenu_PrepareAgents();
 
+        --perform the cleanup/relight
         ALIVE_Scene_LevelCleanup_404_BoardingSchoolDorm(keyArtScene);
         ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu(keyArtScene);
 
@@ -288,21 +279,22 @@ ALIVE_Level_MainMenu = function()
         Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Input);
         Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Main);
 
-        --ALIVE_Camera_DepthOfFieldAutofocus_SetupDOF(keyArtScene);
-        --Callback_OnPostUpdate:Add(ALIVE_Camera_DepthOfFieldAutofocus_PerformAutofocus);
     else --Build menu as normal.
         ALIVE_MainMenu_PrepareMenu();
         ALIVE_MainMenu_PrepareAgents();
         ALIVE_MainMenu_PrepareCamera();
 
+        --perform the cleanup/relight
         ALIVE_Scene_LevelCleanup_404_BoardingSchoolDorm(keyArtScene);
         ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu(keyArtScene);
-
-        Callback_OnPostUpdate:Add(Cutscene_UpdateHandheldCameraValues);
-
         ALIVE_Camera_DepthOfFieldAutofocus_SetupDOF(keyArtScene);
-        Callback_OnPostUpdate:Add(ALIVE_Camera_DepthOfFieldAutofocus_PerformAutofocus);
+
+        --do some additional things
+        Callback_OnPostUpdate:Add(DoHandheldCameraAnimation); --add a procedual handheld camera animation
+        Callback_OnPostUpdate:Add(ALIVE_Camera_DepthOfFieldAutofocus_PerformAutofocus); --do DOF
     end
+
+    --ALIVE_PrintSceneListToTXT(keyArtScene, "adv_boardingSchoolDorm404.txt");
 end
 
 SceneOpen(kScene,kScript)
