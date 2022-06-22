@@ -42,7 +42,7 @@ ALIVE_Scene_LevelCleanup_404_BoardingSchoolDorm = function(kScene)
     ALIVE_RemoveAgent("fx_lightShaft403", kScene);
     ALIVE_RemoveAgent("fx_lightShaft404", kScene);
     ALIVE_RemoveAgent("fx_lightShaft405", kScene);
-    --ALIVE_RemoveAgent("fx_lightShaft406", kScene);
+    ALIVE_RemoveAgent("fx_lightShaft406", kScene);
 
     ALIVE_RemoveAgent("group_skydome", kScene);
     ALIVE_RemoveAgent("group_sun", kScene);
@@ -145,32 +145,32 @@ ALIVE_Scene_LevelCleanup_404_BoardingSchoolDorm = function(kScene)
     ALIVE_RemoveAgent("light_CHAR_CC_obj_chairWoodA_Rim", kScene);
 
     ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesACeiling", kScene);
-    --ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAClem", kScene);
     ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAWallsExterior", kScene);
     ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAFoliage", kScene);
     ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAGlass", kScene);
-    --ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAClemCloth", kScene);
-    --ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAClemCobwebs", kScene);
-    --ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAClemPipes", kScene);
-    --ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAClemCeiling", kScene);
-    --ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAClemFloor", kScene);
     ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAWindowsDoors404", kScene);
-    --ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAWalls404", kScene); --works except when removing it also kills the doorframe for the dorm room
+    ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAWalls404", kScene);
     ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAPipes404", kScene);
     ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAFloor404", kScene);
+    ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesACoatStand404", kScene);
+    --ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAClem", kScene);
+    --ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAClemCloth", kScene);
+    ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAClemCobwebs", kScene);
+    --ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAClemPipes", kScene);
+    ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAClemCeiling", kScene);
+    ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAClemFloor", kScene);
     --ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesAClemFurniture404", kScene);
-    --ALIVE_RemoveAgent("adv_boardingSchoolDorm_meshesACoatStand404", kScene);
 
     ALIVE_RemoveAgent("obj_chairWoodA", kScene);
     ALIVE_RemoveAgent("obj_chinaCabinetBoardingSchool", kScene);
-    --ALIVE_RemoveAgent("obj_doorClemBoardingSchoolDorm", kScene);
+    ALIVE_RemoveAgent("obj_doorClemBoardingSchoolDorm", kScene);
     ALIVE_RemoveAgent("obj_doorEntranceBoardingSchoolDorm", kScene);
     ALIVE_RemoveAgent("obj_doorVestibuleABoardingSchoolDorm", kScene);
     ALIVE_RemoveAgent("obj_doorVestibuleBBoardingSchoolDorm", kScene);
     ALIVE_RemoveAgent("obj_doorClosetClemABoardingSchoolDorm", kScene);
     --ALIVE_RemoveAgent("obj_drawerBoardingSchoolDorm", kScene);
-    --ALIVE_RemoveAgent("obj_drawerDeskABoardingSchoolDorm", kScene);
-    --ALIVE_RemoveAgent("obj_pillowBoardingSchoolDorm1", kScene);
+    ALIVE_RemoveAgent("obj_drawerDeskABoardingSchoolDorm", kScene);
+    ALIVE_RemoveAgent("obj_pillowBoardingSchoolDorm1", kScene);
     ALIVE_RemoveAgent("obj_matteBoardingSchoolWindowFillA", kScene);
     --ALIVE_RemoveAgent("obj_skydome", kScene);
     ALIVE_RemoveAgent("obj_skydomeOverheadClouds", kScene);
@@ -184,7 +184,7 @@ ALIVE_Scene_LevelCleanup_404_BoardingSchoolDorm = function(kScene)
     --ALIVE_RemoveAgent("obj_grassClumpA06", kScene); --grass by dorm window
     ALIVE_RemoveAgent("obj_treeMapleHiRez", kScene);
     --ALIVE_RemoveAgent("obj_matteForestTileRing", kScene); --main skybox forest tile matte
-    --ALIVE_RemoveAgent("obj_pillowBoardingSchoolDorm2", kScene);
+    ALIVE_RemoveAgent("obj_pillowBoardingSchoolDorm2", kScene);
     ALIVE_RemoveAgent("obj_drawingAJ", kScene);
     ALIVE_RemoveAgent("obj_drawingTenn", kScene);
     ALIVE_RemoveAgent("obj_drawingTennNoClem", kScene);

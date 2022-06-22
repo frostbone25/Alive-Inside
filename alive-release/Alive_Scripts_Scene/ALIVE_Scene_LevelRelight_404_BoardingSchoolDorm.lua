@@ -38,9 +38,6 @@ ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu = function(kScene)
     ALIVE_AgentSetProperty("myLight_Sun", "EnvLight - Intensity Specular", 1.0, kScene);
     ALIVE_AgentSetProperty("myLight_Sun", "EnvLight - Enlighten Intensity", 1.0, kScene);
     ALIVE_AgentSetProperty("myLight_Sun", "EnvLight - Radius", 1, kScene);
-    --ALIVE_AgentSetProperty("myLight_Sun", "EnvLight - Distance Falloff", 1, kScene);
-    --ALIVE_AgentSetProperty("myLight_Sun", "EnvLight - Spot Angle Inner", 5, kScene);
-    --ALIVE_AgentSetProperty("myLight_Sun", "EnvLight - Spot Angle Outer", 45, kScene);
     ALIVE_AgentSetProperty("myLight_Sun", "EnvLight - Color", sunColor, kScene);
     ALIVE_AgentSetProperty("myLight_Sun", "EnvLight - Enabled Group", envlight_groupEnabled, kScene);
     ALIVE_AgentSetProperty("myLight_Sun", "EnvLight - Groups", envlight_groups, kScene);
@@ -141,14 +138,14 @@ ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu = function(kScene)
     ALIVE_AgentSetProperty("myLight_GIBounce4", "EnvLight - HBAO Participation Type", 1, kScene);
     ALIVE_AgentSetProperty("myLight_GIBounce4", "EnvLight - Mobility", 2, kScene);
 
-    local myLight_GIBounce5 = AgentCreate("myLight_GIBounce5", envlight_prop, Vector(17.373, 0.795, -4.011), Vector(-32.33, -23.06, 0), kScene, false, false); --lightbulb bounce
+    local myLight_GIBounce5 = AgentCreate("myLight_GIBounce5", envlight_prop, Vector(16.734, 0.792, -4.883), Vector(-19.833, 88.593, 0), kScene, false, false); --window boards bounce
     ALIVE_AgentSetProperty("myLight_GIBounce5", "EnvLight - Type", 1, kScene);
-    ALIVE_AgentSetProperty("myLight_GIBounce5", "EnvLight - Intensity", 5.0, kScene);
+    ALIVE_AgentSetProperty("myLight_GIBounce5", "EnvLight - Intensity", 4.0, kScene);
     ALIVE_AgentSetProperty("myLight_GIBounce5", "EnvLight - Intensity Specular", 1.0, kScene);
     ALIVE_AgentSetProperty("myLight_GIBounce5", "EnvLight - Enlighten Intensity", 1.0, kScene);
     ALIVE_AgentSetProperty("myLight_GIBounce5", "EnvLight - Radius", 5, kScene);
     ALIVE_AgentSetProperty("myLight_GIBounce5", "EnvLight - Distance Falloff", 5, kScene);
-    ALIVE_AgentSetProperty("myLight_GIBounce5", "EnvLight - Spot Angle Inner", 45, kScene);
+    ALIVE_AgentSetProperty("myLight_GIBounce5", "EnvLight - Spot Angle Inner", 0, kScene);
     ALIVE_AgentSetProperty("myLight_GIBounce5", "EnvLight - Spot Angle Outer", 100, kScene);
     ALIVE_AgentSetProperty("myLight_GIBounce5", "EnvLight - Color", Desaturate_RGBColor(RGBColor(255, 128, 0, 255), 0.5), kScene);
     ALIVE_AgentSetProperty("myLight_GIBounce5", "EnvLight - Enabled Group", envlight_groupEnabled, kScene);
@@ -159,16 +156,16 @@ ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu = function(kScene)
     ALIVE_AgentSetProperty("myLight_GIBounce5", "EnvLight - HBAO Participation Type", 1, kScene);
     ALIVE_AgentSetProperty("myLight_GIBounce5", "EnvLight - Mobility", 2, kScene);
 
-    local myLight_GIBounce6 = AgentCreate("myLight_GIBounce6", envlight_prop, Vector(16.734, 0.792, -4.883), Vector(-19.833, 88.593, 0), kScene, false, false); --window boards bounce
+    local myLight_GIBounce6 = AgentCreate("myLight_GIBounce6", envlight_prop, Vector(16.443, 0.996, -4.317), Vector(10, 90, 0), kScene, false, false); --window boards bounce
     ALIVE_AgentSetProperty("myLight_GIBounce6", "EnvLight - Type", 1, kScene);
-    ALIVE_AgentSetProperty("myLight_GIBounce6", "EnvLight - Intensity", 4.0, kScene);
+    ALIVE_AgentSetProperty("myLight_GIBounce6", "EnvLight - Intensity", 7.0, kScene);
     ALIVE_AgentSetProperty("myLight_GIBounce6", "EnvLight - Intensity Specular", 1.0, kScene);
     ALIVE_AgentSetProperty("myLight_GIBounce6", "EnvLight - Enlighten Intensity", 1.0, kScene);
     ALIVE_AgentSetProperty("myLight_GIBounce6", "EnvLight - Radius", 5, kScene);
     ALIVE_AgentSetProperty("myLight_GIBounce6", "EnvLight - Distance Falloff", 5, kScene);
     ALIVE_AgentSetProperty("myLight_GIBounce6", "EnvLight - Spot Angle Inner", 0, kScene);
-    ALIVE_AgentSetProperty("myLight_GIBounce6", "EnvLight - Spot Angle Outer", 100, kScene);
-    ALIVE_AgentSetProperty("myLight_GIBounce6", "EnvLight - Color", Desaturate_RGBColor(RGBColor(255, 128, 0, 255), 0.5), kScene);
+    ALIVE_AgentSetProperty("myLight_GIBounce6", "EnvLight - Spot Angle Outer", 40, kScene);
+    ALIVE_AgentSetProperty("myLight_GIBounce6", "EnvLight - Color", Desaturate_RGBColor(RGBColor(255, 128, 0, 255), 0.65), kScene);
     ALIVE_AgentSetProperty("myLight_GIBounce6", "EnvLight - Enabled Group", envlight_groupEnabled, kScene);
     ALIVE_AgentSetProperty("myLight_GIBounce6", "EnvLight - Groups", envlight_groups, kScene);
     ALIVE_AgentSetProperty("myLight_GIBounce6", "EnvLight - Shadow Type", 0, kScene);
@@ -176,24 +173,6 @@ ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu = function(kScene)
     ALIVE_AgentSetProperty("myLight_GIBounce6", "EnvLight - Shadow Quality", 3, kScene);
     ALIVE_AgentSetProperty("myLight_GIBounce6", "EnvLight - HBAO Participation Type", 1, kScene);
     ALIVE_AgentSetProperty("myLight_GIBounce6", "EnvLight - Mobility", 2, kScene);
-
-    local myLight_GIBounce7 = AgentCreate("myLight_GIBounce7", envlight_prop, Vector(16.443, 0.996, -4.317), Vector(10, 90, 0), kScene, false, false); --window boards bounce
-    ALIVE_AgentSetProperty("myLight_GIBounce7", "EnvLight - Type", 1, kScene);
-    ALIVE_AgentSetProperty("myLight_GIBounce7", "EnvLight - Intensity", 7.0, kScene);
-    ALIVE_AgentSetProperty("myLight_GIBounce7", "EnvLight - Intensity Specular", 1.0, kScene);
-    ALIVE_AgentSetProperty("myLight_GIBounce7", "EnvLight - Enlighten Intensity", 1.0, kScene);
-    ALIVE_AgentSetProperty("myLight_GIBounce7", "EnvLight - Radius", 5, kScene);
-    ALIVE_AgentSetProperty("myLight_GIBounce7", "EnvLight - Distance Falloff", 5, kScene);
-    ALIVE_AgentSetProperty("myLight_GIBounce7", "EnvLight - Spot Angle Inner", 0, kScene);
-    ALIVE_AgentSetProperty("myLight_GIBounce7", "EnvLight - Spot Angle Outer", 40, kScene);
-    ALIVE_AgentSetProperty("myLight_GIBounce7", "EnvLight - Color", Desaturate_RGBColor(RGBColor(255, 128, 0, 255), 0.65), kScene);
-    ALIVE_AgentSetProperty("myLight_GIBounce7", "EnvLight - Enabled Group", envlight_groupEnabled, kScene);
-    ALIVE_AgentSetProperty("myLight_GIBounce7", "EnvLight - Groups", envlight_groups, kScene);
-    ALIVE_AgentSetProperty("myLight_GIBounce7", "EnvLight - Shadow Type", 0, kScene);
-    ALIVE_AgentSetProperty("myLight_GIBounce7", "EnvLight - Wrap", 0.0, kScene);
-    ALIVE_AgentSetProperty("myLight_GIBounce7", "EnvLight - Shadow Quality", 3, kScene);
-    ALIVE_AgentSetProperty("myLight_GIBounce7", "EnvLight - HBAO Participation Type", 1, kScene);
-    ALIVE_AgentSetProperty("myLight_GIBounce7", "EnvLight - Mobility", 2, kScene);
 
     --sky light/color
     ALIVE_AgentSetProperty("light_SKY_amb", "EnvLight - Intensity", 16.0, kScene);
@@ -233,7 +212,7 @@ ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu = function(kScene)
 
     --modify the scene post processing
     ALIVE_AgentSetProperty(agent_name_scene, "FX anti-aliasing", true, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "FX TAA Weight", 0.01, kScene);
+    ALIVE_AgentSetProperty(agent_name_scene, "FX TAA Weight", 0.05, kScene);
     ALIVE_AgentSetProperty(agent_name_scene, "FX Color Enabled", true, kScene);
     ALIVE_AgentSetProperty(agent_name_scene, "FX Color Tint", RGBColor(255, 255, 255, 255), kScene);
     ALIVE_AgentSetProperty(agent_name_scene, "FX Color Opacity", 0.0, kScene);
@@ -291,7 +270,7 @@ ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu = function(kScene)
     ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Shadow Position Offset Bias", 0.0, kScene);
     ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Shadow Depth Bias", -1.0, kScene);
     ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Shadow Auto Depth Bounds", false, kScene);
-    ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Shadow Light Bleed Reduction", 0.4, kScene);
+    ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Shadow Light Bleed Reduction", 0.8, kScene);
     ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Shadow Moment Bias", 0.1, kScene);
     ALIVE_AgentSetProperty(agent_name_scene, "Specular Multiplier Enabled", true, kScene);
     ALIVE_AgentSetProperty(agent_name_scene, "Specular Color Multiplier", 1, kScene);
@@ -369,7 +348,7 @@ ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu = function(kScene)
 
     --RenderSetScaleForResolution(4.0);
     --RenderSetHDRColorBufferScale(5.0);
-    --RenderSetScale(4.0);
+    RenderSetScale(1.0);
     --RenderSetHDRSurfaceFormat("srgb");
     --RenderSetHDRSurfaceFormat("rgb10");
     --RenderSetHDRSurfaceFormat("rgb10f");

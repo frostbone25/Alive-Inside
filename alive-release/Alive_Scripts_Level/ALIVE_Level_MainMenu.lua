@@ -183,7 +183,7 @@ ALIVE_MainMenu_PrepareCamera = function()
 end
 
 ALIVE_MainMenu_PrepareAgents = function()
-    local clemHat = AgentCreate("ALIVE_MainMenuClemHat", "obj_capClementine400.prop", Vector(17.12, 0.82, -4.32), Vector(-5, -65.7, 0), keyArtScene, false, false)
+    local clemHat = AgentCreate("ALIVE_MainMenuClemHat", "obj_capClementine400.prop", Vector(17.12, 0.8125, -4.32), Vector(-2, -65.7, 0), keyArtScene, false, false)
     --local bgMusic = SoundPlay("mus_loop_clementine_04.wav");
     --local bgMusic = SoundPlay("mus_loop_clementine_03.wav");
     --local bgMusic = SoundPlay("mus_loop_clementine_01.wav"); --the real shit
@@ -245,16 +245,24 @@ ALIVE_MainMenu_PrepareMenu = function() --Boilerplate to ensure there are no sca
     if Input_UseTouch() then
         ClickText_Enable(true)
     end
-    local prefs = GetPreferences()
+
+    local prefs = GetPreferences();
+
     if PropertyIsLocal(prefs, "Menu - User Gamma Setting") then
         RenderSetIntensity(PropertyGet(prefs, "Menu - User Gamma Setting"))
         PropertyRemove(prefs, "Menu - User Gamma Setting")
         SavePrefs()
     end
+
     RenderForce_16_by_9_AspectRatio(true)
     RenderDelay(1)
     WaitForNextFrame()
     MenuUtils_AddScene(keyArtScene);
+
+    --perform the cleanup/relight on the key art scene
+    ALIVE_Scene_LevelCleanup_404_BoardingSchoolDorm(keyArtScene);
+    ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu(keyArtScene);
+
     ALIVE_MainMenu_CreateAndPopulateMenu();
 end
 
@@ -266,7 +274,7 @@ ALIVE_Level_MainMenu = function()
         MenuUtils_AddScene(keyArtScene);
         ALIVE_MainMenu_PrepareAgents();
 
-        --perform the cleanup/relight
+        --perform the cleanup/relight on the key art scene
         ALIVE_Scene_LevelCleanup_404_BoardingSchoolDorm(keyArtScene);
         ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu(keyArtScene);
 
@@ -284,12 +292,8 @@ ALIVE_Level_MainMenu = function()
         ALIVE_MainMenu_PrepareAgents();
         ALIVE_MainMenu_PrepareCamera();
 
-        --perform the cleanup/relight
-        ALIVE_Scene_LevelCleanup_404_BoardingSchoolDorm(keyArtScene);
-        ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu(keyArtScene);
+        --get DOF setup
         ALIVE_Camera_DepthOfFieldAutofocus_SetupDOF(keyArtScene);
-
-        --do some additional things
         Callback_OnPostUpdate:Add(DoHandheldCameraAnimation); --add a procedual handheld camera animation
         Callback_OnPostUpdate:Add(ALIVE_Camera_DepthOfFieldAutofocus_PerformAutofocus); --do DOF
     end
