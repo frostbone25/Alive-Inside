@@ -5,12 +5,12 @@
 --there is also a main function at the end of this script that prints an entire scene
 
 --prints an entire scene and its contents to a text file (and this file is saved in the game directory)
-ALIVE_PrintSceneListToTXT = function(SceneObject, txtName)
+ALIVE_PrintSceneListToTXT = function(kScene, txtName)
     --create (or open) a text file
     local main_txt_file = io.open(txtName, "a")
     
     --get all scene objects
-    local scene_agents = SceneGetAgents(SceneObject)
+    local scene_agents = SceneGetAgents(kScene)
     
     --printing options
     local print_agent_transformation    = false
@@ -25,7 +25,7 @@ ALIVE_PrintSceneListToTXT = function(SceneObject, txtName)
     local print_option_showKeyType = true;
     
     if print_scene_camera then
-        local sceneCamera = SceneGetCamera(SceneObject)
+        local sceneCamera = SceneGetCamera(kScene)
         
         local cam_name        = tostring(AgentGetName(sceneCamera))
         local cam_type        = tostring(TypeName(sceneCamera))
@@ -177,9 +177,6 @@ ALIVE_PrintSceneListToTXT = function(SceneObject, txtName)
     
     --close the file stream
     main_txt_file:close()
-
-    --for testing/validating
-    --DialogBox_Okay("Printed Output")
 end
 
 ALIVE_PrintChoreAgentNames = function(choreNameString)

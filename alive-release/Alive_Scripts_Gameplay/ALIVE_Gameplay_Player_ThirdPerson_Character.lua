@@ -276,7 +276,7 @@ ALIVE_Gameplay_Player_ThirdPerson_Character_UpdateCharacter = function()
     finalPlayerMovement = VectorScale(finalPlayerMovement, thirdperson_movementSpeed);
 
     if (thirdperson_state_running) then
-        prevFinalPlayerMovement = ALIVE_VectorLerp(prevFinalPlayerMovement, finalPlayerMovement, thirdperson_frameTime * 2.0);
+        prevFinalPlayerMovement = ALIVE_VectorLerp(prevFinalPlayerMovement, finalPlayerMovement, thirdperson_frameTime * 5.0);
     else
         prevFinalPlayerMovement = ALIVE_VectorLerp(prevFinalPlayerMovement, finalPlayerMovement, thirdperson_frameTime * 7.5);
     end

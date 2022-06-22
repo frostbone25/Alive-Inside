@@ -55,6 +55,8 @@ ALIVE_Gameplay_Player_ThirdPerson_Zombat_Main = function()
     thirdperson_state_crouching = false;
 
     if(currentZombieController == nil) then
+        RenderDelay(1);
+
         startTime = GetTotalTime();
 
         local vector_zombie_position = AgentGetWorldPos(zombieObject_agent);

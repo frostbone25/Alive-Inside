@@ -70,7 +70,7 @@ ALIVE_Development_SceneObjectAgentName = agent_name_scene;
 ALIVE_Development_UseSeasonOneAPI = false;
 ALIVE_Development_FreecamUseFOVScale = false;
 
-local EnableFreecam = true;
+local EnableFreecam = false;
 
 --|||||||||||||||||||||||||||||||||||||||||||||| SCENE SETUP ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| SCENE SETUP ||||||||||||||||||||||||||||||||||||||||||||||
@@ -79,9 +79,9 @@ local EnableFreecam = true;
 ResourceSetEnable("UISeason4");
 ResourceSetEnable("ProjectSeason4");
 ResourceSetEnable("ProjectSeason1");
-ResourceSetEnable("WalkingDead401", 950);
+ResourceSetEnable("WalkingDead401");
 ResourceSetEnable("WalkingDead402");
-ResourceSetEnable("WalkingDead403");
+ResourceSetEnable("WalkingDead403", 950);
 ResourceSetEnable("WalkingDead404");
 
 --ResourceSetEnable("ProjectSeason3", 1000);
@@ -136,8 +136,8 @@ ALIVE_Level_Gameplay_Sandbox = function()
     end
 
     ALIVE_Character_AJ_Jackets(kScene);
-    --ALIVE_Character_AJ_KennyHat(kScene);
-    ALIVE_Character_AJ_ClementineHat(kScene);
+    ALIVE_Character_AJ_KennyHat(kScene);
+    --ALIVE_Character_AJ_ClementineHat(kScene);
     ALIVE_Character_Clementine_Sick(kScene);
 end
 

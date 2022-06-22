@@ -3,30 +3,30 @@
 --============ UTILLITY ============
 
 --hides an agent by name
-ALIVE_HideAgent = function(agentName, sceneObject)
-    local agent = AgentFindInScene(agentName, sceneObject)
+ALIVE_HideAgent = function(agentName, kScene)
+    local agent = AgentFindInScene(agentName, kScene)
     AgentHide(agent)
 end
 
 --sets an agents visibility by name
-ALIVE_SetAgentVisibillity = function(agentName, visibilityValue, sceneObject)
-    ALIVE_AgentSetProperty(agentName, "Runtime: Visible", visibilityValue, sceneObject)
+ALIVE_SetAgentVisibillity = function(agentName, visibilityValue, kScene)
+    ALIVE_AgentSetProperty(agentName, "Runtime: Visible", visibilityValue, kScene)
 end
 
 --sets an agents culling mode
-ALIVE_SetAgentCulling = function(agentName, cullValue, sceneObject)
-    ALIVE_AgentSetProperty(agentName, "Render Cull", cullValue, sceneObject)
+ALIVE_SetAgentCulling = function(agentName, cullValue, kScene)
+    ALIVE_AgentSetProperty(agentName, "Render Cull", cullValue, kScene)
 end
 
 --sets an agent render scale
-ALIVE_SetAgentScale = function(agentName, scaleValue, sceneObject)
-    ALIVE_AgentSetProperty(agentName, "Render Global Scale", scaleValue, sceneObject)
+ALIVE_SetAgentScale = function(agentName, scaleValue, kScene)
+    ALIVE_AgentSetProperty(agentName, "Render Global Scale", scaleValue, kScene)
 end
 
 --sets an agent shadow casting
-ALIVE_SetAgentShadowCasting = function(agentName, castsShadows, sceneObject)
-    ALIVE_AgentSetProperty(agentName, "Render EnvLight Shadow Cast Enable", castsShadows, sceneObject)
-    ALIVE_AgentSetProperty(agentName, "Render Shadow Force Visible", castsShadows, sceneObject)
+ALIVE_SetAgentShadowCasting = function(agentName, castsShadows, kScene)
+    ALIVE_AgentSetProperty(agentName, "Render EnvLight Shadow Cast Enable", castsShadows, kScene)
+    ALIVE_AgentSetProperty(agentName, "Render Shadow Force Visible", castsShadows, kScene)
 end
 
 --checks if an agent exists, then removes an agent by name
@@ -38,9 +38,9 @@ ALIVE_RemoveAgent = function(agentName, sceneObj)
 end
 
 --removes agents in a scene with a prefix
-ALIVE_RemovingAgentsWithPrefix = function(sceneObject, prefixString)
+ALIVE_RemovingAgentsWithPrefix = function(kScene, prefixString)
     --get all agents in the scene
-    local scene_agents = SceneGetAgents(sceneObject)
+    local scene_agents = SceneGetAgents(kScene)
 
     --fill out rig agents list
     for i, agent_object in pairs(scene_agents) do
@@ -49,15 +49,15 @@ ALIVE_RemovingAgentsWithPrefix = function(sceneObject, prefixString)
         
         --check if the agent name contains the prefix, if it does then add it to our agent_names table
         if (string.match)(agent_name, prefixString) then
-            ALIVE_RemoveAgent(agent_name, sceneObject)
+            ALIVE_RemoveAgent(agent_name, kScene)
         end
     end
 end
 
 --removes agents in a scene with a prefix
-ALIVE_ReplaceAgentsWithPrefixWithDummy = function(sceneObject, prefixString)
+ALIVE_ReplaceAgentsWithPrefixWithDummy = function(kScene, prefixString)
     --get all agents in the scene
-    local scene_agents = SceneGetAgents(sceneObject)
+    local scene_agents = SceneGetAgents(kScene)
 
     --fill out rig agents list
     for i, agent_object in pairs(scene_agents) do
@@ -66,9 +66,9 @@ ALIVE_ReplaceAgentsWithPrefixWithDummy = function(sceneObject, prefixString)
         
         --check if the agent name contains the prefix, if it does then add it to our agent_names table
         if (string.match)(agent_name, prefixString) then
-            ALIVE_RemoveAgent(agent_name, sceneObject)
+            ALIVE_RemoveAgent(agent_name, kScene)
         
-            local dummyAgent = AgentCreate(agent_name, "group.prop", Vector(0,0,0), Vector(0,0,0), sceneObject, false, false)
+            local dummyAgent = AgentCreate(agent_name, "group.prop", Vector(0,0,0), Vector(0,0,0), kScene, false, false)
         end
     end
 end

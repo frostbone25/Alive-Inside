@@ -149,7 +149,12 @@ ALIVE_Gameplay_Player_ThirdPerson_Camera_UpdateCamera = function()
         end
     end
     
-    thirdperson_prevCamPos = ALIVE_VectorLerp(thirdperson_prevCamPos, vector_character_position, thirdperson_frameTime * camPosLerpFactor);
+    if (thirdperson_state_running) then
+        thirdperson_prevCamPos = ALIVE_VectorLerp(thirdperson_prevCamPos, vector_character_position, thirdperson_frameTime * 10.0);
+    else
+        thirdperson_prevCamPos = ALIVE_VectorLerp(thirdperson_prevCamPos, vector_character_position, thirdperson_frameTime * camPosLerpFactor);
+    end
+
     thirdperson_prevCamRot = ALIVE_VectorLerp(thirdperson_prevCamRot, newRotation, thirdperson_frameTime * camRotLerpFactor);
     --thirdperson_prevCamPos = vector_character_position;
     --thirdperson_prevCamRot = newRotation;

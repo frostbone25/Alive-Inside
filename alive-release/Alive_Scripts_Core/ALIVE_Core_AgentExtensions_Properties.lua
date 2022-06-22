@@ -3,8 +3,8 @@
 --============ PROPERTIES - BOOL ============
 
 --checks if an agent has a property by name
-ALIVE_AgentHasProperty = function(agentName, propertyString, sceneObject)
-    local agent = AgentFindInScene(agentName, sceneObject)
+ALIVE_AgentHasProperty = function(agentName, propertyString, kScene)
+    local agent = AgentFindInScene(agentName, kScene)
     return AgentHasProperty(agent, propertyString)
 end
 
@@ -19,14 +19,14 @@ ALIVE_PropertySet = function(agent, propertyString, propertyValue)
 end
 
 --sets a property on an agent by name
-ALIVE_AgentSetProperty = function(agentName, propertyString, propertyValue, sceneObject)
-    local agent = AgentFindInScene(agentName, sceneObject)
+ALIVE_AgentSetProperty = function(agentName, propertyString, propertyValue, kScene)
+    local agent = AgentFindInScene(agentName, kScene)
     ALIVE_PropertySet(agent, propertyString, propertyValue)
 end
 
 --forcibly sets a property on an agent by name
-ALIVE_AgentForceSetProperty = function(agentName, propertyString, propertyValueType, propertyValue, sceneObject)
-    local agent = AgentFindInScene(agentName, sceneObject)
+ALIVE_AgentForceSetProperty = function(agentName, propertyString, propertyValueType, propertyValue, kScene)
+    local agent = AgentFindInScene(agentName, kScene)
     local agent_props = AgentGetProperties(agent)
 	--local agent_props = AgentGetRuntimeProperties(agent)
 
@@ -38,9 +38,9 @@ ALIVE_AgentForceSetProperty = function(agentName, propertyString, propertyValueT
 end
 
 --sets a property on all agents with the given prefix in a scene
-ALIVE_SetPropertyOnAgentsWithPrefix = function(sceneObject, prefixString, propertyString, propertyValue)
+ALIVE_SetPropertyOnAgentsWithPrefix = function(kScene, prefixString, propertyString, propertyValue)
     --get all agents in the scene
-    local scene_agents = SceneGetAgents(sceneObject)
+    local scene_agents = SceneGetAgents(kScene)
 
     --fill out rig agents list
     for i, agent_object in pairs(scene_agents) do
@@ -49,15 +49,15 @@ ALIVE_SetPropertyOnAgentsWithPrefix = function(sceneObject, prefixString, proper
         
         --check if the agent name contains the prefix, if it does then add it to our agent_names table
         if (string.match)(agent_name, prefixString) then
-            ALIVE_AgentSetProperty(agent_name, propertyString, propertyValue, sceneObject)
+            ALIVE_AgentSetProperty(agent_name, propertyString, propertyValue, kScene)
         end
     end
 end
 
 --sets a property on all cameras in a scene
-ALIVE_SetPropertyOnAllCameras = function(sceneObject, propertyString, propertyValue)
+ALIVE_SetPropertyOnAllCameras = function(kScene, propertyString, propertyValue)
     --get all agents in the scene
-    local scene_agents = SceneGetAgents(sceneObject)
+    local scene_agents = SceneGetAgents(kScene)
 
     --fill out rig agents list
     for i, agent_object in pairs(scene_agents) do
@@ -66,13 +66,13 @@ ALIVE_SetPropertyOnAllCameras = function(sceneObject, propertyString, propertyVa
         
         --check if the agent name contains the prefix, if it does then add it to our agent_names table
         if (string.match)(agent_name, "cam_") then
-            ALIVE_AgentSetProperty(agent_name, propertyString, propertyValue, sceneObject)
+            ALIVE_AgentSetProperty(agent_name, propertyString, propertyValue, kScene)
         end
     end
 end
 
-ALIVE_SetTexturesOnAgentWithNamePrefix = function(agentName, texturePrefixString, newPropertyValue, cacheObjectListName, sceneObject)
-    local agent = AgentFindInScene(agentName, sceneObject);
+ALIVE_SetTexturesOnAgentWithNamePrefix = function(agentName, texturePrefixString, newPropertyValue, cacheObjectListName, kScene)
+    local agent = AgentFindInScene(agentName, kScene);
     local properties = AgentGetProperties(agent);
     local propertyKeys = PropertyGetKeys(properties);
     
@@ -110,26 +110,26 @@ ALIVE_SetTexturesOnAgentWithNamePrefix = function(agentName, texturePrefixString
     end
 end
 
-ALIVE_SetTexturesOnAgentsWithNamePrefixes = function(agentNamePrefix, texturePrefixString, newPropertyValue, cacheObjectListName, sceneObject)
-    local scene_agents = SceneGetAgents(sceneObject)
+ALIVE_SetTexturesOnAgentsWithNamePrefixes = function(agentNamePrefix, texturePrefixString, newPropertyValue, cacheObjectListName, kScene)
+    local scene_agents = SceneGetAgents(kScene)
 
     for i, agent_object in pairs(scene_agents) do
         local agent_name = tostring(AgentGetName(agent_object))
 
         if (string.match)(agent_name, agentNamePrefix) then
-            ALIVE_SetTexturesOnAgentWithNamePrefix(agent_name, texturePrefixString, newPropertyValue, cacheObjectListName, sceneObject)
+            ALIVE_SetTexturesOnAgentWithNamePrefix(agent_name, texturePrefixString, newPropertyValue, cacheObjectListName, kScene)
         end
     end
 end
 
-ALIVE_SetDiffuseTexturesOnAgentsWithNamePrefixes = function(agentNamePrefix, newPropertyValue, cacheObjectListName, sceneObject)
-    local scene_agents = SceneGetAgents(sceneObject)
+ALIVE_SetDiffuseTexturesOnAgentsWithNamePrefixes = function(agentNamePrefix, newPropertyValue, cacheObjectListName, kScene)
+    local scene_agents = SceneGetAgents(kScene)
 
     for i, agent_object in pairs(scene_agents) do
         local agent_name = tostring(AgentGetName(agent_object))
 
         if (string.match)(agent_name, agentNamePrefix) then
-            local agent = AgentFindInScene(agent_name, sceneObject);
+            local agent = AgentFindInScene(agent_name, kScene);
             local properties = AgentGetProperties(agent);
             local propertyKeys = PropertyGetKeys(properties);
     
@@ -190,19 +190,19 @@ ALIVE_PropertyGet = function(agent, propertyString)
 end
 
 --gets a property on an agent by name
-ALIVE_AgentGetProperty = function(agentName, propertyString, sceneObject)
-    local agent = AgentFindInScene(agentName, sceneObject)
+ALIVE_AgentGetProperty = function(agentName, propertyString, kScene)
+    local agent = AgentFindInScene(agentName, kScene)
     return ALIVE_PropertyGet(agent, propertyString)
 end
 
 --gets properties on an agent by name
-ALIVE_AgentGetProperties = function(agentName, sceneObject)
-    local agent = AgentFindInScene(agentName, sceneObject)
+ALIVE_AgentGetProperties = function(agentName, kScene)
+    local agent = AgentFindInScene(agentName, kScene)
     return AgentGetProperties(agent)
 end
 
 --gets runtime properties on an agent by name
-ALIVE_AgentGetRuntimeProperties = function(agentName, sceneObject)
-    local agent = AgentFindInScene(agentName, sceneObject)
+ALIVE_AgentGetRuntimeProperties = function(agentName, kScene)
+    local agent = AgentFindInScene(agentName, kScene)
     return AgentGetRuntimeProperties(agent)
 end
