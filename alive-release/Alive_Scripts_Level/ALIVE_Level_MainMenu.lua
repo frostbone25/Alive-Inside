@@ -96,6 +96,88 @@ ALIVE_DOF_AUTOFOCUS_ManualSettings =
     FarMax = 0.25
 };
 
+--proceudal handheld animation variables
+local camera_handheld_currentRot = Vector(0, 0, 0);
+local camera_handheld_currentPos = Vector(0, 0, 0);
+local cutscene_handheld_x_level1 = 0;
+local cutscene_handheld_x_level2 = 0;
+local cutscene_handheld_x_level3 = 0;
+local cutscene_handheld_x_level4 = 0;
+local cutscene_handheld_y_level1 = 0;
+local cutscene_handheld_y_level2 = 0;
+local cutscene_handheld_y_level3 = 0;
+local cutscene_handheld_y_level4 = 0;
+local cutscene_handheld_z_level1 = 0;
+local cutscene_handheld_z_level2 = 0;
+local cutscene_handheld_z_level3 = 0;
+local cutscene_handheld_z_level4 = 0;
+
+--proceudal handheld animation
+--worth noting that while it does work, its definetly not perfect and jumps around more than I'd like.
+--if the values are kept low then it works fine
+--procedual handheld camera animation (adds a bit of extra life and motion to the camera throughout the sequence)
+Cutscene_UpdateHandheldCameraValues = function()
+    local totalShakeAmount = 0.15;
+    local totalSpeedMultiplier = 0.75;
+
+    ------------------------------------------
+    cutscene_handheld_x_level1 = cutscene_handheld_x_level1 + (GetFrameTime() * 2.0 * totalSpeedMultiplier);
+    cutscene_handheld_x_level2 = cutscene_handheld_x_level2 + (GetFrameTime() * 5.0 * totalSpeedMultiplier);
+    cutscene_handheld_x_level3 = cutscene_handheld_x_level3 + (GetFrameTime() * 3.5 * totalSpeedMultiplier);
+    cutscene_handheld_x_level4 = cutscene_handheld_x_level4 + (GetFrameTime() * 12.0 * totalSpeedMultiplier);
+    
+    local level1_x = math.sin(cutscene_handheld_x_level1) * 0.3;
+    local level2_x = math.sin(cutscene_handheld_x_level2) * 0.25;
+    local level3_x = math.sin(cutscene_handheld_x_level3) * 0.15;
+    local level4_x = math.sin(cutscene_handheld_x_level4) * 0.05;
+
+    --local totalX = level1_x - level2_x + level3_x + level4_x;
+    local totalX = level1_x - level2_x + level3_x;
+    totalX = totalX * totalShakeAmount;
+
+    ------------------------------------------
+    cutscene_handheld_y_level1 = cutscene_handheld_y_level1 + (GetFrameTime() * 2.0 * totalSpeedMultiplier);
+    cutscene_handheld_y_level2 = cutscene_handheld_y_level2 + (GetFrameTime() * 4.5 * totalSpeedMultiplier);
+    cutscene_handheld_y_level3 = cutscene_handheld_y_level3 + (GetFrameTime() * 3.5 * totalSpeedMultiplier);
+    cutscene_handheld_y_level4 = cutscene_handheld_y_level4 + (GetFrameTime() * 12.5 * totalSpeedMultiplier);
+    
+    local level1_y = math.sin(cutscene_handheld_y_level1) * 0.3;
+    local level2_y = math.sin(cutscene_handheld_y_level2) * 0.25;
+    local level3_y = math.sin(cutscene_handheld_y_level3) * 0.15;
+    local level4_y = math.sin(cutscene_handheld_y_level4) * 0.05;
+
+    --local totalY = level1_y + level2_y - level3_y - level4_y;
+    local totalY = level1_y + level2_y - level3_y;
+    totalY = totalY * totalShakeAmount;
+
+    ------------------------------------------
+    cutscene_handheld_z_level1 = cutscene_handheld_z_level1 + (GetFrameTime() * 1.5 * totalSpeedMultiplier);
+    cutscene_handheld_z_level2 = cutscene_handheld_z_level2 + (GetFrameTime() * 4.0 * totalSpeedMultiplier);
+    cutscene_handheld_z_level3 = cutscene_handheld_z_level3 + (GetFrameTime() * 3.5 * totalSpeedMultiplier);
+    cutscene_handheld_z_level4 = cutscene_handheld_z_level4 + (GetFrameTime() * 10.5 * totalSpeedMultiplier);
+    
+    local level1_z = math.sin(cutscene_handheld_z_level1) * 0.15;
+    local level2_z = math.sin(cutscene_handheld_z_level2) * 0.1;
+    local level3_z = math.sin(cutscene_handheld_z_level3) * 0.05;
+    local level4_z = math.sin(cutscene_handheld_z_level4) * 0.01;
+
+    --local totalZ = level1_z - level2_z + level3_z - level4_z;
+    local totalZ = level1_z - level2_z + level3_z;
+    totalZ = totalZ * totalShakeAmount;
+
+    ------------------------------------------
+    camera_handheld_currentRot = Vector(totalX, totalY, totalZ);
+
+    local camPosition = Vector(15.05, 1, -4.32);
+    local camRotation = Vector(0, 90, 0);
+
+    camPosition = camPosition + camera_handheld_currentPos;
+    camRotation = camRotation + camera_handheld_currentRot;
+
+    --ALIVE_SetAgentPosition("ALIVE_MainMenuCamera", camPosition, keyArtScene);
+    ALIVE_SetAgentRotation("ALIVE_MainMenuCamera", camRotation, keyArtScene);
+end
+
 ALIVE_MainMenu_PrepareCamera = function()
     local camProp = "module_camera.prop";
     local camPosition = Vector(15.05, 1, -4.32);
@@ -114,7 +196,8 @@ end
 ALIVE_MainMenu_PrepareAgents = function()
     local clemHat = AgentCreate("ALIVE_MainMenuClemHat", "obj_capClementine400.prop", Vector(17.12, 0.82, -4.32), Vector(-5, -65.7, 0), keyArtScene, false, false)
     --local bgMusic = SoundPlay("mus_loop_clementine_04.wav");
-    local bgMusic = SoundPlay("music_custom1.wav");
+    --local bgMusic = SoundPlay("music_custom1.wav");
+    local bgMusic = SoundPlay("mus_loop_AJ_01a.wav");
 
     ControllerSetLooping(bgMusic, true);
 end
@@ -214,6 +297,8 @@ ALIVE_Level_MainMenu = function()
 
         ALIVE_Scene_LevelCleanup_404_BoardingSchoolDorm(keyArtScene);
         ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu(keyArtScene);
+
+        Callback_OnPostUpdate:Add(Cutscene_UpdateHandheldCameraValues);
 
         ALIVE_Camera_DepthOfFieldAutofocus_SetupDOF(keyArtScene);
         Callback_OnPostUpdate:Add(ALIVE_Camera_DepthOfFieldAutofocus_PerformAutofocus);
