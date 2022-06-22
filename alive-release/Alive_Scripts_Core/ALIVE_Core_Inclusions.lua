@@ -13,3 +13,4 @@ require("ALIVE_Core_Strings.lua");
 require("ALIVE_Core_PropertyKeys.lua");
 require("ALIVE_Development_Freecam.lua");
 require("ALIVE_Development_AgentBrowser.lua");
+require("ALIVE_Development_PerformanceMetrics.lua");

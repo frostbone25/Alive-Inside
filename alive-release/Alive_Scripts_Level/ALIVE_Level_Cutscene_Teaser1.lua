@@ -1,22 +1,10 @@
-require("ALIVE_Core_Math.lua");
-require("ALIVE_Core_Utilities.lua");
-require("ALIVE_Core_AgentExtensions_Properties.lua");
-require("ALIVE_Core_AgentExtensions_Transform.lua");
-require("ALIVE_Core_AgentExtensions_Utillity.lua");
-require("ALIVE_Core_Color.lua");
-require("ALIVE_Core_Strings.lua");
-require("ALIVE_Core_Printing.lua");
-require("ALIVE_Core_PropertyKeys.lua");
-require("ALIVE_Development_Freecam.lua");
-require("ALIVE_Development_AgentBrowser.lua");
-require("ALIVE_Camera_DepthOfFieldAutofocus.lua");
+require("ALIVE_Core_Inclusions.lua");
 require("ALIVE_Gameplay_Shared.lua");
 require("ALIVE_Gameplay_AI_Zombies.lua");
 require("ALIVE_Scene_LevelCleanup_404_ForestBarn_Teaser.lua");
 require("ALIVE_Scene_LevelRelight_404_ForestBarn_Teaser.lua");
 require("ALIVE_Character_AJ.lua");
 require("ALIVE_Character_Clementine.lua");
-require("ALIVE_Core_Project.lua");
 
 ResourceSetEnable("ProjectSeason4");
 ResourceSetEnable("WalkingDead402");
@@ -35,23 +23,14 @@ local kScene = "adv_forestBarn";
 local agent_name_scene = "adv_forestBarn.scene";
 
 --cutscene development variables variables (these are variables required by the development scripts)
-ALIVE_Development_SceneObject = kScene;
-ALIVE_Development_SceneObjectAgentName = agent_name_scene;
-ALIVE_Development_UseSeasonOneAPI = false;
-ALIVE_Development_FreecamUseFOVScale = false;
-
---dof autofocus variables
-ALIVE_DOF_AUTOFOCUS_SceneObject = kScene;
-ALIVE_DOF_AUTOFOCUS_SceneObjectAgentName = agent_name_scene;
+--DOF Autofocus Variables
+ALIVE_DOF_AUTOFOCUS_SceneObject = keyArtScene;
+ALIVE_DOF_AUTOFOCUS_SceneObjectAgentName = keyArtScene;
 ALIVE_DOF_AUTOFOCUS_UseCameraDOF = true;
-
---list of gameplay camera agent names, putting a camera name in here means that DOF will be disabled since its a gameplay camera, and we dont want DOF during gameplay.
-ALIVE_DOF_AUTOFOCUS_GameplayCameraNames = { "null" };
-
---list of objects in the scene that are our targets for depth of field autofocusing
+ALIVE_DOF_AUTOFOCUS_UseLegacyDOF = false;
+ALIVE_DOF_AUTOFOCUS_UseHighQualityDOF = true;
+ALIVE_DOF_AUTOFOCUS_GameplayCameraNames = { "FuckinDontRemoveThis" };
 ALIVE_DOF_AUTOFOCUS_ObjectEntries = { "AJ" };
-
---depth of field autofocusing settings for target validation
 ALIVE_DOF_AUTOFOCUS_Settings =
 {
     TargetValidation_IsOnScreen = true,
@@ -59,7 +38,28 @@ ALIVE_DOF_AUTOFOCUS_Settings =
     TargetValidation_IsWithinDistance = true,
     TargetValidation_IsFacingCamera = true,
     TargetValidation_IsOccluded = false
-}
+};
+ALIVE_DOF_AUTOFOCUS_BokehSettings =
+{
+    BokehBrightnessDeltaThreshold = 0.1,
+    BokehBrightnessThreshold = 0.1,
+    BokehBlurThreshold = 0.1,
+    BokehMinSize = 0.0,
+    BokehMaxSize = 0.05,
+    BokehFalloff = 0.30,
+    MaxBokehBufferAmount = 1.0,
+    BokehPatternTexture = "bokeh_circle5.d3dtx"
+};
+ALIVE_DOF_AUTOFOCUS_ManualSettings =
+{
+    ManualOnly = false,
+    NearFocusDistance = 2.0,
+    NearFallof = 0.25,
+    NearMax = 0.5,
+    FarFocusDistance = 2.25,
+    FarFalloff = 0.25,
+    FarMax = 0.25
+};
 
 --cutscene variables
 local MODE_FREECAM = false;

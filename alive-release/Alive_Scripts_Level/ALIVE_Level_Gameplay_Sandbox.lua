@@ -1,14 +1,4 @@
-require("ALIVE_Core_Math.lua");
-require("ALIVE_Core_Utilities.lua");
-require("ALIVE_Core_AgentExtensions_Properties.lua");
-require("ALIVE_Core_AgentExtensions_Transform.lua");
-require("ALIVE_Core_AgentExtensions_Utillity.lua");
-require("ALIVE_Core_Color.lua");
-require("ALIVE_Core_Strings.lua");
-require("ALIVE_Core_Printing.lua");
-require("ALIVE_Core_PropertyKeys.lua");
-require("ALIVE_Development_Freecam.lua");
-require("ALIVE_Development_AgentBrowser.lua");
+require("ALIVE_Core_Inclusions.lua");
 require("ALIVE_Gameplay_Shared.lua");
 require("ALIVE_Gameplay_Player_ThirdPerson_Base.lua");
 require("ALIVE_Gameplay_AI_Zombies.lua");
@@ -20,7 +10,6 @@ require("ALIVE_Scene_LevelRelight_305_RichmondStreetTile.lua");
 require("ALIVE_Scene_LevelRelight_403_BoardingSchoolExterior.lua");
 require("ALIVE_Character_AJ.lua");
 require("ALIVE_Character_Clementine.lua");
-require("ALIVE_Core_Project.lua");
 
 --|||||||||||||||||||||||||||||||||||||||||||||| SCRIPT VARIABLES ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| SCRIPT VARIABLES ||||||||||||||||||||||||||||||||||||||||||||||

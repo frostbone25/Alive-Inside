@@ -91,19 +91,20 @@ ALIVE_Development_PerformanceMetrics_Update = function()
     -------------------------------------------------------------------------
     --vram metrics
     local vramSize = GetVramSize();
-    local vramSize_GB = math.floor(GetVramSize() * 1e-9);
+    local vramSize_MB = math.floor(vramSize * 1e-6);
     local vramAllocated = GetVramAllocated();
-    local vramUsagePercent = GetVramSize() / GetVramAllocated();
+    local vramAllocated_MB = math.floor(vramAllocated * 1e-6);
+    local vramUsagePercent = (vramAllocated / vramSize) * 100;
 
     finalText = finalText .. "\n"; --new line
-    finalText = finalText .. "Vram Size: " .. vramSize .. " (" .. vramSize_GB .. " GB)";
+    finalText = finalText .. "Vram Size: " .. vramSize .. " (" .. vramSize_MB .. " MB)";
 
     finalText = finalText .. "\n"; --new line
-    finalText = finalText .. "Vram Allocated: " .. vramAllocated;
+    finalText = finalText .. "Vram Allocated: " .. vramAllocated .. " (" .. vramAllocated_MB .. " MB)";
 
 
     finalText = finalText .. "\n"; --new line
-    finalText = finalText .. "Vram Usage: " .. vramUsagePercent;
+    finalText = finalText .. "Vram Usage: " .. vramUsagePercent .. "%";
 
     finalText = finalText .. "\n"; --new line
     finalText = finalText .. "--------------------------";
@@ -112,16 +113,16 @@ ALIVE_Development_PerformanceMetrics_Update = function()
     local heapSize_MB = GetHeapSizeMB();
     local heapSizeAllocated = GetHeapAllocated();
     local heapSizeAllocated_MB = math.floor(GetHeapAllocated() * 1e-6);
-    local heapUsagePercent = heapSize_MB / heapSizeAllocated;
+    local heapUsagePercent = (heapSizeAllocated_MB / heapSize_MB) * 100;
 
     finalText = finalText .. "\n"; --new line
-    finalText = finalText .. "Heap Size MB: " .. heapSize_MB;
+    finalText = finalText .. "Heap Size MB: " .. heapSize_MB .. " MB";
 
     finalText = finalText .. "\n"; --new line
     finalText = finalText .. "Heap Allocated: " .. heapSizeAllocated .. " (" .. heapSizeAllocated_MB .. " MB)";
 
     finalText = finalText .. "\n"; --new line
-    finalText = finalText .. "Heap Usage: " .. heapUsagePercent;
+    finalText = finalText .. "Heap Usage: " .. heapUsagePercent .. "%";
 
     TextSet(ALIVE_Development_PerformanceMetrics_Text, finalText);
 end
