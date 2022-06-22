@@ -52,29 +52,76 @@ ALIVE_Development_PerformanceMetrics_Update = function()
     --0.0 0.0 0.0 = top left
     --0.5 0.5 0.0 = center
     --0.0 1.0 0.0 = bottom left
-    local screenPos = Vector(0.0, 0.875, 0.0);
+    local screenPos = Vector(0.0, 0.75, 0.0);
     AgentSetWorldPosFromLogicalScreenPos(ALIVE_Development_PerformanceMetrics_Text, screenPos);
 
     -------------------------------------------------------------
     local finalText = ALIVE_Development_PerformanceMetrics_TextTitle;
 
-    finalText = finalText .. "\n"; --new line
-    finalText = finalText .. "FPS: " .. 1.0 / GetAverageFrameTime();
+    -------------------------------------------------------------------------
+    --common metrics
+    local averageFrameTime = GetAverageFrameTime();
+    local fpsValue = 1.0 / GetAverageFrameTime();
 
     finalText = finalText .. "\n"; --new line
-    finalText = finalText .. "Average Frame Time: " .. GetAverageFrameTime();
+    finalText = finalText .. "FPS: " .. fpsValue;
+
+    finalText = finalText .. "\n"; --new line
+    finalText = finalText .. "Average Frame Time: " .. averageFrameTime;
 
     finalText = finalText .. "\n"; --new line
     finalText = finalText .. "--------------------------";
+    -------------------------------------------------------------------------
+    --time metrics
+    local frameTime = GetFrameTime();
+    local frameNumber = GetFrameNumber();
+    local totalTime = GetTotalTime();
 
     finalText = finalText .. "\n"; --new line
-    finalText = finalText .. "Frame Time: " .. GetFrameTime();
+    finalText = finalText .. "Frame Time: " .. frameTime;
 
     finalText = finalText .. "\n"; --new line
-    finalText = finalText .. "Frame Number: " .. GetFrameNumber();
+    finalText = finalText .. "Frame Number: " .. frameNumber;
 
     finalText = finalText .. "\n"; --new line
-    finalText = finalText .. "Total Time: " .. GetTotalTime();
+    finalText = finalText .. "Total Time: " .. totalTime;
+
+    finalText = finalText .. "\n"; --new line
+    finalText = finalText .. "--------------------------";
+    -------------------------------------------------------------------------
+    --vram metrics
+    local vramSize = GetVramSize();
+    local vramSize_GB = math.floor(GetVramSize() * 1e-9);
+    local vramAllocated = GetVramAllocated();
+    local vramUsagePercent = GetVramSize() / GetVramAllocated();
+
+    finalText = finalText .. "\n"; --new line
+    finalText = finalText .. "Vram Size: " .. vramSize .. " (" .. vramSize_GB .. " GB)";
+
+    finalText = finalText .. "\n"; --new line
+    finalText = finalText .. "Vram Allocated: " .. vramAllocated;
+
+
+    finalText = finalText .. "\n"; --new line
+    finalText = finalText .. "Vram Usage: " .. vramUsagePercent;
+
+    finalText = finalText .. "\n"; --new line
+    finalText = finalText .. "--------------------------";
+    -------------------------------------------------------------------------
+    --heap metrics
+    local heapSize_MB = GetHeapSizeMB();
+    local heapSizeAllocated = GetHeapAllocated();
+    local heapSizeAllocated_MB = math.floor(GetHeapAllocated() * 1e-6);
+    local heapUsagePercent = heapSize_MB / heapSizeAllocated;
+
+    finalText = finalText .. "\n"; --new line
+    finalText = finalText .. "Heap Size MB: " .. heapSize_MB;
+
+    finalText = finalText .. "\n"; --new line
+    finalText = finalText .. "Heap Allocated: " .. heapSizeAllocated .. " (" .. heapSizeAllocated_MB .. " MB)";
+
+    finalText = finalText .. "\n"; --new line
+    finalText = finalText .. "Heap Usage: " .. heapUsagePercent;
 
     TextSet(ALIVE_Development_PerformanceMetrics_Text, finalText);
 end
