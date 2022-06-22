@@ -5,20 +5,7 @@ ResourceSetEnable("ProjectSeason4");
 ResourceSetEnable("WalkingDead404");
 ResourceSetEnable("Menu");
 
-require("ALIVE_Core_Math.lua");
-require("ALIVE_Core_Utilities.lua");
-require("ALIVE_Core_AgentExtensions_Properties.lua");
-require("ALIVE_Core_AgentExtensions_Transform.lua");
-require("ALIVE_Core_AgentExtensions_Utillity.lua");
-require("ALIVE_Core_Color.lua");
-require("ALIVE_Core_Strings.lua");
-require("ALIVE_Core_Printing.lua");
-require("ALIVE_Core_PropertyKeys.lua");
-require("ALIVE_Core_DepthOfFieldAutofocus.lua");
-require("ALIVE_Development_Freecam.lua");
-require("ALIVE_Development_AgentBrowser.lua");
-require("ALIVE_Core_Project.lua");
-require("ALIVE_Core_MenuUtils.lua");
+require("ALIVE_Core_Inclusions.lua");
 require("ALIVE_Scene_LevelCleanup_404_BoardingSchoolDorm.lua");
 require("ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm.lua");
 
@@ -268,6 +255,7 @@ end
 
 ALIVE_Level_MainMenu = function()
     ALIVE_Core_Project_SetProjectSettings();
+    ALIVE_Core_FileUtils_Init();
 
     if (ALIVE_Core_Project_IsDebugMode) and (EnableFreecamTools) then
         --add the key art scene so we can fly around within it

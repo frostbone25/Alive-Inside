@@ -1,3 +1,7 @@
+print = function(message)
+    os.execute("echo " .. message);
+end
+
 ALIVE_GetTableType = function(tableValue)
     local stringType = "table";
     
