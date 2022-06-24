@@ -60,6 +60,7 @@ ALIVE_Development_UseSeasonOneAPI = false;
 ALIVE_Development_FreecamUseFOVScale = false;
 
 local EnableFreecam = false;
+local EnablePerformanceMetrics = false;
 
 --|||||||||||||||||||||||||||||||||||||||||||||| SCENE SETUP ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| SCENE SETUP ||||||||||||||||||||||||||||||||||||||||||||||
@@ -128,6 +129,11 @@ ALIVE_Level_Gameplay_Sandbox = function()
     ALIVE_Character_AJ_KennyHat(kScene);
     --ALIVE_Character_AJ_ClementineHat(kScene);
     ALIVE_Character_Clementine_Sick(kScene);
+
+    if(EnablePerformanceMetrics) then
+        ALIVE_Development_PerformanceMetrics_Initalize();
+        Callback_OnPostUpdate:Add(ALIVE_Development_PerformanceMetrics_Update);
+    end
 end
 
 SceneOpen(kScene, kScript)

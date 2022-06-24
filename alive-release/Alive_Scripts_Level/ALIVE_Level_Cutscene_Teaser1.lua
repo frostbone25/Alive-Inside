@@ -1,6 +1,7 @@
 require("ALIVE_Core_Inclusions.lua");
 require("ALIVE_Gameplay_Shared.lua");
-require("ALIVE_Gameplay_AI_Zombies.lua");
+require("ALIVE_Cutscene_HandheldCameraAnimation.lua");
+require("ALIVE_Cutscene_CharacterVoiceLine.lua");
 require("ALIVE_Scene_LevelCleanup_404_ForestBarn_Teaser.lua");
 require("ALIVE_Scene_LevelRelight_404_ForestBarn_Teaser.lua");
 require("ALIVE_Character_AJ.lua");
@@ -18,14 +19,20 @@ ResourceSetEnable("WalkingDead201");
 --main level variables
 local kScript = "ALIVE_Level_Cutscene_Teaser1";
 local kScene = "adv_forestBarn";
+local kSceneObj = kScene .. ".scene";
 
---scene agent name variable
-local agent_name_scene = "adv_forestBarn.scene";
+--Cutscene Development Variables
+ALIVE_Development_SceneObject = kScene;
+ALIVE_Development_SceneObjectAgentName = kSceneObj;
+ALIVE_Development_UseSeasonOneAPI = false;
+ALIVE_Development_FreecamUseFOVScale = false;
 
---cutscene development variables variables (these are variables required by the development scripts)
+local EnableFreecamTools = false;
+local EnablePerformanceMetrics = true;
+
 --DOF Autofocus Variables
-ALIVE_DOF_AUTOFOCUS_SceneObject = keyArtScene;
-ALIVE_DOF_AUTOFOCUS_SceneObjectAgentName = keyArtScene;
+ALIVE_DOF_AUTOFOCUS_SceneObject = kScene;
+ALIVE_DOF_AUTOFOCUS_SceneObjectAgentName = kSceneObj;
 ALIVE_DOF_AUTOFOCUS_UseCameraDOF = true;
 ALIVE_DOF_AUTOFOCUS_UseLegacyDOF = false;
 ALIVE_DOF_AUTOFOCUS_UseHighQualityDOF = true;
@@ -62,20 +69,7 @@ ALIVE_DOF_AUTOFOCUS_ManualSettings =
 };
 
 --cutscene variables
-local MODE_FREECAM = false;
 local agent_name_cutsceneCamera = "myCutsceneCamera";
-
---procedual handheld camera animation (adds a bit of extra life and motion to the camera throughout the sequence)
-local camera_handheld_rot_strength = 10; --the amount of (shake) for the camera rotation
-local camera_handheld_pos_strength = 0.35; --the amount of (shake) for the camera position
-local camera_handheld_rot_lerpFactor = 0.5; --how smooth/snappy the rotation shake will be
-local camera_handheld_pos_lerpFactor = 0.5;--how smooth/snappy the position shake will be
-local camera_handheld_desiredRot = Vector(0, 0, 0); --dont touch (the desired random calculated shake for rotational movement)
-local camera_handheld_desiredPos = Vector(0, 0, 0); --dont touch (the desired random calculated shake for positional movement)
-local camera_handheld_currentRot = Vector(0, 0, 0); --dont touch (the current rotation of the shake, overtime it tries to [match] the desired rotation)
-local camera_handheld_currentPos = Vector(0, 0, 0); --dont touch (the current position of the shake, overtime it tries to [match] the desired position)
-local camera_handheld_tick = 0; --dont touch (main handheld tick variable, this gets incremented 1 every frame until we reach the update level, and then the time resets (so we don't calculate a new shake every single frame, this spaces it out)
-local camera_handheld_updateLevel = 30; --the (duration) until a new desired shake rotation/position is calculated
 
 --current sequence variables
 local currentSequence_clip = nil; --dont touch (the current clip object that we are on)
@@ -353,41 +347,6 @@ end
 --|||||||||||||||||||||||||||||||||||||||||||||| CUTSCENE UPDATE ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| CUTSCENE UPDATE ||||||||||||||||||||||||||||||||||||||||||||||
 
---proceudal handheld animation
---worth noting that while it does work, its definetly not perfect and jumps around more than I'd like.
---if the values are kept low then it works fine
-Cutscene_UpdateHandheldCameraValues = function()
-    --update the tick rate by 1
-    camera_handheld_tick = camera_handheld_tick + 1;
-    
-    --if we reached the max update tick rate, time to calculate a new shake position/rotation (this only gets called once during update until we hit the max update level again)
-    if (camera_handheld_tick > camera_handheld_updateLevel) then
-        --calculate a random rotation for the shake
-        local newRotShakeX = math.random(-camera_handheld_rot_strength, camera_handheld_rot_strength);
-        local newRotShakeY = math.random(-camera_handheld_rot_strength, camera_handheld_rot_strength);
-        local newRotShakeZ = math.random(-camera_handheld_rot_strength, camera_handheld_rot_strength);
-        --local newRotShakeZ = 0;
-        
-        --calculate a random position for the shake
-        local newPosShakeX = math.random(-camera_handheld_pos_strength, camera_handheld_pos_strength);
-        local newPosShakeY = math.random(-camera_handheld_pos_strength, camera_handheld_pos_strength);
-        local newPosShakeZ = math.random(-camera_handheld_pos_strength, camera_handheld_pos_strength);
-    
-        --combine the corresponding values into vectors and assign them to the desired rot/pos
-        camera_handheld_desiredRot = Vector(newRotShakeX, newRotShakeY, newRotShakeZ);
-        camera_handheld_desiredPos = Vector(newPosShakeX, newPosShakeY, newPosShakeZ);
-        
-        --reset the tick counter
-        camera_handheld_tick = 0;
-    end
-    
-    --meanwhile, if we haven't reached our max update tick rate
-    --lets use this to our advantage and start gradually matching the current position/rotation of the shake to the desired over time.
-
-    --smoothstep interpolation
-    camera_handheld_currentRot = ALIVE_VectorSmoothstep(camera_handheld_currentRot, camera_handheld_desiredRot, GetFrameTime() * camera_handheld_rot_lerpFactor);
-    camera_handheld_currentPos = ALIVE_VectorSmoothstep(camera_handheld_currentPos, camera_handheld_desiredPos, GetFrameTime() * camera_handheld_pos_lerpFactor);
-end
 
 --this function is important and is responsible for setting the current shot that we are on
 Cutscene_UpdateSequence = function()
@@ -431,8 +390,8 @@ Cutscene_UpdateSequence = function()
         local angleInfo_rot = currentSequence_angle["CameraRotation"];
         
         --add our handheld camera shake to the angle position/rotation
-        angleInfo_rot = angleInfo_rot + camera_handheld_currentRot;
-        angleInfo_pos = angleInfo_pos + camera_handheld_currentPos;
+        angleInfo_rot = angleInfo_rot + ALIVE_Cutscene_HandheldCameraAnimation_CurrentRot;
+        --angleInfo_pos = angleInfo_pos + ALIVE_Cutscene_HandheldCameraAnimation_CurrentPos;
         
         --apply the data to the camera
         ALIVE_AgentSetProperty(agent_name_cutsceneCamera, "Field Of View", angleInfo_fov, kScene);
@@ -472,9 +431,9 @@ Cutscene_UpdateSequence = function()
         ALIVE_AgentSetProperty("module_environment", "Env - Fog Height", 3.45, kScene);
         ALIVE_AgentSetProperty("module_environment", "Env - Fog Density", 0.00025, kScene);
         ALIVE_AgentSetProperty("module_environment", "Env - Fog Max Opacity", 0.35, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "Ambient Color", ambientColor, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Shadow Max Distance", 20.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Dynamic Shadow Max Distance", 25.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "Ambient Color", ambientColor, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "LightEnv Shadow Max Distance", 20.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "LightEnv Dynamic Shadow Max Distance", 25.0, kScene);
     elseif (sequence_currentShotIndex == 2) then --forest wide
         ambientColor = Desaturate_RGBColor(ambientColor, 0.45);
     
@@ -489,26 +448,26 @@ Cutscene_UpdateSequence = function()
         ALIVE_AgentSetProperty("module_environment", "Env - Fog Falloff", 3.5, kScene);
         ALIVE_AgentSetProperty("module_environment", "Env - Fog Density", 0.00025, kScene);
         ALIVE_AgentSetProperty("module_environment", "Env - Fog Max Opacity", 0.65, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "Ambient Color", Multiplier_RGBColor(ambientColor, 1.35), kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Shadow Max Distance", 17.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Dynamic Shadow Max Distance", 17.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Intensity", 1.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap White Point", 16.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Black Point", 0.012, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Toe Intensity", 1.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Shoulder Intensity", 0.75, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Type", 2, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Pivot", 0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Shoulder Intensity", 0.7, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Enabled", true, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Intensity", 3.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Radius", 0.8, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Max Radius Percent", 0.76, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Max Distance", 35.5, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Distance Falloff", 0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Hemisphere Bias", -0.2, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Bloom Threshold", -0.65, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Bloom Intensity", 0.35, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "Ambient Color", Multiplier_RGBColor(ambientColor, 1.35), kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "LightEnv Shadow Max Distance", 17.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "LightEnv Dynamic Shadow Max Distance", 17.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Intensity", 1.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap White Point", 16.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Black Point", 0.012, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Filmic Toe Intensity", 1.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Filmic Shoulder Intensity", 0.75, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Type", 2, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Filmic Pivot", 0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Filmic Shoulder Intensity", 0.7, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Enabled", true, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Intensity", 3.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Radius", 0.8, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Max Radius Percent", 0.76, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Max Distance", 35.5, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Distance Falloff", 0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Hemisphere Bias", -0.2, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Bloom Threshold", -0.65, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Bloom Intensity", 0.35, kScene);
     elseif (sequence_currentShotIndex == 3) then --zombie shadows
         ALIVE_SetAgentWorldRotation("myLight_Sun", Vector(9.666, 90, 0), kScene);
         ALIVE_SetAgentWorldPosition("procedualGrassGroup", Vector(-144.57, -3.340749, -2.59), kScene);
@@ -522,26 +481,26 @@ Cutscene_UpdateSequence = function()
         ALIVE_AgentSetProperty("module_environment", "Env - Fog Density", 0.00025, kScene);
         ALIVE_AgentSetProperty("module_environment", "Env - Fog Max Opacity", 0.35, kScene);
         ALIVE_AgentSetProperty("module_environment", "Env - Fog Falloff", 3.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "Ambient Color", Multiplier_RGBColor(ambientColor, 0.25), kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Shadow Max Distance", 30.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Dynamic Shadow Max Distance", 35.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Intensity", 1.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap White Point", 10.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Black Point", 0.005, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Toe Intensity", 1.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Shoulder Intensity", 0.75, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Type", 2, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Pivot", 0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Shoulder Intensity", 0.8, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Enabled", true, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Intensity", 2.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Radius", 0.5, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Max Radius Percent", 0.5, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Max Distance", 35.5, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Distance Falloff", 0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Hemisphere Bias", -0.2, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Bloom Threshold", -0.45, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Bloom Intensity", 0.45, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "Ambient Color", Multiplier_RGBColor(ambientColor, 0.25), kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "LightEnv Shadow Max Distance", 30.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "LightEnv Dynamic Shadow Max Distance", 35.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Intensity", 1.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap White Point", 10.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Black Point", 0.005, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Filmic Toe Intensity", 1.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Filmic Shoulder Intensity", 0.75, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Type", 2, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Filmic Pivot", 0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Filmic Shoulder Intensity", 0.8, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Enabled", true, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Intensity", 2.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Radius", 0.5, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Max Radius Percent", 0.5, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Max Distance", 35.5, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Distance Falloff", 0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Hemisphere Bias", -0.2, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Bloom Threshold", -0.45, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Bloom Intensity", 0.45, kScene);
    elseif (sequence_currentShotIndex == 4) then --barn wide 1
         ALIVE_SetAgentWorldRotation("myLight_Sun", Vector(36.666, 113.1561, 0), kScene);
         ALIVE_SetAgentWorldPosition("procedualGrassGroup", Vector(-13.57, -0.013749, 12.59), kScene);
@@ -555,25 +514,25 @@ Cutscene_UpdateSequence = function()
         ALIVE_AgentSetProperty("module_environment", "Env - Fog Density", 0.00025, kScene);
         ALIVE_AgentSetProperty("module_environment", "Env - Fog Max Opacity", 0.45, kScene);
         ALIVE_AgentSetProperty("module_environment", "Env - Fog Falloff", 1.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Shadow Max Distance", 20.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Dynamic Shadow Max Distance", 25.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Intensity", 1.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap White Point", 10.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Black Point", 0.005, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Toe Intensity", 1.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Shoulder Intensity", 0.75, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Type", 2, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Pivot", 0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Shoulder Intensity", 0.8, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Enabled", true, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Intensity", 2.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Radius", 0.5, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Max Radius Percent", 0.5, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Max Distance", 35.5, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Distance Falloff", 0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Hemisphere Bias", -0.2, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Bloom Threshold", -0.45, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Bloom Intensity", 0.25, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "LightEnv Shadow Max Distance", 20.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "LightEnv Dynamic Shadow Max Distance", 25.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Intensity", 1.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap White Point", 10.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Black Point", 0.005, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Filmic Toe Intensity", 1.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Filmic Shoulder Intensity", 0.75, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Type", 2, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Filmic Pivot", 0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Filmic Shoulder Intensity", 0.8, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Enabled", true, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Intensity", 2.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Radius", 0.5, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Max Radius Percent", 0.5, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Max Distance", 35.5, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Distance Falloff", 0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Hemisphere Bias", -0.2, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Bloom Threshold", -0.45, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Bloom Intensity", 0.25, kScene);
     elseif (sequence_currentShotIndex == 5) then --barn wide 2
         ALIVE_SetAgentWorldRotation("myLight_Sun", Vector(36.666, 113.1561, 0), kScene);
         ALIVE_SetAgentWorldPosition("procedualGrassGroup", Vector(-0.57, -0.340749, 12.59), kScene);
@@ -588,25 +547,25 @@ Cutscene_UpdateSequence = function()
         ALIVE_AgentSetProperty("module_environment", "Env - Fog Density", 0.00025, kScene);
         ALIVE_AgentSetProperty("module_environment", "Env - Fog Max Opacity", 0.45, kScene);
         ALIVE_AgentSetProperty("module_environment", "Env - Fog Falloff", 1.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Shadow Max Distance", 20.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Dynamic Shadow Max Distance", 25.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Intensity", 1.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap White Point", 14.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Black Point", 0.005, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Toe Intensity", 1.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Shoulder Intensity", 0.75, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Type", 2, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Pivot", 0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Shoulder Intensity", 0.8, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Enabled", true, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Intensity", 2.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Radius", 0.5, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Max Radius Percent", 0.5, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Max Distance", 35.5, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Distance Falloff", 0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Hemisphere Bias", -0.2, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Bloom Threshold", -0.45, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Bloom Intensity", 0.45, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "LightEnv Shadow Max Distance", 20.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "LightEnv Dynamic Shadow Max Distance", 25.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Intensity", 1.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap White Point", 14.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Black Point", 0.005, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Filmic Toe Intensity", 1.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Filmic Shoulder Intensity", 0.75, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Type", 2, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Filmic Pivot", 0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Filmic Shoulder Intensity", 0.8, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Enabled", true, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Intensity", 2.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Radius", 0.5, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Max Radius Percent", 0.5, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Max Distance", 35.5, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Distance Falloff", 0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Hemisphere Bias", -0.2, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Bloom Threshold", -0.45, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Bloom Intensity", 0.45, kScene);
     elseif (sequence_currentShotIndex == 6) then --black
     elseif (sequence_currentShotIndex == 7) then --aj reverse
         ALIVE_SetAgentWorldRotation("myLight_Sun", Vector(41.33, 166.406, 0), kScene);
@@ -620,25 +579,25 @@ Cutscene_UpdateSequence = function()
         ALIVE_AgentSetProperty("module_environment", "Env - Fog Height", 3.45, kScene);
         ALIVE_AgentSetProperty("module_environment", "Env - Fog Density", 0.00025, kScene);
         ALIVE_AgentSetProperty("module_environment", "Env - Fog Max Opacity", 0.35, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Shadow Max Distance", 10.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "LightEnv Dynamic Shadow Max Distance", 10.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Intensity", 1.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap White Point", 10.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Black Point", 0.009, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Toe Intensity", 1.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Shoulder Intensity", 0.75, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Type", 2, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Pivot", 0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Tonemap Filmic Shoulder Intensity", 0.8, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Enabled", true, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Intensity", 2.0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Radius", 0.5, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Max Radius Percent", 0.5, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Max Distance", 35.5, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Distance Falloff", 0, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "HBAO Hemisphere Bias", -0.2, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Bloom Threshold", -0.45, kScene);
-        ALIVE_AgentSetProperty(agent_name_scene, "FX Bloom Intensity", 0.45, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "LightEnv Shadow Max Distance", 10.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "LightEnv Dynamic Shadow Max Distance", 10.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Intensity", 1.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap White Point", 10.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Black Point", 0.009, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Filmic Toe Intensity", 1.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Filmic Shoulder Intensity", 0.75, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Type", 2, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Filmic Pivot", 0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Tonemap Filmic Shoulder Intensity", 0.8, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Enabled", true, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Intensity", 2.0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Radius", 0.5, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Max Radius Percent", 0.5, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Max Distance", 35.5, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Distance Falloff", 0, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "HBAO Hemisphere Bias", -0.2, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Bloom Threshold", -0.45, kScene);
+        ALIVE_AgentSetProperty(kSceneObj, "FX Bloom Intensity", 0.45, kScene);
     elseif (sequence_currentShotIndex == 8) then --black
     end
 end
@@ -1064,42 +1023,31 @@ end
 local voiceLineTick = 0;
 local maxVoiceLineTick = 19200;
 
-local PlayAJVoiceLine = function(lineID, intensity)
-    agent_aj = AgentFindInScene("AJ", kScene);
-
-    local controller_voiceLineAnm = PlayAnimation(agent_aj, lineID);
-    local controller_voiceLineSound = SoundPlay(lineID .. ".wav");
-    
-    ControllerSetContribution(controller_voiceLineAnm, intensity);
-    ControllerSetLooping(controller_voiceLineAnm, false);
-    ControllerSetLooping(controller_voiceLineSound, false);
-end
-
 local AJVoiceLines = function()
     voiceLineTick = voiceLineTick + 1;
 
     if(voiceLineTick == 300) then
-        PlayAJVoiceLine("396767243", 1.0); --I always listened to Clem, always. But I've been thinking more...
+        ALIVE_Cutscene_CharacterVoiceLine_Play(agent_aj, "396767243", 1.0, 100); --I always listened to Clem, always. But I've been thinking more...
     end
     
     if(voiceLineTick == 850) then
-        PlayAJVoiceLine("396767275", 1.0); --She told me way back, to shoot her if she got bit...
+        ALIVE_Cutscene_CharacterVoiceLine_Play(agent_aj, "396767275", 1.0, 100); --She told me way back, to shoot her if she got bit...
     end
     
     if(voiceLineTick == 1150) then
-        PlayAJVoiceLine("396730926", 1.0); --I thought a lot about it, and I felt a lotta ways about it...
+        ALIVE_Cutscene_CharacterVoiceLine_Play(agent_aj, "396730926", 1.0, 100); --I thought a lot about it, and I felt a lotta ways about it...
     end
 
     if(voiceLineTick == 1600) then
-        PlayAJVoiceLine("396706038", 1.0); --sigh
+        ALIVE_Cutscene_CharacterVoiceLine_Play(agent_aj, "396706038", 1.0, 100); --sigh
     end
     
     if(voiceLineTick == 1700) then
-        PlayAJVoiceLine("396542111", 1.0); --clem 2
+        ALIVE_Cutscene_CharacterVoiceLine_Play(agent_aj, "396542111", 1.0, 100); --clem 2
     end
     
     if(voiceLineTick == 1900) then
-        PlayAJVoiceLine("396722851", 1.0); --I can't let you turn into a monster.
+        ALIVE_Cutscene_CharacterVoiceLine_Play(agent_aj, "396722851", 1.0, 100); --I can't let you turn into a monster.
     end
     
     if(voiceLineTick == 2400) then
@@ -1112,7 +1060,7 @@ end
 ALIVE_Level_Cutscene_Teaser1 = function()
     ----------------------------------------------------------------
     --scene setup (call all of our scene setup functions)
-    ALIVE_Project_SetProjectSettings();
+    ALIVE_Core_Project_SetProjectSettings();
     ALIVE_Scene_LevelCleanup_404_ForestBarn_Teaser(kScene);
     ALIVE_Scene_LevelRelight_404_ForestBarn_Teaser_AddProcedualGrass(kScene);
     ALIVE_Scene_LevelRelight_404_ForestBarn_Teaser_AddAdditionalParticleEffects(kScene);
@@ -1123,16 +1071,14 @@ ALIVE_Level_Cutscene_Teaser1 = function()
     ALIVE_Character_AJ_Teaser(kScene);
     ALIVE_Character_Clementine_Sick(kScene);
     
-
     --cutscene setup (start calling our cutscene setup functions)
     Cutscene_CreateSoundtrack(); --start playing our custom soundtrack and have it loop
 
     --if we are not in freecam mode, go ahead and create the cutscene camera
-    if (MODE_FREECAM == false) then
+    if (EnableFreecamTools == false) then
         Cutscene_CreateCutsceneCamera(); --create our cutscene camera in the scene
     end
 
-    --Cutscene_SetupCutsceneContent();
     ALIVE_Gameplay_Shared_HideCusorInGame(); --hide the cursor during the cutscene
 
     ----------------------------------------------------------------
@@ -1140,40 +1086,46 @@ ALIVE_Level_Cutscene_Teaser1 = function()
     
     --add all of our update functions, and these will run for every single frame that is rendered
     Callback_OnPostUpdate:Add(Cutscene_UpdateSequence);
-    Callback_OnPostUpdate:Add(Cutscene_UpdateHandheldCameraValues);
     Callback_OnPostUpdate:Add(Cutscene_UpdateCharacterActing);
-    Callback_OnPostUpdate:Add(AJBlinks);
+    --Callback_OnPostUpdate:Add(AJBlinks);
     
     Callback_OnPostUpdate:Add(AJVoiceLines);
     Callback_OnPostUpdate:Add(Cutscene_UpdateMoveShitAround);
     
     --add depth of field
-    Callback_OnPostUpdate:Add(PerformAutofocusDOF);
-    
-    ----------------------------------------------------------------
-    --if freecam mode is not enabled, then don't continue on
-    if (MODE_FREECAM == false) then
-        do return end --the function will not continue past this point if freecam is disabled (we don't want our development tools interferring with the cutscene)
-    end
+    ALIVE_Camera_DepthOfFieldAutofocus_SetupDOF(kScene)
+    Callback_OnPostUpdate:Add(ALIVE_Camera_DepthOfFieldAutofocus_PerformAutofocus);
 
+    --add a procedual handheld camera animation
+    ALIVE_Cutscene_HandheldCameraAnimation_TotalShakeAmount = 0.35;
+    ALIVE_Cutscene_HandheldCameraAnimation_TotalSpeedMultiplier = 0.55;
+    ALIVE_Cutscene_HandheldCameraAnimation_ShakeLevel = 4;
+    Callback_OnPostUpdate:Add(ALIVE_Cutscene_HandheldCameraAnimation_Update);
+    Callback_OnPostUpdate:Add(ApplyHandheldCameraAnimation);
+    
     ----------------------------------------------------------------
     --CUTSCENE DEVELOPMENT
-    --if freecam is enabled, these functions are run
-    
-    --commented out on purpose, but when the scene starts this prints all of the scene agents to a text file that is saved in the game directory.
-    --ALIVE_PrintSceneListToTXT(kScene, "adv_forestBarn404.txt");
 
-    --remove the DOF because it interferes with UI
-    Callback_OnPostUpdate:Remove(PerformAutofocusDOF);
+    if (ALIVE_Core_Project_IsDebugMode) then
+        if(EnablePerformanceMetrics) then
+            ALIVE_Development_PerformanceMetrics_Initalize();
+            Callback_OnPostUpdate:Add(ALIVE_Development_PerformanceMetrics_Update);
+        end
+
+        if (EnableFreecamTools) then
+            --commented out on purpose, but when the scene starts this prints all of the scene agents to a text file that is saved in the game directory.
+            --ALIVE_PrintSceneListToTXT(kScene, "adv_forestBarn404.txt");
        
-    --create our free camera and our cutscene dev tools
-    ALIVE_Development_CreateFreeCamera();
-    ALIVE_Development_InitalizeCutsceneTools();
+            --create our free camera and our cutscene dev tools
+            ALIVE_Development_CreateFreeCamera();
+            ALIVE_Development_InitalizeCutsceneTools();
 
-    --add these development update functions, and have them run every frame
-    Callback_OnPostUpdate:Add(ALIVE_Development_UpdateFreeCamera);
-    Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Input);
-    Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Main);
+            --add these development update functions, and have them run every frame
+            Callback_OnPostUpdate:Add(ALIVE_Development_UpdateFreeCamera);
+            Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Input);
+            Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Main);
+        end
+    end
 end
 
 --open the scene with this script

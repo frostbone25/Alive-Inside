@@ -7,15 +7,6 @@
 
 -------------------------- ZOMBIES - GLOBAL --------------------------
 local ai_zombie_name_character = "ZombieAI";
---local ai_zombie_name_characterProp = "sk61_zombie400Sherak.prop";
---local ai_zombie_name_characterProp = "sk61_zombie400ChoppedFingers.prop";
---local ai_zombie_name_characterProp = "sk61_zombie400ClemHeadCrush.prop";
---local ai_zombie_name_characterProp = "sk61_zombie400CoupleFemale.prop";
---local ai_zombie_name_characterProp = "sk61_zombie400CoupleMale.prop";
---local ai_zombie_name_characterProp = "sk61_zombie400DeathByRosie.prop";
---local ai_zombie_name_characterProp = "sk61_zombie400EyeStab.prop";
---local ai_zombie_name_characterProp = "sk61_zombie400Incapacitated.prop";
-
 
 local zombie_props = 
 {
@@ -25,6 +16,7 @@ local zombie_props =
     "sk61_zombie400CoupleFemale.prop",
     "sk61_zombie400CoupleMale.prop",
     "sk61_zombie400DeathByRosie.prop",
+    "sk61_zombie400EyeStab.prop",
     "sk61_zombie400Incapacitated.prop"
 };
 

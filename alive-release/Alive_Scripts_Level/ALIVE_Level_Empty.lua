@@ -16,6 +16,7 @@ ALIVE_Development_UseSeasonOneAPI = false;
 ALIVE_Development_FreecamUseFOVScale = false;
 
 local EnableFreecamTools = true;
+local EnablePerformanceMetrics = true;
 
 --DOF Autofocus Variables
 ALIVE_DOF_AUTOFOCUS_SceneObject = kScene;
@@ -56,17 +57,22 @@ ALIVE_DOF_AUTOFOCUS_ManualSettings =
 };
 
 ALIVE_Level_Empty = function()
-    if (ALIVE_Core_Project_IsDebugMode) and (EnableFreecamTools) then
-        --Initialize tools
-        ALIVE_Development_CreateFreeCamera();
-        ALIVE_Development_InitalizeCutsceneTools();
-        ALIVE_Development_PerformanceMetrics_Initalize();
+    if (ALIVE_Core_Project_IsDebugMode) then
+        if(EnableFreecamTools) then
+            --Initialize tools
+            ALIVE_Development_CreateFreeCamera();
+            ALIVE_Development_InitalizeCutsceneTools();
     
-        --Add required callbacks
-        Callback_OnPostUpdate:Add(ALIVE_Development_UpdateFreeCamera);
-        Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Input);
-        Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Main);
-        Callback_OnPostUpdate:Add(ALIVE_Development_PerformanceMetrics_Update);
+            --Add required callbacks
+            Callback_OnPostUpdate:Add(ALIVE_Development_UpdateFreeCamera);
+            Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Input);
+            Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Main);
+        end
+
+        if(EnablePerformanceMetrics) then
+            ALIVE_Development_PerformanceMetrics_Initalize();
+            Callback_OnPostUpdate:Add(ALIVE_Development_PerformanceMetrics_Update);
+        end
     end
 end
 

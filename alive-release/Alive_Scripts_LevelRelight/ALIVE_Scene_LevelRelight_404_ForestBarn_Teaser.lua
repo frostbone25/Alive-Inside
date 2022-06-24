@@ -403,6 +403,7 @@ ALIVE_Scene_LevelRelight_404_ForestBarn_Teaser = function(kScene)
 
 
     --modify the scene post processing
+    local agent_name_scene = kScene .. ".scene";
     ALIVE_AgentSetProperty(agent_name_scene, "FX anti-aliasing", true, kScene);
     ALIVE_AgentSetProperty(agent_name_scene, "FX Sharp Shadows Enabled", true, kScene);
     ALIVE_AgentSetProperty(agent_name_scene, "FX Ambient Occlusion Enabled", true, kScene);
