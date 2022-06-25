@@ -102,6 +102,7 @@ ALIVE_MainMenu_PrepareCamera = function()
 end
 
 ALIVE_MainMenu_PrepareAgents = function()
+
     local clemHat = AgentCreate("ALIVE_MainMenuClemHat", "obj_capClementine400.prop", Vector(17.12, 0.8125, -4.32), Vector(-2, -65.7, 0), keyArtScene, false, false)
     --local bgMusic = SoundPlay("mus_loop_clementine_04.wav");
     --local bgMusic = SoundPlay("mus_loop_clementine_03.wav");
@@ -134,7 +135,19 @@ ALIVE_MainMenu_CreateAndPopulateMenu = function()
     end
 
     menu.Populate = function(self) --Populate the menu here. Add buttons & everything functional.
-        local buttonPlay =  Menu_Add(ListButtonLite, "play", "Play", "ALIVE_PlayGame()")
+
+        local topText = "";
+
+        --If Checkpoint State is "Not Started" or "Game Complete"
+        if ALIVE_FileUtils_ActiveSave.checkpoint == 0 then
+            topText = "New Game"
+        elseif ALIVE_FileUtils_ActiveSave.checkpoint == 99 then
+            topText = "Restart"
+        else
+            topText = "Continue"
+        end
+
+        local buttonPlay =  Menu_Add(ListButtonLite, "play", topText, "SubProject_Switch(\"Menu\", \"ALIVE_Level_Gameplay_CompositeWorldTest.lua\")") --ALIVE_Menu_Configurator()
         AgentSetProperty(buttonPlay.agent, "Text Glyph Scale", 1.5);
 
         Menu_Add(ListButtonLite, "settings", "Settings", "ALIVE_MainMenu_Settings()")

@@ -18,3 +18,8 @@ ALIVE_Menu_UpdateLegend = function()
     Legend_Add("faceButtonUp", MenuUtils_LegendStringForProfileUser(Menu_Text("legend_changeProfile")), "PlatformOpenAccountPickerUI()")
   end
 end
+
+ALIVE_Menu_Configurator = function()
+  WidgetInputHandler_EnableInput(false)
+  DialogBox_YesNo("Beep", "Boop", "Poop", "Peep", true)
+end
