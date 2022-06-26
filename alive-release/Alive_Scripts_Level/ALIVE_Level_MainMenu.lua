@@ -26,6 +26,7 @@ local keyArtScene = "adv_boardingSchoolDorm.scene"
 local kSceneObj = kScene .. ".scene"
 
 local menuCamera = nil;
+local menu = nil;
 
 --Cutscene Development Variables
 ALIVE_Development_SceneObject = keyArtScene;
@@ -113,8 +114,22 @@ ALIVE_MainMenu_PrepareAgents = function()
     ControllerSetLooping(bgMusic, true);
 end
 
+ALIVE_MainMenu_LaunchConfigurator = function()
+    WidgetInputHandler_EnableInput(false)
+    Menu_Pop(theMenu)
+    Sleep(0.5)
+    
+    if ALIVE_FileUtils_ActiveSave.checkpoint == 0 then
+            ALIVE_Menu_Configurator(menu, false)
+    elseif ALIVE_FileUtils_ActiveSave.checkpoint == 99 then
+            ALIVE_Menu_Configurator(menu, true)
+    else
+            SubProject_Switch("Menu", "ALIVE_Level_Gameplay_Sandbox.lua")
+   end
+end
+
 ALIVE_MainMenu_CreateAndPopulateMenu = function()
-    local menu = Menu_Create(ListMenu, "ui_menuMain", kScene)
+    menu = Menu_Create(ListMenu, "ui_menuMain", kScene)
     menu.align = "left"
     menu.background = {}
 
@@ -147,7 +162,7 @@ ALIVE_MainMenu_CreateAndPopulateMenu = function()
             topText = "Continue"
         end
 
-        local buttonPlay =  Menu_Add(ListButtonLite, "play", topText, "SubProject_Switch(\"Menu\", \"ALIVE_Level_Gameplay_CompositeWorldTest.lua\")") --ALIVE_Menu_Configurator()
+        local buttonPlay =  Menu_Add(ListButtonLite, "play", topText, "ALIVE_MainMenu_LaunchConfigurator()") --ALIVE_Menu_Configurator()
         AgentSetProperty(buttonPlay.agent, "Text Glyph Scale", 1.5);
 
         Menu_Add(ListButtonLite, "settings", "Settings", "ALIVE_MainMenu_Settings()")
