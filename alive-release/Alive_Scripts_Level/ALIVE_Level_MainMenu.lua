@@ -131,7 +131,9 @@ ALIVE_MainMenu_LaunchConfigurator = function()
 end
 
 ALIVE_MainMenu_LaunchCredits = function()
-    ALIVE_Menu_PlayCredits();
+    if not ALIVE_Menu_PlayCredits() then
+        DialogBox_Okay("The credits are already running.", "Error");
+    end
 end
 
 ALIVE_MainMenu_CreateAndPopulateMenu = function()

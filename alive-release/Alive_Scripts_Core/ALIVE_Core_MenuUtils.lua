@@ -60,6 +60,8 @@ ALIVE_Menu_CleanUpCredits = function()
   if ALIVE_Menu_CreditsMusic ~= nil then
     ControllerFadeOut(ALIVE_Menu_CreditsMusic, 0.5, true)
   end
+  
+  ALIVE_Menu_AreCreditsRunning = false;
 
   if ALIVE_MainMenu_MenuAgent == nil then
     print("No menu found. Running SubProject_Switch.")
@@ -68,6 +70,7 @@ ALIVE_Menu_CleanUpCredits = function()
   end
 
   Sleep(1);
+  CursorHide(false, "ui_creditsClosing");
   SceneRemove("ui_creditsClosing.scene");
   Sleep(0.5);
   if ALIVE_Menu_ActiveMenuSound ~= nil then
@@ -87,16 +90,17 @@ ALIVE_Menu_PlayCredits = function()
   local cPos = -16.5; --Determines the initial starting point
   local cPosMax = 9; --Determines where the credits *Stop* scrolling, eg. when the legal text is centered.
 
-  local scrollCredits = true;
+  local scrollCredits = true; --Don't touch me!
 
-  if ALIVE_Menu_AreCreditsRunning then
+  if ALIVE_Menu_AreCreditsRunning then --Prevents credits from being run on top of one another.
     return false
   end
 
-  ALIVE_Menu_AreCreditsRunning = true;
-  Menu_Pop();
+  ALIVE_Menu_AreCreditsRunning = true; 
+  CursorHide(true, "ui_creditsClosing");  
+  Menu_Pop(); --Removes any active menus.
   
-  if ALIVE_Menu_ActiveMenuSound ~= nil then
+  if ALIVE_Menu_ActiveMenuSound ~= nil then --Fades out the current menu music.
     ControllerFadeOut(ALIVE_Menu_ActiveMenuSound, 0.5, true)
   end
 
@@ -104,19 +108,19 @@ ALIVE_Menu_PlayCredits = function()
   MenuUtils_AddScene(cScene); --Add credits scene for blank background.
   Sleep(0.25);
 
-  ALIVE_Menu_CreditsMusic = SoundPlay("music_custom1.wav");
+  ALIVE_Menu_CreditsMusic = SoundPlay("music_custom1.wav"); --Adds credits music and plays it.
   ControllerSetLooping(ALIVE_Menu_CreditsMusic, true);
 
   Sleep(0.5);
 
-  ALIVE_Menu_CreateTextAgent("ALIVE_Credits_Text", ALIVE_Menu_CreditsText, 0, cPos, 0, nil, nil, cScene)
+  ALIVE_Menu_CreateTextAgent("ALIVE_Credits_Text", ALIVE_Menu_CreditsText, 0, cPos, 0, nil, nil, cScene) --Create credits text
 
   local CreditsUpdater = function()
-    if not scrollCredits then
+    if not scrollCredits then --If credits aren't to be scrolled, return.
       return false
     end
 
-    if cPos >= cPosMax then
+    if cPos >= cPosMax then --If the credits have reached their intended final position
       print("Reached max credits position.");
       ALIVE_SetAgentWorldPosition("ALIVE_Credits_Text", Vector(0, cPosMax, 0), cScene)
       scrollCredits = false;
@@ -124,11 +128,12 @@ ALIVE_Menu_PlayCredits = function()
       return
     end
 
-    cPos = cPos + (cSpeed * GetFrameTime());
+    cPos = cPos + (cSpeed * GetFrameTime()); --Move credits according to frame time.
     ALIVE_SetAgentWorldPosition("ALIVE_Credits_Text", Vector(0, cPos, 0), cScene)
   end
 
-  Callback_OnPostUpdate:Add(CreditsUpdater);
+  Callback_OnPostUpdate:Add(CreditsUpdater); --Add callback.
+  return true; --Return true to prevent failed credits false-positives.
 end
 
 ALIVE_Menu_Configurator = function(menu, isRestarting)
