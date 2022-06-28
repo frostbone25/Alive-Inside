@@ -5,6 +5,8 @@ require("Menu_ListMenu.lua")
 
 ResourceSetEnable("WalkingDead404");
 ResourceSetEnable("ProjectSeason4");
+ResourceSetEnable("Menu")
+ResourceSetEnable("Project")
 
 ALIVE_Menu_AreCreditsRunning = false;
 ALIVE_Menu_CreditsMusic = nil;
@@ -74,35 +76,37 @@ ALIVE_Menu_CleanUpCredits = function()
   SceneRemove("ui_creditsClosing.scene");
   Sleep(0.5);
   if ALIVE_Menu_ActiveMenuSound ~= nil then
-    ControllerFadeIn(ALIVE_Menu_ActiveMenuSound, 0.5, true)
+    ALIVE_Menu_ActiveMenuSound = SoundPlay("mus_loop_AJ_01a.wav");
+    ControllerSetVolume(ALIVE_Menu_ActiveMenuSound, 1);
+    ControllerSetLooping(ALIVE_Menu_ActiveMenuSound, true);
   end
   Menu_Push(ALIVE_MainMenu_MenuAgent, "ui_menuMain.scene");
 end
 
-
---Plays credits, with optional arguments for sound.
---If sound is provided, it will mute the sound controller.
+--Plays the credits
 ALIVE_Menu_PlayCredits = function()
-  local cScene = "ui_creditsClosing.scene";
-  local cSpeed = 0.5;
+  print("---ALIVE_Menu_PlayCredits---")
   
+  local cScene = "ui_creditsClosing.scene";
+  local cSpeed = 0.5; --0.5
   --Remember to update these when you update the credits! -Violet
-  local cPos = -16.5; --Determines the initial starting point
-  local cPosMax = 9; --Determines where the credits *Stop* scrolling, eg. when the legal text is centered.
+  local cPos = -26; --Determines the initial starting point
+  local cPosMax = 19.5; --Determines where the credits *Stop* scrolling, eg. when the legal text is centered.
 
   local scrollCredits = true; --Don't touch me!
 
   if ALIVE_Menu_AreCreditsRunning then --Prevents credits from being run on top of one another.
     return false
   end
-
   ALIVE_Menu_AreCreditsRunning = true; 
   CursorHide(true, "ui_creditsClosing");  
-  Menu_Pop(); --Removes any active menus.
   
   if ALIVE_Menu_ActiveMenuSound ~= nil then --Fades out the current menu music.
     ControllerFadeOut(ALIVE_Menu_ActiveMenuSound, 0.5, true)
+    Menu_Pop(); --Removes any active menus.
   end
+
+  print("Reached Milestone: Add Credits Scene");
 
   Sleep(1);
   MenuUtils_AddScene(cScene); --Add credits scene for blank background.
@@ -113,6 +117,7 @@ ALIVE_Menu_PlayCredits = function()
 
   Sleep(0.5);
 
+  print("Reached Milestone: Add text");
   ALIVE_Menu_CreateTextAgent("ALIVE_Credits_Text", ALIVE_Menu_CreditsText, 0, cPos, 0, nil, nil, cScene) --Create credits text
 
   local CreditsUpdater = function()
@@ -183,12 +188,68 @@ ALIVE_Menu_CreditsText = [[
   FlashOfVolt
 
 
+  Telltale Modding Discord Staff
+  BatuTH
+  Ryuk
+  Mihalache Dragos-Stefan
+  Threefold Maker
+
+
   Special Thanks
   ZealotTormounds
   InColdBlood
   DomTheBomb
   Lightning
+  Melora
   and You.
+
+  
+  OPEN SOURCE ATTRIBUTION
+
+
+  JSON.lua
+  Copyright (c) 2020 rxi
+
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy of
+  this software and associated documentation files (the "Software"), to deal in
+  the Software without restriction, including without limitation the rights to
+  use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+  of the Software, and to permit persons to whom the Software is furnished to do
+  so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+
+  Alive Inside is available under the MIT license.
+  Copyright (c) 2020-22 Telltale Modding Group
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
 
 
 
@@ -207,4 +268,6 @@ ALIVE_Menu_CreditsText = [[
 
   Telltale Modding Group is not endorsed by or otherwise associated
   with Telltale Games, Skybound Entertainment, or their affiliates.
+
+  THANK YOU FOR PLAYING
 ]]

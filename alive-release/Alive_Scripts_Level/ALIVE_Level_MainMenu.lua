@@ -126,7 +126,7 @@ ALIVE_MainMenu_LaunchConfigurator = function()
     elseif ALIVE_FileUtils_ActiveSave.checkpoint == 99 then
             ALIVE_Menu_Configurator(ALIVE_MainMenu_MenuAgent, true)
     else
-            SubProject_Switch("Menu", "ALIVE_Level_Gameplay_Sandbox.lua")
+            SubProject_Switch("Menu", "ALIVE_Level_VioletSandbox.lua")
    end
 end
 
