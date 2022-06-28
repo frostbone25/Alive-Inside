@@ -7,6 +7,8 @@ ALIVE_FileUtils_SavesDirectory = ALIVE_FileUitls_SubDirectory .. "Saves\\"
 ALIVE_FileUtils_ActiveSave = nil;
 ALIVE_FileUtils_OptionsFile = nil;
 
+ALIVE_FileUtils_IsCurrentlyInitialized = false;
+
 --Decodes a JSON file and returns the raw object. Useful for non-standard reads.
 ALIVE_Core_FileUtils_DecodeJSONFile = function(fileName) 
     local theFile = (io.open)(fileName, "r") --Open the file
@@ -18,6 +20,19 @@ ALIVE_Core_FileUtils_DecodeJSONFile = function(fileName)
     theFile:close()
     
     return ALIVE_Core_JSON.decode(content) --Return the decoded file.
+end
+
+ALIVE_Core_FileUtils_SaveSetCheckpoint = function(checkpoint)
+    if ALIVE_FileUtils_OptionsFile == nil or ALIVE_FileUtils_ActiveSave == nil then
+        return false;
+    end
+    
+    ALIVE_FileUtils_ActiveSave.checkpoint = checkpoint;
+    local saveFile = (io.open)(ALIVE_FileUtils_SavesDirectory.."AliveInside-Save"..ALIVE_FileUtils_OptionsFile.activeSaveFile..".json", "w")
+    saveFile:write(ALIVE_Core_JSON.encode(ALIVE_FileUtils_ActiveSave));
+    saveFile:close();    
+
+    return true;
 end
 
 ALIVE_Core_FileUtils_Init = function()
@@ -44,6 +59,7 @@ ALIVE_Core_FileUtils_Init = function()
 
     ALIVE_FileUtils_ActiveSave = ALIVE_Core_FileUtils_DecodeJSONFile(ALIVE_FileUtils_SavesDirectory.."AliveInside-Save"..ALIVE_FileUtils_OptionsFile.activeSaveFile..".json");
 
+    ALIVE_FileUtils_IsCurrentlyInitialized = true;
     print("FileUtils Initialization Complete.") --We now have all requisite files and are ready to use them.
 end
 
@@ -91,10 +107,26 @@ ALIVE_FileUtils_GenericSaveFile = [[
     "s2KilledKenny": false,
     "s2Wellington": false,
     "s2Alone": false,
-    "s4KilledLilly": true,
-    "s4SavedViolet": true,
+    "s4KilledLilly": false,
+    "s4SavedViolet": false,
     "s4TrustedAJ": false
   },
-  "checkpoint": 99
+  "checkpoint": 0
 }
 ]]
+
+if ALIVE_Core_Project_IsDebugMode then
+    ALIVE_FileUtils_GenericSaveFile = [[
+    {
+        "configurator": {
+        "s2KilledKenny": false,
+        "s2Wellington": false,
+        "s2Alone": false,
+        "s4KilledLilly": true,
+        "s4SavedViolet": true,
+        "s4TrustedAJ": false
+        },
+        "checkpoint": 1
+    }
+]]
+end

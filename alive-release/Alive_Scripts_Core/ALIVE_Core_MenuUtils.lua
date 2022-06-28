@@ -10,6 +10,7 @@ ResourceSetEnable("Project")
 
 ALIVE_Menu_AreCreditsRunning = false;
 ALIVE_Menu_CreditsMusic = nil;
+local mScene = "ui_menuMain.scene"
 
 ALIVE_Menu_ExitToDefinitive = function() --Exit to Definitive Edition w/ popup modal
     WidgetInputHandler_EnableInput(false)
@@ -35,6 +36,69 @@ local ALIVE_Menu_CreateTextAgent = function(name, text, posx, posy, posz, halign
   end
   TextSet(textAgent, text)
   return textAgent
+end
+
+ALIVE_Menu_NotYetImplemented = function()
+  DialogBox_Okay("This menu hasn't been implemented yet!", "Whoops!")
+end
+
+ALIVE_Menu_ReturnToRootMenu = function()
+  Menu_Pop();
+  Menu_Push(ALIVE_Menu_ActiveMenuAgent);
+  Menu_Show(ALIVE_Menu_ActiveMenuAgent);
+end
+
+ALIVE_Menu_CreateSettingsMenu = function()
+  local SettingsMenu = Menu_Create(ListMenu, "ui_menuSettings", mScene) 
+  SettingsMenu.align = "left"
+  SettingsMenu.background = {}
+
+    SettingsMenu.Show = function(self, direction) --Ran on menu show.
+        if direction and direction < 0 then
+            ChorePlay("ui_alphaGradient_show")
+        end
+        ;
+        (Menu.Show)(self)
+        RichPresence_Set("richPresence_mainMenu", false)
+        ALIVE_Menu_UpdateLegend();
+    end
+
+    SettingsMenu.Hide = function(self, direction) --Ran on menu hide.
+        ChorePlay("ui_alphaGradient_hide")
+        ;
+        (Menu.Hide)(self)
+    end
+
+    SettingsMenu.Populate = function(self) --Populate the menu here. Add buttons & everything functional.
+
+        print("Settings - Reached Milestone: Populate Menu");
+
+        local header = Menu_Add(Header, nil, "Settings");
+        AgentSetProperty(header.agent, "Text Glyph Scale", 1.5);
+        Menu_Add(ListButtonLite, "settings_audio", "Audio", "ALIVE_Menu_NotYetImplemented()");
+        Menu_Add(ListButtonLite, "settings_controls", "Controls", "ALIVE_Menu_NotYetImplemented()");
+        Menu_Add(ListButtonLite, "settings_access", "Accessibility", "ALIVE_Menu_NotYetImplemented()");
+        Menu_Add(ListButtonLite, "settings_back", "Back", "ALIVE_Menu_ReturnToRootMenu()")
+        
+        print("Population Complete!");
+
+        local legendWidget = Menu_Add(Legend)
+        legendWidget.Place = function(self)
+            self:AnchorToAgent(SettingsMenu.agent, "left", "bottom")
+        end
+        ALIVE_Menu_UpdateLegend();
+    end
+
+    SettingsMenu.onModalPopped = function(self)
+        (Menu.onModalPopped)(self)
+        ALIVE_Menu_UpdateLegend()
+    end
+    
+    print("Settings - Reached Milestone: Pop / Push");
+
+    Menu_Pop();
+    Menu_Push(SettingsMenu); --This is vitally important. Fixes alignment bug. -Violet 
+    Menu_Show(SettingsMenu);  
 end
 
 local SetSelectableExtents = function(agent, extentX, extentY)
@@ -65,7 +129,7 @@ ALIVE_Menu_CleanUpCredits = function()
   
   ALIVE_Menu_AreCreditsRunning = false;
 
-  if ALIVE_MainMenu_MenuAgent == nil then
+  if not ALIVE_Menu_IsMainMenuActive or ALIVE_Menu_ActiveMenuAgent == nil then
     print("No menu found. Running SubProject_Switch.")
     SubProject_Switch("Menu", "ALIVE_Level_MainMenu.lua");
     return
@@ -80,7 +144,7 @@ ALIVE_Menu_CleanUpCredits = function()
     ControllerSetVolume(ALIVE_Menu_ActiveMenuSound, 1);
     ControllerSetLooping(ALIVE_Menu_ActiveMenuSound, true);
   end
-  Menu_Push(ALIVE_MainMenu_MenuAgent, "ui_menuMain.scene");
+  Menu_Push(ALIVE_Menu_ActiveMenuAgent, "ui_menuMain.scene");
 end
 
 --Plays the credits
@@ -101,9 +165,16 @@ ALIVE_Menu_PlayCredits = function()
   ALIVE_Menu_AreCreditsRunning = true; 
   CursorHide(true, "ui_creditsClosing");  
   
-  if ALIVE_Menu_ActiveMenuSound ~= nil then --Fades out the current menu music.
+  if ALIVE_Menu_IsMainMenuActive and ALIVE_Menu_ActiveMenuSound ~= nil then --Fades out the current menu music.
     ControllerFadeOut(ALIVE_Menu_ActiveMenuSound, 0.5, true)
     Menu_Pop(); --Removes any active menus.
+  else --There is not currently an active menu -- SAVE THE GAME instead.
+    if not ALIVE_FileUtils_IsCurrentlyInitialized then
+      ALIVE_Core_FileUtils_Init();
+    end
+    if not ALIVE_Core_FileUtils_SaveSetCheckpoint(99) then
+      DialogBox_Okay("Save failed.")
+    end
   end
 
   print("Reached Milestone: Add Credits Scene");
@@ -112,7 +183,8 @@ ALIVE_Menu_PlayCredits = function()
   MenuUtils_AddScene(cScene); --Add credits scene for blank background.
   Sleep(0.25);
 
-  ALIVE_Menu_CreditsMusic = SoundPlay("music_custom1.wav"); --Adds credits music and plays it.
+  --music_custom1.wav
+  ALIVE_Menu_CreditsMusic = SoundPlay("AwesomeGod.wav"); --Adds credits music and plays it.
   ControllerSetLooping(ALIVE_Menu_CreditsMusic, true);
 
   Sleep(0.5);
