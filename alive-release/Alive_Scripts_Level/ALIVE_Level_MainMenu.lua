@@ -27,6 +27,7 @@ local kSceneObj = kScene .. ".scene"
 
 local menuCamera = nil;
 local menu = nil;
+local bgMusic = nil;
 
 --Cutscene Development Variables
 ALIVE_Development_SceneObject = keyArtScene;
@@ -109,8 +110,7 @@ ALIVE_MainMenu_PrepareAgents = function()
     --local bgMusic = SoundPlay("mus_loop_clementine_03.wav");
     --local bgMusic = SoundPlay("mus_loop_clementine_01.wav"); --the real shit
     --local bgMusic = SoundPlay("music_custom1.wav"); --flashvolts "credits" track
-    local bgMusic = SoundPlay("mus_loop_AJ_01a.wav"); --what it should be
-
+    bgMusic = SoundPlay("mus_loop_AJ_01a.wav"); --what it should be
     ControllerSetLooping(bgMusic, true);
 end
 
@@ -126,6 +126,10 @@ ALIVE_MainMenu_LaunchConfigurator = function()
     else
             SubProject_Switch("Menu", "ALIVE_Level_Gameplay_Sandbox.lua")
    end
+end
+
+ALIVE_MainMenu_LaunchCredits = function()
+    ALIVE_Menu_PlayCredits(theMenu, bgMusic);
 end
 
 ALIVE_MainMenu_CreateAndPopulateMenu = function()
@@ -166,7 +170,7 @@ ALIVE_MainMenu_CreateAndPopulateMenu = function()
         AgentSetProperty(buttonPlay.agent, "Text Glyph Scale", 1.5);
 
         Menu_Add(ListButtonLite, "settings", "Settings", "ALIVE_MainMenu_Settings()")
-        Menu_Add(ListButtonLite, "credits", "Credits", "ALIVE_MainMenu_Credits()")
+        Menu_Add(ListButtonLite, "credits", "Credits", "ALIVE_MainMenu_LaunchCredits()")
         Menu_Add(ListButtonLite, "definitive", "Definitive Menu", "ALIVE_Menu_ExitToDefinitive()")
         if IsPlatformPC() or IsPlatformMac() then
             Menu_Add(ListButtonLite, "exit", "label_exitGame", "UI_Confirm( \"popup_quit_header\", \"popup_quit_message\", \"EngineQuit()\" )")
