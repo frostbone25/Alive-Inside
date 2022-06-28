@@ -1,5 +1,7 @@
 print = function(message)
-    os.execute("echo " .. message);
+    if ALIVE_Core_Project_IsDebugMode then
+        os.execute("echo " .. message);
+    end
 end
 
 ALIVE_GetTableType = function(tableValue)

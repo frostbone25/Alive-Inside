@@ -26,8 +26,10 @@ local keyArtScene = "adv_boardingSchoolDorm.scene"
 local kSceneObj = kScene .. ".scene"
 
 local menuCamera = nil;
-local menu = nil;
 local bgMusic = nil;
+
+ALIVE_MainMenu_MenuAgent = nil;
+ALIVE_Menu_ActiveMenuSound = nil;
 
 --Cutscene Development Variables
 ALIVE_Development_SceneObject = keyArtScene;
@@ -110,34 +112,34 @@ ALIVE_MainMenu_PrepareAgents = function()
     --local bgMusic = SoundPlay("mus_loop_clementine_03.wav");
     --local bgMusic = SoundPlay("mus_loop_clementine_01.wav"); --the real shit
     --local bgMusic = SoundPlay("music_custom1.wav"); --flashvolts "credits" track
-    bgMusic = SoundPlay("mus_loop_AJ_01a.wav"); --what it should be
-    ControllerSetLooping(bgMusic, true);
+    ALIVE_Menu_ActiveMenuSound = SoundPlay("mus_loop_AJ_01a.wav"); --what it should be
+    ControllerSetLooping(ALIVE_Menu_ActiveMenuSound, true);
 end
 
 ALIVE_MainMenu_LaunchConfigurator = function()
     WidgetInputHandler_EnableInput(false)
-    Menu_Pop(theMenu)
+    Menu_Pop()
     Sleep(0.5)
     
     if ALIVE_FileUtils_ActiveSave.checkpoint == 0 then
-            ALIVE_Menu_Configurator(menu, false)
+            ALIVE_Menu_Configurator(ALIVE_MainMenu_MenuAgent, false)
     elseif ALIVE_FileUtils_ActiveSave.checkpoint == 99 then
-            ALIVE_Menu_Configurator(menu, true)
+            ALIVE_Menu_Configurator(ALIVE_MainMenu_MenuAgent, true)
     else
             SubProject_Switch("Menu", "ALIVE_Level_Gameplay_Sandbox.lua")
    end
 end
 
 ALIVE_MainMenu_LaunchCredits = function()
-    ALIVE_Menu_PlayCredits(theMenu, bgMusic);
+    ALIVE_Menu_PlayCredits();
 end
 
 ALIVE_MainMenu_CreateAndPopulateMenu = function()
-    menu = Menu_Create(ListMenu, "ui_menuMain", kScene)
-    menu.align = "left"
-    menu.background = {}
+    ALIVE_MainMenu_MenuAgent = Menu_Create(ListMenu, "ui_menuMain", kScene)
+    ALIVE_MainMenu_MenuAgent.align = "left"
+    ALIVE_MainMenu_MenuAgent.background = {}
 
-    menu.Show = function(self, direction) --Ran on menu show.
+    ALIVE_MainMenu_MenuAgent.Show = function(self, direction) --Ran on menu show.
         if direction and direction < 0 then
             ChorePlay("ui_alphaGradient_show")
         end
@@ -147,13 +149,13 @@ ALIVE_MainMenu_CreateAndPopulateMenu = function()
         ALIVE_Menu_UpdateLegend();
     end
 
-    menu.Hide = function(self, direction) --Ran on menu hide.
+    ALIVE_MainMenu_MenuAgent.Hide = function(self, direction) --Ran on menu hide.
         ChorePlay("ui_alphaGradient_hide")
         ;
         (Menu.Hide)(self)
     end
 
-    menu.Populate = function(self) --Populate the menu here. Add buttons & everything functional.
+    ALIVE_MainMenu_MenuAgent.Populate = function(self) --Populate the menu here. Add buttons & everything functional.
 
         local topText = "";
 
@@ -178,18 +180,18 @@ ALIVE_MainMenu_CreateAndPopulateMenu = function()
 
         local legendWidget = Menu_Add(Legend)
         legendWidget.Place = function(self)
-            self:AnchorToAgent(menu.agent, "left", "bottom")
+            self:AnchorToAgent(ALIVE_MainMenu_MenuAgent.agent, "left", "bottom")
         end
         ALIVE_Menu_UpdateLegend();
     end
 
-    menu.onModalPopped = function(self)
+    ALIVE_MainMenu_MenuAgent.onModalPopped = function(self)
         (Menu.onModalPopped)(self)
         ALIVE_Menu_UpdateLegend()
     end
 
-    Menu_Push(menu); --This is vitally important. Fixes alignment bug. -Violet 
-    Menu_Show(menu);
+    Menu_Push(ALIVE_MainMenu_MenuAgent); --This is vitally important. Fixes alignment bug. -Violet 
+    Menu_Show(ALIVE_MainMenu_MenuAgent);
 end
 
 ALIVE_MainMenu_PrepareMenu = function() --Boilerplate to ensure there are no scaling issues or visual inconsistencies.

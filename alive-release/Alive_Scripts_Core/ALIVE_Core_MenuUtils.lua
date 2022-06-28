@@ -7,6 +7,7 @@ ResourceSetEnable("WalkingDead404");
 ResourceSetEnable("ProjectSeason4");
 
 ALIVE_Menu_AreCreditsRunning = false;
+ALIVE_Menu_CreditsMusic = nil;
 
 ALIVE_Menu_ExitToDefinitive = function() --Exit to Definitive Edition w/ popup modal
     WidgetInputHandler_EnableInput(false)
@@ -50,32 +51,79 @@ ALIVE_Menu_UpdateLegend = function()
   end
 end
 
-ALIVE_Menu_PlayCredits = function(menu, sound)
+--Internal function used to clean up the credits.
+--Checks for main menu, and if unavailable, switches to the Main Menu scene.
+ALIVE_Menu_CleanUpCredits = function()
+  print("Cleaning up credits!");
+  Sleep(5);
+  
+  if ALIVE_Menu_CreditsMusic ~= nil then
+    ControllerFadeOut(ALIVE_Menu_CreditsMusic, 0.5, true)
+  end
+
+  if ALIVE_MainMenu_MenuAgent == nil then
+    print("No menu found. Running SubProject_Switch.")
+    SubProject_Switch("Menu", "ALIVE_Level_MainMenu.lua");
+    return
+  end
+
+  Sleep(1);
+  SceneRemove("ui_creditsClosing.scene");
+  Sleep(0.5);
+  if ALIVE_Menu_ActiveMenuSound ~= nil then
+    ControllerFadeIn(ALIVE_Menu_ActiveMenuSound, 0.5, true)
+  end
+  Menu_Push(ALIVE_MainMenu_MenuAgent, "ui_menuMain.scene");
+end
+
+
+--Plays credits, with optional arguments for sound.
+--If sound is provided, it will mute the sound controller.
+ALIVE_Menu_PlayCredits = function()
   local cScene = "ui_creditsClosing.scene";
   local cSpeed = 0.5;
-  local cPos = -11.5;
+  
+  --Remember to update these when you update the credits! -Violet
+  local cPos = -16.5; --Determines the initial starting point
+  local cPosMax = 9; --Determines where the credits *Stop* scrolling, eg. when the legal text is centered.
+
+  local scrollCredits = true;
 
   if ALIVE_Menu_AreCreditsRunning then
     return false
   end
-  ALIVE_Menu_AreCreditsRunning = true;
-  MenuUtils_AddScene(cScene);
-  Menu_Pop();
 
-  if sound ~= nil then
-    ControllerSetVolume(sound, 0);
+  ALIVE_Menu_AreCreditsRunning = true;
+  Menu_Pop();
+  
+  if ALIVE_Menu_ActiveMenuSound ~= nil then
+    ControllerFadeOut(ALIVE_Menu_ActiveMenuSound, 0.5, true)
   end
 
+  Sleep(1);
+  MenuUtils_AddScene(cScene); --Add credits scene for blank background.
   Sleep(0.25);
 
-  local creditsMusic = SoundPlay("music_custom1.wav");
-  ControllerSetLooping(creditsMusic, true);
+  ALIVE_Menu_CreditsMusic = SoundPlay("music_custom1.wav");
+  ControllerSetLooping(ALIVE_Menu_CreditsMusic, true);
 
   Sleep(0.5);
 
-  ALIVE_Menu_CreateTextAgent("ALIVE_Credits_Text", ALIVE_Menu_CreditsText, 0, 0, 0, nil, nil, cScene)
+  ALIVE_Menu_CreateTextAgent("ALIVE_Credits_Text", ALIVE_Menu_CreditsText, 0, cPos, 0, nil, nil, cScene)
 
   local CreditsUpdater = function()
+    if not scrollCredits then
+      return false
+    end
+
+    if cPos >= cPosMax then
+      print("Reached max credits position.");
+      ALIVE_SetAgentWorldPosition("ALIVE_Credits_Text", Vector(0, cPosMax, 0), cScene)
+      scrollCredits = false;
+      ThreadStart(ALIVE_Menu_CleanUpCredits);
+      return
+    end
+
     cPos = cPos + (cSpeed * GetFrameTime());
     ALIVE_SetAgentWorldPosition("ALIVE_Credits_Text", Vector(0, cPos, 0), cScene)
   end
@@ -84,7 +132,6 @@ ALIVE_Menu_PlayCredits = function(menu, sound)
 end
 
 ALIVE_Menu_Configurator = function(menu, isRestarting)
-
   if isRestarting then
     local isOkToOverride = DialogBox_YesNo("This will overwrite your current save file! If you'd like to start a new file, head to Settings -> Saves.", "Are you sure?")
 
@@ -97,38 +144,39 @@ ALIVE_Menu_Configurator = function(menu, isRestarting)
   end
   
   Sleep(0.25);
-  
-
-  DialogBox("Are you gay?", "Think about your past...", "Go Fuck Yourself", false, "GUILTY!!!!", true, "TitsAndBalls", "Tits and Balls")
 end
 
 ALIVE_Menu_CreditsText = [[
-
-
   Telltale Modding Group
   ALIVE INSIDE
 
   Created by
   Droyti
 
+
   Developed By
   David Matos
   Droyti
+
 
   Written By
   Liam "Denymeister" Denton
   Droyti
   David Matos
 
+
   Textures by
   FrankDP1
+
 
   Tools Developed By
   Ben O'Sullivan
   Lucas Saragosa
 
+
   Custom Music By
   FlashOfVolt
+
 
   Special Thanks
   ZealotTormounds
@@ -136,6 +184,18 @@ ALIVE_Menu_CreditsText = [[
   DomTheBomb
   Lightning
   and You.
+
+
+
+
+
+
+
+
+
+
+
+
 
   Copyright (C) 2020-22 Telltale Modding Group. Alive Inside is a fan
   project, created wholly without profit.
