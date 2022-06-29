@@ -113,7 +113,7 @@ ALIVE_MainMenu_PrepareAgents = function()
     --local bgMusic = SoundPlay("mus_loop_clementine_03.wav");
     --local bgMusic = SoundPlay("mus_loop_clementine_01.wav"); --the real shit
     --local bgMusic = SoundPlay("music_custom1.wav"); --flashvolts "credits" track
-    ALIVE_Menu_ActiveMenuSound = SoundPlay("mus_401_alvinJunior.ogg");
+    ALIVE_Menu_ActiveMenuSound = SoundPlay(ALIVE_Menu_MenuMusicFile);
     --ALIVE_Menu_ActiveMenuSound = SoundPlay("mus_loop_AJ_01a.wav"); --what it should be (davids a dum dum)
     ControllerSetLooping(ALIVE_Menu_ActiveMenuSound, true);
 end
