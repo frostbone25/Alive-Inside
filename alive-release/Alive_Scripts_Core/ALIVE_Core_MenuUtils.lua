@@ -11,7 +11,16 @@ ResourceSetEnable("Project")
 ALIVE_Menu_AreCreditsRunning = false;
 ALIVE_Menu_CreditsMusic = nil;
 
-ALIVE_Menu_ExitToDefinitive = function() --Exit to Definitive Edition w/ popup modal
+ALIVE_Menu_MenuMusicFile = "mus_401_alvinJunior.ogg"
+ALIVE_Menu_CreditsMusicFile = "music_custom1.wav"
+
+local mScene = "ui_menuMain.scene";
+local cancelCredits = false;
+
+--[[
+Exit to Definitive Edition - Includes Popup Modal
+--]] 
+ALIVE_Menu_ExitToDefinitive = function()
     WidgetInputHandler_EnableInput(false)
     
     local toReturn = DialogBox_YesNo("Are you sure you want to return to the Definitive Edition menu? All unsaved progress will be lost.", "Exit to Definitive Menu")
@@ -24,40 +33,126 @@ ALIVE_Menu_ExitToDefinitive = function() --Exit to Definitive Edition w/ popup m
     end
 end
 
-local ALIVE_Menu_CreateTextAgent = function(name, text, posx, posy, posz, halign, valign, theScene)
-  local pos = Vector(posx, posy, posz)
-  local textAgent = AgentCreate(name, "ui_text.prop", pos, Vector(0, 0, 0), theScene)
-  if halign then
-    TextSetHorizAlign(textAgent, halign)
-  end
-  if valign then
-    TextSetVertAlign(textAgent, valign)
-  end
-  TextSet(textAgent, text)
-  return textAgent
+--[[
+Exit to Alive Inside Main Menu - Includes Popup Modal
+--]] 
+ALIVE_Menu_ExitToMainMenu = function()
+    WidgetInputHandler_EnableInput(false)
+    
+    local toReturn = DialogBox_YesNo("Are you sure you want to return to the main menu? All unsaved progress will be lost.", "Exit to Main Menu")
+    
+    if (toReturn) then
+        ChorePlayAndWait("ui_alphaGradient_hide");
+        SubProject_Switch("Menu", "ALIVE_Level_MainMenu.lua");
+    else
+        WidgetInputHandler_EnableInput(true);
+    end 
+end 
+
+--[[
+Exit to Root Menu - ONLY TO BE USED IN SUBMENUS
+--]] 
+ALIVE_Menu_ReturnToRootMenu = function()
+  Menu_Pop();
+  Menu_Push(ALIVE_Menu_ActiveMenuAgent);
+  Menu_Show(ALIVE_Menu_ActiveMenuAgent);
 end
 
-local SetSelectableExtents = function(agent, extentX, extentY)
-  local propSet = AgentGetRuntimeProperties(agent)
-  if propSet then
-    PropertySet(propSet, "Extents Min", Vector(-extentX, -extentY, 0))
-    PropertySet(propSet, "Extents Max", Vector(extentX, extentY, 0))
-  end
+--[[
+"Menu not yet implemented" error dialog
+--]] 
+ALIVE_Menu_NotYetImplemented = function()
+  WidgetInputHandler_EnableInput(false)
+  DialogBox_Okay("This menu hasn't been implemented yet!", "Whoops!")
+  WidgetInputHandler_EnableInput(true)
 end
 
-ALIVE_Menu_UpdateLegend = function()
-  Legend_Clear()
-  Legend_Add("faceButtonDown", "legend_select")
-  if IsPlatformXboxOne() then
-    Legend_Add("faceButtonUp", MenuUtils_LegendStringForProfileUser(Menu_Text("legend_changeProfile")), "PlatformOpenAccountPickerUI()")
+ALIVE_Menu_Configurator = function(menu, isRestarting)
+  if isRestarting then
+    local isOkToOverride = DialogBox_YesNo("This will overwrite your current save file! If you'd like to start a new file, head to Settings -> Saves.", "Are you sure?")
+
+    if not isOkToOverride then
+      Sleep(0.5)
+      WidgetInputHandler_EnableInput(true)
+      Menu_Push(menu)
+      return
+    end
   end
+  
+  Sleep(0.25);
+end
+
+ALIVE_Menu_CreateSettingsMenu = function()
+  local SettingsMenu = Menu_Create(ListMenu, "ui_menuSettings", mScene) 
+  SettingsMenu.align = "left"
+  SettingsMenu.background = {}
+
+    SettingsMenu.Show = function(self, direction) --Ran on menu show.
+        if direction and direction < 0 then
+            ChorePlay("ui_alphaGradient_show")
+        end
+        ;
+        (Menu.Show)(self)
+        RichPresence_Set("richPresence_mainMenu", false)
+        ALIVE_Menu_UpdateLegend();
+    end
+
+    SettingsMenu.Hide = function(self, direction) --Ran on menu hide.
+        ChorePlay("ui_alphaGradient_hide")
+        ;
+        (Menu.Hide)(self)
+    end
+
+    SettingsMenu.Populate = function(self) --Populate the menu here. Add buttons & everything functional.
+
+        print("Settings - Reached Milestone: Populate Menu");
+
+        local header = Menu_Add(Header, nil, "Settings");
+        AgentSetProperty(header.agent, "Text Glyph Scale", 1.5);
+        Menu_Add(ListButtonLite, "settings_audio", "Audio", "ALIVE_Menu_NotYetImplemented()");
+        Menu_Add(ListButtonLite, "settings_controls", "Controls", "ALIVE_Menu_NotYetImplemented()");
+        Menu_Add(ListButtonLite, "settings_access", "Accessibility", "ALIVE_Menu_NotYetImplemented()");
+        Menu_Add(ListButtonLite, "settings_back", "Back", "ALIVE_Menu_ReturnToRootMenu()")
+        
+        print("Population Complete!");
+
+        local legendWidget = Menu_Add(Legend)
+        legendWidget.Place = function(self)
+            self:AnchorToAgent(SettingsMenu.agent, "left", "bottom")
+        end
+        ALIVE_Menu_UpdateLegend();
+    end
+
+    SettingsMenu.onModalPopped = function(self)
+        (Menu.onModalPopped)(self)
+        ALIVE_Menu_UpdateLegend()
+    end
+    
+    print("Settings - Reached Milestone: Pop / Push");
+
+    Menu_Pop();
+    Menu_Push(SettingsMenu); --This is vitally important. Fixes alignment bug. -Violet 
+    Menu_Show(SettingsMenu);  
+end
+
+Credits_OnCancel = function(event)
+  ALIVE_CancelCredits();
+end
+
+ALIVE_CancelCredits = function(event)
+  print("Cancelling credits.");
+  cancelCredits = true;
+  ALIVE_Menu_CleanUpCredits(true);
 end
 
 --Internal function used to clean up the credits.
 --Checks for main menu, and if unavailable, switches to the Main Menu scene.
-ALIVE_Menu_CleanUpCredits = function()
+ALIVE_Menu_CleanUpCredits = function(cancel)
   print("Cleaning up credits!");
-  Sleep(5);
+  InputMapperDeactivate("Credits");
+  if not cancel then
+    Sleep(5);
+  end
   
   if ALIVE_Menu_CreditsMusic ~= nil then
     ControllerFadeOut(ALIVE_Menu_CreditsMusic, 0.5, true)
@@ -65,7 +160,7 @@ ALIVE_Menu_CleanUpCredits = function()
   
   ALIVE_Menu_AreCreditsRunning = false;
 
-  if ALIVE_MainMenu_MenuAgent == nil then
+  if not ALIVE_Menu_IsMainMenuActive or ALIVE_Menu_ActiveMenuAgent == nil then
     print("No menu found. Running SubProject_Switch.")
     SubProject_Switch("Menu", "ALIVE_Level_MainMenu.lua");
     return
@@ -76,17 +171,18 @@ ALIVE_Menu_CleanUpCredits = function()
   SceneRemove("ui_creditsClosing.scene");
   Sleep(0.5);
   if ALIVE_Menu_ActiveMenuSound ~= nil then
-    ALIVE_Menu_ActiveMenuSound = SoundPlay("mus_loop_AJ_01a.wav");
+    ALIVE_Menu_ActiveMenuSound = SoundPlay(ALIVE_Menu_MenuMusicFile);
     ControllerSetVolume(ALIVE_Menu_ActiveMenuSound, 1);
     ControllerSetLooping(ALIVE_Menu_ActiveMenuSound, true);
   end
-  Menu_Push(ALIVE_MainMenu_MenuAgent, "ui_menuMain.scene");
+  Menu_Push(ALIVE_Menu_ActiveMenuAgent, "ui_menuMain.scene");
 end
 
 --Plays the credits
 ALIVE_Menu_PlayCredits = function()
   print("---ALIVE_Menu_PlayCredits---")
   
+  InputMapperActivate("Credits");
   local cScene = "ui_creditsClosing.scene";
   local cSpeed = 0.5; --0.5
   --Remember to update these when you update the credits! -Violet
@@ -101,9 +197,16 @@ ALIVE_Menu_PlayCredits = function()
   ALIVE_Menu_AreCreditsRunning = true; 
   CursorHide(true, "ui_creditsClosing");  
   
-  if ALIVE_Menu_ActiveMenuSound ~= nil then --Fades out the current menu music.
+  if ALIVE_Menu_IsMainMenuActive and ALIVE_Menu_ActiveMenuSound ~= nil then --Fades out the current menu music.
     ControllerFadeOut(ALIVE_Menu_ActiveMenuSound, 0.5, true)
     Menu_Pop(); --Removes any active menus.
+  else --There is not currently an active menu -- SAVE THE GAME instead.
+    if not ALIVE_FileUtils_IsCurrentlyInitialized then
+      ALIVE_Core_FileUtils_Init();
+    end
+    if not ALIVE_Core_FileUtils_SaveSetCheckpoint(99) then
+      DialogBox_Okay("Save failed.")
+    end
   end
 
   print("Reached Milestone: Add Credits Scene");
@@ -112,7 +215,7 @@ ALIVE_Menu_PlayCredits = function()
   MenuUtils_AddScene(cScene); --Add credits scene for blank background.
   Sleep(0.25);
 
-  ALIVE_Menu_CreditsMusic = SoundPlay("music_custom1.wav"); --Adds credits music and plays it.
+  ALIVE_Menu_CreditsMusic = SoundPlay(ALIVE_Menu_CreditsMusicFile); --Adds credits music and plays it.
   ControllerSetLooping(ALIVE_Menu_CreditsMusic, true);
 
   Sleep(0.5);
@@ -123,6 +226,11 @@ ALIVE_Menu_PlayCredits = function()
   local CreditsUpdater = function()
     if not scrollCredits then --If credits aren't to be scrolled, return.
       return false
+    end
+
+    if cancelCredits then
+      cancelCredits = false;
+      scrollCredits = false;
     end
 
     if cPos >= cPosMax then --If the credits have reached their intended final position
@@ -141,19 +249,25 @@ ALIVE_Menu_PlayCredits = function()
   return true; --Return true to prevent failed credits false-positives.
 end
 
-ALIVE_Menu_Configurator = function(menu, isRestarting)
-  if isRestarting then
-    local isOkToOverride = DialogBox_YesNo("This will overwrite your current save file! If you'd like to start a new file, head to Settings -> Saves.", "Are you sure?")
-
-    if not isOkToOverride then
-      Sleep(0.5)
-      WidgetInputHandler_EnableInput(true)
-      Menu_Push(menu)
-      return
-    end
+ALIVE_Menu_UpdateLegend = function()
+  Legend_Clear()
+  Legend_Add("faceButtonDown", "legend_select")
+  if IsPlatformXboxOne() then
+    Legend_Add("faceButtonUp", MenuUtils_LegendStringForProfileUser(Menu_Text("legend_changeProfile")), "PlatformOpenAccountPickerUI()")
   end
-  
-  Sleep(0.25);
+end
+
+ALIVE_Menu_CreateTextAgent = function(name, text, posx, posy, posz, halign, valign, theScene)
+  local pos = Vector(posx, posy, posz)
+  local textAgent = AgentCreate(name, "ui_text.prop", pos, Vector(0, 0, 0), theScene)
+  if halign then
+    TextSetHorizAlign(textAgent, halign)
+  end
+  if valign then
+    TextSetVertAlign(textAgent, valign)
+  end
+  TextSet(textAgent, text)
+  return textAgent
 end
 
 ALIVE_Menu_CreditsText = [[

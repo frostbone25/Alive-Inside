@@ -28,8 +28,9 @@ local kSceneObj = kScene .. ".scene"
 local menuCamera = nil;
 local bgMusic = nil;
 
-ALIVE_MainMenu_MenuAgent = nil;
+ALIVE_Menu_ActiveMenuAgent = nil;
 ALIVE_Menu_ActiveMenuSound = nil;
+ALIVE_Menu_IsMainMenuActive = false;
 
 --Cutscene Development Variables
 ALIVE_Development_SceneObject = keyArtScene;
@@ -112,7 +113,8 @@ ALIVE_MainMenu_PrepareAgents = function()
     --local bgMusic = SoundPlay("mus_loop_clementine_03.wav");
     --local bgMusic = SoundPlay("mus_loop_clementine_01.wav"); --the real shit
     --local bgMusic = SoundPlay("music_custom1.wav"); --flashvolts "credits" track
-    ALIVE_Menu_ActiveMenuSound = SoundPlay("mus_loop_AJ_01a.wav"); --what it should be
+    ALIVE_Menu_ActiveMenuSound = SoundPlay(ALIVE_Menu_MenuMusicFile);
+    --ALIVE_Menu_ActiveMenuSound = SoundPlay("mus_loop_AJ_01a.wav"); --what it should be (davids a dum dum)
     ControllerSetLooping(ALIVE_Menu_ActiveMenuSound, true);
 end
 
@@ -122,9 +124,9 @@ ALIVE_MainMenu_LaunchConfigurator = function()
     Sleep(0.5)
     
     if ALIVE_FileUtils_ActiveSave.checkpoint == 0 then
-            ALIVE_Menu_Configurator(ALIVE_MainMenu_MenuAgent, false)
+            ALIVE_Menu_Configurator(ALIVE_Menu_ActiveMenuAgent, false)
     elseif ALIVE_FileUtils_ActiveSave.checkpoint == 99 then
-            ALIVE_Menu_Configurator(ALIVE_MainMenu_MenuAgent, true)
+            ALIVE_Menu_Configurator(ALIVE_Menu_ActiveMenuAgent, true)
     else
             SubProject_Switch("Menu", "ALIVE_Level_VioletSandbox.lua")
    end
@@ -137,11 +139,12 @@ ALIVE_MainMenu_LaunchCredits = function()
 end
 
 ALIVE_MainMenu_CreateAndPopulateMenu = function()
-    ALIVE_MainMenu_MenuAgent = Menu_Create(ListMenu, "ui_menuMain", kScene)
-    ALIVE_MainMenu_MenuAgent.align = "left"
-    ALIVE_MainMenu_MenuAgent.background = {}
+    ALIVE_Menu_IsMainMenuActive = true;
+    ALIVE_Menu_ActiveMenuAgent = Menu_Create(ListMenu, "ui_menuMain", kScene)
+    ALIVE_Menu_ActiveMenuAgent.align = "left"
+    ALIVE_Menu_ActiveMenuAgent.background = {}
 
-    ALIVE_MainMenu_MenuAgent.Show = function(self, direction) --Ran on menu show.
+    ALIVE_Menu_ActiveMenuAgent.Show = function(self, direction) --Ran on menu show.
         if direction and direction < 0 then
             ChorePlay("ui_alphaGradient_show")
         end
@@ -151,13 +154,13 @@ ALIVE_MainMenu_CreateAndPopulateMenu = function()
         ALIVE_Menu_UpdateLegend();
     end
 
-    ALIVE_MainMenu_MenuAgent.Hide = function(self, direction) --Ran on menu hide.
+    ALIVE_Menu_ActiveMenuAgent.Hide = function(self, direction) --Ran on menu hide.
         ChorePlay("ui_alphaGradient_hide")
         ;
         (Menu.Hide)(self)
     end
 
-    ALIVE_MainMenu_MenuAgent.Populate = function(self) --Populate the menu here. Add buttons & everything functional.
+    ALIVE_Menu_ActiveMenuAgent.Populate = function(self) --Populate the menu here. Add buttons & everything functional.
 
         local topText = "";
 
@@ -173,7 +176,7 @@ ALIVE_MainMenu_CreateAndPopulateMenu = function()
         local buttonPlay =  Menu_Add(ListButtonLite, "play", topText, "ALIVE_MainMenu_LaunchConfigurator()") --ALIVE_Menu_Configurator()
         AgentSetProperty(buttonPlay.agent, "Text Glyph Scale", 1.5);
 
-        Menu_Add(ListButtonLite, "settings", "Settings", "ALIVE_MainMenu_Settings()")
+        Menu_Add(ListButtonLite, "settings", "Settings", "ALIVE_Menu_CreateSettingsMenu()")
         Menu_Add(ListButtonLite, "credits", "Credits", "ALIVE_MainMenu_LaunchCredits()")
         Menu_Add(ListButtonLite, "definitive", "Definitive Menu", "ALIVE_Menu_ExitToDefinitive()")
         if IsPlatformPC() or IsPlatformMac() then
@@ -182,18 +185,18 @@ ALIVE_MainMenu_CreateAndPopulateMenu = function()
 
         local legendWidget = Menu_Add(Legend)
         legendWidget.Place = function(self)
-            self:AnchorToAgent(ALIVE_MainMenu_MenuAgent.agent, "left", "bottom")
+            self:AnchorToAgent(ALIVE_Menu_ActiveMenuAgent.agent, "left", "bottom")
         end
         ALIVE_Menu_UpdateLegend();
     end
 
-    ALIVE_MainMenu_MenuAgent.onModalPopped = function(self)
+    ALIVE_Menu_ActiveMenuAgent.onModalPopped = function(self)
         (Menu.onModalPopped)(self)
         ALIVE_Menu_UpdateLegend()
     end
 
-    Menu_Push(ALIVE_MainMenu_MenuAgent); --This is vitally important. Fixes alignment bug. -Violet 
-    Menu_Show(ALIVE_MainMenu_MenuAgent);
+    Menu_Push(ALIVE_Menu_ActiveMenuAgent); --This is vitally important. Fixes alignment bug. -Violet 
+    Menu_Show(ALIVE_Menu_ActiveMenuAgent);
 end
 
 ALIVE_MainMenu_PrepareMenu = function() --Boilerplate to ensure there are no scaling issues or visual inconsistencies.
