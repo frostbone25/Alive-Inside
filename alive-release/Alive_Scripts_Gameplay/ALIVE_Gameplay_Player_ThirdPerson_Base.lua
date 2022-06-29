@@ -22,6 +22,9 @@ thirdperson_name_dummyObject = "Player_ThirdPersonDummyObject";
 thirdperson_name_dummyObjectHip = "Player_ThirdPersonDummyHipObject";
 thirdperson_name_knife = "Player_KnifeObject";
 thirdperson_sceneWbox = "customWBOX.wbox";
+--thirdperson_sceneWbox = "adv_riverShoreline.wbox";
+--thirdperson_sceneWbox = "adv_riverShorelineNight.wbox";
+--thirdperson_sceneWbox = "adv_riverShorelineNight_dock.wbox";
 
 -------------------------- PROPERTIES - STATES --------------------------
 thirdperson_state_moving = false;

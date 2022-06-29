@@ -13,11 +13,11 @@ ALIVE_PrintSceneListToTXT = function(kScene, txtName)
     local scene_agents = SceneGetAgents(kScene)
     
     --printing options
-    local print_agent_transformation    = false
+    local print_agent_transformation    = true
     local print_agent_properties        = false
     local print_agent_properties_keyset = false --not that useful
     local print_scene_camera            = false
-    local printOnlyName                 = true
+    local printOnlyName                 = false
     
     local print_option_showValue = true;
     local print_option_showValueType = true;

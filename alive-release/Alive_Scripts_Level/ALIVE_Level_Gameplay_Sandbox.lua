@@ -17,14 +17,14 @@ require("ALIVE_Character_Clementine.lua");
 
 --main level variables
 local kScript = "ALIVE_Level_Gameplay_Sandbox";
-local kScene = "adv_boardingSchoolExterior";
-local agent_name_scene = "adv_boardingSchoolExterior.scene"; 
+--local kScene = "adv_boardingSchoolExterior";
+--local agent_name_scene = "adv_boardingSchoolExterior.scene"; 
 --local kScene = "adv_richmondOverpass";
 --local agent_name_scene = "adv_richmondOverpass.scene"; 
 --local kScene = "adv_richmondStreetTile";
 --local agent_name_scene = "adv_richmondStreetTile.scene"; 
---local kScene = "adv_boardingSchoolInterior"; --401/402/403
---local agent_name_scene = "adv_boardingSchoolInterior.scene";  --401/402/403
+local kScene = "adv_boardingSchoolInterior"; --401/402/403
+local agent_name_scene = "adv_boardingSchoolInterior.scene";  --401/402/403
 --local kScene = "adv_boardingSchoolInteriorNight"; --402
 --local agent_name_scene = "adv_boardingSchoolInteriorNight.scene";  --402
 --local kScene = "adv_dormRoom"; --402
@@ -37,6 +37,12 @@ local agent_name_scene = "adv_boardingSchoolExterior.scene";
 --local agent_name_scene = "adv_boardingSchoolDorm.scene";  --401/402/403/404
 --local kScene = "adv_greenHouse"; --402
 --local agent_name_scene = "adv_greenHouse.scene";  --402
+--local kScene = "adv_riverShoreline"; --403
+--local agent_name_scene = "adv_riverShoreline.scene"; --403
+--local kScene = "adv_riverShorelineNight"; --403/404
+--local agent_name_scene = "adv_riverShorelineNight.scene"; --403/404
+--local kScene = "adv_cliffBridge"; --404
+--local agent_name_scene = "adv_cliffBridge.scene"; --404
 
 --season 3
 --local kScene = "adv_richmondMedical"; --303
@@ -95,11 +101,12 @@ end
 
 ALIVE_Level_Gameplay_Sandbox = function()
     --ALIVE_PrintSceneListToTXT(kScene, "adv_boardingSchoolExterior.txt");
+    --ALIVE_PrintSceneListToTXT(kScene, "adv_boardingSchoolInterior.txt");
     --ALIVE_PrintValidPropertyNames("fx_lightShaft01", kScene);
 
     ALIVE_Core_Project_SetProjectSettings();
-    ALIVE_Scene_LevelCleanup_403_BoardingSchoolExterior(kScene);
-    ALIVE_Scene_LevelRelight_403_BoardingSchoolExterior(kScene);
+    --ALIVE_Scene_LevelCleanup_403_BoardingSchoolExterior(kScene);
+    --ALIVE_Scene_LevelRelight_403_BoardingSchoolExterior(kScene);
 
     --ALIVE_Scene_LevelCleanup_305_RichmondOverpass(kScene);
     --ALIVE_Scene_LevelRelight_305_RichmondOverpass(kScene);
@@ -121,8 +128,8 @@ ALIVE_Level_Gameplay_Sandbox = function()
         --Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Main);
     else
         SceneAdd(ThirdPerson_UI_kScene);
-        ALIVE_Gameplay_CreateThirdPersonController(Vector(15, 0, 0));
-        ALIVE_Gameplay_AI_CreateZombies(10, Vector(0, 0, 17), Vector(15, 0, 15));
+        ALIVE_Gameplay_CreateThirdPersonController(Vector(18, 0, 0));
+        --ALIVE_Gameplay_AI_CreateZombies(10, Vector(0, 0, 17), Vector(15, 0, 15));
     end
 
     ALIVE_Character_AJ_Jackets(kScene);
