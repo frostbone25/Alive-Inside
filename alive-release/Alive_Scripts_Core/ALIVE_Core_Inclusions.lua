@@ -7,7 +7,7 @@ require("ALIVE_Core_Color.lua");
 require("ALIVE_Core_DepthOfFieldAutofocus.lua");
 require("ALIVE_Core_FileUtils.lua");
 require("ALIVE_Core_Math.lua");
-require("ALIVE_Core_MenuUtils.lua");
+require("ALIVE_Menu_MenuUtils.lua");
 require("ALIVE_Core_Printing.lua");
 require("ALIVE_Core_Strings.lua");
 require("ALIVE_Core_PropertyKeys.lua");

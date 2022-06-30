@@ -1,4 +1,5 @@
 ALIVE_Core_Project_IsDebugMode = true;
+ALIVE_Core_Project_Version = "1.0.0";
 
 ALIVE_Core_Project_SetProjectSettings = function()
     local prefs = GetPreferences();

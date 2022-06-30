@@ -6,6 +6,8 @@ ResourceSetEnable("WalkingDead404");
 ResourceSetEnable("Menu");
 
 require("ALIVE_Core_Inclusions.lua");
+require("ALIVE_Menu_Credits.lua");
+require("ALIVE_Menu_Settings.lua");
 require("ALIVE_Cutscene_HandheldCameraAnimation.lua");
 require("ALIVE_Scene_LevelCleanup_404_BoardingSchoolDorm.lua");
 require("ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm.lua");

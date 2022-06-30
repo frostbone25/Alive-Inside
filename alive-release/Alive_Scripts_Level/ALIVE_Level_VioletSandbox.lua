@@ -1,4 +1,5 @@
 require("ALIVE_Core_Inclusions.lua");
+require("ALIVE_Menu_Credits.lua");
 
 --Enable requisite ResourceSets
 ResourceSetEnable("ProjectSeason4");
