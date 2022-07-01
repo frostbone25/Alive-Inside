@@ -128,7 +128,7 @@ ALIVE_Level_Gameplay_Sandbox = function()
         --Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Main);
     else
         --SceneAdd(ThirdPerson_UI_kScene);
-        ALIVE_Gameplay_CreateThirdPersonController(Vector(18, 0, 0));
+        ALIVE_Gameplay_CreateThirdPersonController(Vector(18, 0, 0), kScene);
         --ALIVE_Gameplay_AI_CreateZombies(10, Vector(0, 0, 17), Vector(15, 0, 15));
     end
 

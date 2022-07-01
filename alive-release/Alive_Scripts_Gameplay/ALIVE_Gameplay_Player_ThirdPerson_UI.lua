@@ -1,27 +1,40 @@
---ThirdPerson_UI_kScene = "ui_main.scene";
-ThirdPerson_UI_kScene = "ui_vignette.scene";
---ThirdPerson_UI_kScene = "default.scene";
+local kScene = "";
 
-ALIVE_Gameplay_Player_ThirdPerson_UI_CreateUI = function()
-    --local textAgent = AgentCreate("UITEXTTEST", "ui_text.prop", Vector(0.5,0.5,-1), Vector(0,0,0), ThirdPerson_UI_kScene, false, false);
-    local textAgent = AgentCreate("UITEXTTEST", "ui_text.prop", Vector(0.5,0.5,-1));
+ALIVE_Gameplay_Player_ThirdPerson_UI_Init = function(scene)
+    if scene == nil then
+        return false
+    end
+    
+    kScene = scene;
 
-    --if halign then
-        --TextSetHorizAlign(textAgent, true)
-    --end
-    
-    --if valign then
-        --TextSetVertAlign(textAgent, valign)
-    --end
-    
-    TextSet(textAgent, "TESTING");
-    
-    AgentSetProperty(textAgent, "Text Render Layer", 99)
+    return true;
+end
 
-    --ThirdPerson_UI_kScene
-    ALIVE_PrintSceneListToTXT(ThirdPerson_UI_kScene, "uivingette404.txt");
+
+require("ALIVE_Core_Inclusions.lua");
+
+pauseWasPressedLastFrame = false;
+isSceneHidden = false;
+gamePausedIncrements = 1;
+
+
+ALIVE_Gameplay_Player_ThirdPerson_UI_FixBecauseToolIsPoo = function()
+
 end
 
 ALIVE_Gameplay_Player_ThirdPerson_UI_UpdateUI = function()
+    local pause_isPressed = Input_IsVKeyPressed(27);
 
+    if pause_isPressed and not pauseWasPressedLastFrame then
+        pauseWasPressedLastFrame = true;
+        print("GAME PAUSED " .. gamePausedIncrements);
+        gamePausedIncrements = gamePausedIncrements + 1;
+        print(kScene);
+        SceneHide(kScene, not isSceneHidden);
+        isSceneHidden = not isSceneHidden;
+    elseif not pause_isPressed and pauseWasPressedLastFrame then
+        --Game_PopMode(eModeMenu);
+        ThreadStart(ALIVE_Gameplay_Player_ThirdPerson_UI_FixBecauseToolIsPoo);
+        pauseWasPressedLastFrame = false;
+    end
 end

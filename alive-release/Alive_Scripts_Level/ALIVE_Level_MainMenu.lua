@@ -6,6 +6,7 @@ ResourceSetEnable("WalkingDead404");
 ResourceSetEnable("Menu");
 
 require("ALIVE_Core_Inclusions.lua");
+require("ALIVE_Menu_Main.lua")
 require("ALIVE_Menu_Credits.lua");
 require("ALIVE_Menu_Settings.lua");
 require("ALIVE_Cutscene_HandheldCameraAnimation.lua");
@@ -25,14 +26,7 @@ require("AspectRatio.lua")
 local kScript = "ALIVE_Level_MainMenu"
 local kScene = "ui_menuMain.scene" --adv_boardingSchoolDorm
 local keyArtScene = "adv_boardingSchoolDorm.scene"
-local kSceneObj = kScene .. ".scene"
-
 local menuCamera = nil;
-local bgMusic = nil;
-
-ALIVE_Menu_ActiveMenuAgent = nil;
-ALIVE_Menu_ActiveMenuSound = nil;
-ALIVE_Menu_IsMainMenuActive = false;
 
 --Cutscene Development Variables
 ALIVE_Development_SceneObject = keyArtScene;
@@ -111,94 +105,9 @@ end
 ALIVE_MainMenu_PrepareAgents = function()
 
     local clemHat = AgentCreate("ALIVE_MainMenuClemHat", "obj_capClementine400.prop", Vector(17.12, 0.8125, -4.32), Vector(-2, -65.7, 0), keyArtScene, false, false)
-    --local bgMusic = SoundPlay("mus_loop_clementine_04.wav");
-    --local bgMusic = SoundPlay("mus_loop_clementine_03.wav");
-    --local bgMusic = SoundPlay("mus_loop_clementine_01.wav"); --the real shit
-    --local bgMusic = SoundPlay("music_custom1.wav"); --flashvolts "credits" track
     ALIVE_Menu_ActiveMenuSound = SoundPlay(ALIVE_Menu_MenuMusicFile);
     --ALIVE_Menu_ActiveMenuSound = SoundPlay("mus_loop_AJ_01a.wav"); --what it should be (davids a dum dum)
     ControllerSetLooping(ALIVE_Menu_ActiveMenuSound, true);
-end
-
-ALIVE_MainMenu_LaunchConfigurator = function()
-    WidgetInputHandler_EnableInput(false)
-    Menu_Pop()
-    Sleep(0.5)
-    
-    if ALIVE_FileUtils_ActiveSave.checkpoint == 0 then
-            ALIVE_Menu_Configurator(ALIVE_Menu_ActiveMenuAgent, false)
-    elseif ALIVE_FileUtils_ActiveSave.checkpoint == 99 then
-            ALIVE_Menu_Configurator(ALIVE_Menu_ActiveMenuAgent, true)
-    else
-            SubProject_Switch("Menu", "ALIVE_Level_VioletSandbox.lua")
-   end
-end
-
-ALIVE_MainMenu_LaunchCredits = function()
-    if not ALIVE_Menu_PlayCredits() then
-        DialogBox_Okay("The credits are already running.", "Error");
-    end
-end
-
-ALIVE_MainMenu_CreateAndPopulateMenu = function()
-    ALIVE_Menu_IsMainMenuActive = true;
-    ALIVE_Menu_ActiveMenuAgent = Menu_Create(ListMenu, "ui_menuMain", kScene)
-    ALIVE_Menu_ActiveMenuAgent.align = "left"
-    ALIVE_Menu_ActiveMenuAgent.background = {}
-
-    ALIVE_Menu_ActiveMenuAgent.Show = function(self, direction) --Ran on menu show.
-        if direction and direction < 0 then
-            ChorePlay("ui_alphaGradient_show")
-        end
-        ;
-        (Menu.Show)(self)
-        RichPresence_Set("richPresence_mainMenu", false)
-        ALIVE_Menu_UpdateLegend();
-    end
-
-    ALIVE_Menu_ActiveMenuAgent.Hide = function(self, direction) --Ran on menu hide.
-        ChorePlay("ui_alphaGradient_hide")
-        ;
-        (Menu.Hide)(self)
-    end
-
-    ALIVE_Menu_ActiveMenuAgent.Populate = function(self) --Populate the menu here. Add buttons & everything functional.
-
-        local topText = "";
-
-        --If Checkpoint State is "Not Started" or "Game Complete"
-        if ALIVE_FileUtils_ActiveSave.checkpoint == 0 then
-            topText = "New Game"
-        elseif ALIVE_FileUtils_ActiveSave.checkpoint == 99 then
-            topText = "Restart"
-        else
-            topText = "Continue"
-        end
-
-        local buttonPlay =  Menu_Add(ListButtonLite, "play", topText, "ALIVE_MainMenu_LaunchConfigurator()") --ALIVE_Menu_Configurator()
-        AgentSetProperty(buttonPlay.agent, "Text Glyph Scale", 1.5);
-
-        Menu_Add(ListButtonLite, "settings", "Settings", "ALIVE_Menu_CreateSettingsMenu()")
-        Menu_Add(ListButtonLite, "credits", "Credits", "ALIVE_MainMenu_LaunchCredits()")
-        Menu_Add(ListButtonLite, "definitive", "Definitive Menu", "ALIVE_Menu_ExitToDefinitive()")
-        if IsPlatformPC() or IsPlatformMac() then
-            Menu_Add(ListButtonLite, "exit", "label_exitGame", "UI_Confirm( \"popup_quit_header\", \"popup_quit_message\", \"EngineQuit()\" )")
-        end
-
-        local legendWidget = Menu_Add(Legend)
-        legendWidget.Place = function(self)
-            self:AnchorToAgent(ALIVE_Menu_ActiveMenuAgent.agent, "left", "bottom")
-        end
-        ALIVE_Menu_UpdateLegend();
-    end
-
-    ALIVE_Menu_ActiveMenuAgent.onModalPopped = function(self)
-        (Menu.onModalPopped)(self)
-        ALIVE_Menu_UpdateLegend()
-    end
-
-    Menu_Push(ALIVE_Menu_ActiveMenuAgent); --This is vitally important. Fixes alignment bug. -Violet 
-    Menu_Show(ALIVE_Menu_ActiveMenuAgent);
 end
 
 ALIVE_MainMenu_PrepareMenu = function() --Boilerplate to ensure there are no scaling issues or visual inconsistencies.
@@ -223,7 +132,7 @@ ALIVE_MainMenu_PrepareMenu = function() --Boilerplate to ensure there are no sca
     ALIVE_Scene_LevelCleanup_404_BoardingSchoolDorm(keyArtScene);
     ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu(keyArtScene);
 
-    ALIVE_MainMenu_CreateAndPopulateMenu();
+    ALIVE_Menu_CreateMainMenu(kScene);
 end
 
 ALIVE_Level_MainMenu = function()

@@ -15,8 +15,32 @@ ALIVE_Menu_CreditsMusic = nil;
 ALIVE_Menu_MenuMusicFile = "mus_401_alvinJunior.ogg"
 ALIVE_Menu_CreditsMusicFile = "mus_alive_credits.wav"
 
+ALIVE_Menu_ActiveMenuAgent = nil;
+ALIVE_Menu_IsMainMenuActive = false;
+ALIVE_Menu_ActiveMenuSound = nil;
+
+ALIVE_Menu_isGamePaused = false;
+
 mScene = "ui_menuMain.scene";
 cancelCredits = false;
+
+--[[
+Toggles pause TimeScale
+--]]
+ALIVE_Menu_TogglePause = function(kScene)
+  print("Toggling pause in scene " .. kScene);
+  local ts = 1.0;
+  if not ALIVE_Menu_isGamePaused then
+    ts = 0;
+    ALIVE_Menu_isGamePaused = true;
+  else
+    ALIVE_Menu_isGamePaused = false;
+  end
+
+  SetTimeScale(kScene, ts);
+  print("Pause set to " .. ALIVE_Menu_isGamePaused); 
+  return ALIVE_Menu_isGamePaused;
+end
 
 --[[
 Exit to Definitive Edition - Includes Popup Modal
@@ -68,8 +92,10 @@ ALIVE_Menu_NotYetImplemented = function()
   WidgetInputHandler_EnableInput(true)
 end
 
-ALIVE_Menu_ShowMenu = function(menuTS)
-  Menu_Pop();
+ALIVE_Menu_ShowMenu = function(menuTS, overridePop)
+  if not overridePop then
+    Menu_Pop();
+  end 
   Menu_Push(menuTS);
   Menu_Show(menuTS);
 end

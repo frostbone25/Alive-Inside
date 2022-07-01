@@ -58,7 +58,7 @@ ALIVE_Gameplay_AI_Zombies_CurrentStationedZombieObject = nil;
 --|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER SETUP ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER SETUP ||||||||||||||||||||||||||||||||||||||||||||||
 
-ALIVE_Gameplay_CreateThirdPersonController = function(startingPosition)
+ALIVE_Gameplay_CreateThirdPersonController = function(startingPosition, kScene)
     -----------------------------------------------
     --base character
     ALIVE_Gameplay_Player_ThirdPerson_Character_CreateCharacter(startingPosition)
@@ -79,8 +79,10 @@ ALIVE_Gameplay_CreateThirdPersonController = function(startingPosition)
     --base UI
     --ALIVE_Gameplay_Player_ThirdPerson_UI_CreateUI();
 
-    --Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_UI_UpdateUI);
-
+    if ALIVE_Gameplay_Player_ThirdPerson_UI_Init(kScene) then
+        Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_UI_UpdateUI);
+    end
+    
     -----------------------------------------------
     --extra components
     Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_Zombat_SetZombieStation);
