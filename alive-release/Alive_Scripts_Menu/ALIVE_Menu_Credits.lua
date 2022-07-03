@@ -246,5 +246,5 @@ ALIVE_Menu_CreditsText = [[
   Telltale Modding Group is not endorsed by or otherwise associated
   with Telltale Games, Skybound Entertainment, or their affiliates.
 
-  THANK YOU FOR PLAYING
+  Made with <3 across the world | THANK YOU FOR PLAYING
 ]]

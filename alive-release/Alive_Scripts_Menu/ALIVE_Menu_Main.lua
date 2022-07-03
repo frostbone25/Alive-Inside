@@ -16,7 +16,6 @@ ALIVE_Menu_CreateMainMenu = function(scene)
         end
         ;
         (Menu.Show)(self)
-        RichPresence_Set("richPresence_mainMenu", false)
         ALIVE_Menu_UpdateLegend();
     end
 

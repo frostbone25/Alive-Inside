@@ -22,7 +22,6 @@ ALIVE_Menu_CreateAboutMenu = function()
         end
         ;
         (Menu.Show)(self)
-        RichPresence_Set("richPresence_mainMenu", false)
         ALIVE_Menu_UpdateLegend();
     end
 

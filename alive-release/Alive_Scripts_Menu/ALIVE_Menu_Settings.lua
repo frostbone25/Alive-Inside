@@ -12,7 +12,6 @@ ALIVE_Menu_CreateSettingsMenu = function()
         end
         ;
         (Menu.Show)(self)
-        RichPresence_Set("richPresence_mainMenu", false)
         ALIVE_Menu_UpdateLegend();
     end
 

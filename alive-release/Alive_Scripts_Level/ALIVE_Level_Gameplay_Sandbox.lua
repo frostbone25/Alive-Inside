@@ -1,3 +1,9 @@
+ResourceSetEnable("Project");
+ResourceSetEnable("ProjectSeason4");
+ResourceSetEnable("Menu");
+
+require("MenuUtils.lua")
+
 require("ALIVE_Core_Inclusions.lua");
 require("ALIVE_Gameplay_Shared.lua");
 require("ALIVE_Gameplay_Player_ThirdPerson_Base.lua");
@@ -24,6 +30,7 @@ local kScript = "ALIVE_Level_Gameplay_Sandbox";
 --local kScene = "adv_richmondStreetTile";
 --local agent_name_scene = "adv_richmondStreetTile.scene"; 
 local kScene = "adv_boardingSchoolInterior"; --401/402/403
+local mScene = "ui_menuMain.scene"
 local agent_name_scene = "adv_boardingSchoolInterior.scene";  --401/402/403
 --local kScene = "adv_boardingSchoolInteriorNight"; --402
 --local agent_name_scene = "adv_boardingSchoolInteriorNight.scene";  --402
@@ -100,6 +107,7 @@ local WheelBarrowSpawn = function()
 end
 
 ALIVE_Level_Gameplay_Sandbox = function()
+    MenuUtils_AddScene(kScene);
     --ALIVE_PrintSceneListToTXT(kScene, "adv_boardingSchoolExterior.txt");
     --ALIVE_PrintSceneListToTXT(kScene, "adv_boardingSchoolInterior.txt");
     --ALIVE_PrintValidPropertyNames("fx_lightShaft01", kScene);
@@ -143,4 +151,4 @@ ALIVE_Level_Gameplay_Sandbox = function()
     end
 end
 
-SceneOpen(kScene, kScript)
+SceneOpen(mScene, kScript)

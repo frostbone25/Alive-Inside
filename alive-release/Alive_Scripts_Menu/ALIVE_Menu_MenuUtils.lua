@@ -3,12 +3,16 @@ ResourceSetEnable("ProjectSeason4");
 ResourceSetEnable("Menu");
 ResourceSetEnable("Project");
 
-require("MenuUtils.lua")
-require("Credits.lua")
-require("ClickText.lua")
-require("Menu_ListMenu.lua")
+require("UI_ListButton.lua")
+require("UI_ListButtonLite.lua")
+require("UI_Legend.lua")
+require("UI_Popup.lua")
 require("UI_Header.lua")
 require("UI_TextWidget.lua")
+require("Utilities.lua")
+require("MenuUtils.lua")
+require("AspectRatio.lua")
+require("Credits.lua")
 
 ALIVE_Menu_AreCreditsRunning = false;
 ALIVE_Menu_CreditsMusic = nil;
@@ -95,7 +99,9 @@ end
 ALIVE_Menu_ShowMenu = function(menuTS, overridePop)
   if not overridePop then
     Menu_Pop();
+    print("Utils - Popping menus!")
   end 
+  print("Utils - Pushing menus!");
   Menu_Push(menuTS);
   Menu_Show(menuTS);
 end

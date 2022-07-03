@@ -7,20 +7,12 @@ ResourceSetEnable("Menu");
 
 require("ALIVE_Core_Inclusions.lua");
 require("ALIVE_Menu_Main.lua")
+require("ALIVE_Menu_Pause.lua");
 require("ALIVE_Menu_Credits.lua");
 require("ALIVE_Menu_Settings.lua");
 require("ALIVE_Cutscene_HandheldCameraAnimation.lua");
 require("ALIVE_Scene_LevelCleanup_404_BoardingSchoolDorm.lua");
 require("ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm.lua");
-
-require("UI_ListButton.lua")
-require("UI_ListButtonLite.lua")
-require("UI_Legend.lua")
-require("UI_Popup.lua")
-require("Utilities.lua")
-require("MenuUtils.lua")
-require("RichPresence.lua")
-require("AspectRatio.lua")
 
 --Engine Scene Variables
 local kScript = "ALIVE_Level_MainMenu"
@@ -115,6 +107,8 @@ ALIVE_MainMenu_PrepareMenu = function() --Boilerplate to ensure there are no sca
         ClickText_Enable(true)
     end
 
+    local isBlindMode = false;
+
     local prefs = GetPreferences();
 
     if PropertyIsLocal(prefs, "Menu - User Gamma Setting") then
@@ -126,18 +120,23 @@ ALIVE_MainMenu_PrepareMenu = function() --Boilerplate to ensure there are no sca
     RenderForce_16_by_9_AspectRatio(true)
     RenderDelay(1)
     WaitForNextFrame()
-    MenuUtils_AddScene(keyArtScene);
+
+    if not ALIVE_FileUtils_OptionsFile.screenReaderCompat then
+        MenuUtils_AddScene(keyArtScene);
+        isBlindMode = true;
+    end
 
     --perform the cleanup/relight on the key art scene
     ALIVE_Scene_LevelCleanup_404_BoardingSchoolDorm(keyArtScene);
     ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu(keyArtScene);
 
     ALIVE_Menu_CreateMainMenu(kScene);
+
+    return not isBlindMode;
 end
 
 ALIVE_Level_MainMenu = function()
     ALIVE_Core_Project_SetProjectSettings();
-    ALIVE_Core_FileUtils_Init();
 
     if (ALIVE_Core_Project_IsDebugMode) and (EnableFreecamTools) then
         --add the key art scene so we can fly around within it
@@ -158,7 +157,11 @@ ALIVE_Level_MainMenu = function()
         Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Main);
 
     else --Build menu as normal.
-        ALIVE_MainMenu_PrepareMenu();
+        
+        if not ALIVE_MainMenu_PrepareMenu() then
+            return
+        end
+        
         ALIVE_MainMenu_PrepareAgents();
         ALIVE_MainMenu_PrepareCamera();
 
@@ -180,6 +183,10 @@ ALIVE_Level_MainMenu = function()
     end
 
     --ALIVE_PrintSceneListToTXT(keyArtScene, "adv_boardingSchoolDorm404.txt");
+end
+
+if not ALIVE_FileUtils_IsCurrentlyInitialized then
+        ALIVE_Core_FileUtils_Init();
 end
 
 SceneOpen(kScene,kScript)
