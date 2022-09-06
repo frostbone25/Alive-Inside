@@ -26,8 +26,8 @@ ALIVE_Development_SceneObjectAgentName = keyArtScene;
 ALIVE_Development_UseSeasonOneAPI = false;
 ALIVE_Development_FreecamUseFOVScale = false;
 
-local EnableFreecamTools = false;
-local EnablePerformanceMetrics = false;
+local EnableFreecamTools = true;
+local EnablePerformanceMetrics = true;
 
 --DOF Autofocus Variables
 ALIVE_DOF_AUTOFOCUS_SceneObject = keyArtScene;
@@ -51,10 +51,10 @@ ALIVE_DOF_AUTOFOCUS_BokehSettings =
     BokehBrightnessThreshold = 0.1,
     BokehBlurThreshold = 0.1,
     BokehMinSize = 0.0,
-    BokehMaxSize = 0.05,
-    BokehFalloff = 0.30,
+    BokehMaxSize = 0.03,
+    BokehFalloff = 0.75,
     MaxBokehBufferAmount = 1.0,
-    BokehPatternTexture = "bokeh_circle5.d3dtx"
+    BokehPatternTexture = "bokeh_circle.d3dtx"
 };
 ALIVE_DOF_AUTOFOCUS_ManualSettings =
 {
@@ -121,10 +121,10 @@ ALIVE_MainMenu_PrepareMenu = function() --Boilerplate to ensure there are no sca
     RenderDelay(1)
     WaitForNextFrame()
 
-    if not ALIVE_FileUtils_OptionsFile.screenReaderCompat then
+    --if not ALIVE_FileUtils_OptionsFile.screenReaderCompat then
         MenuUtils_AddScene(keyArtScene);
-        isBlindMode = true;
-    end
+    --    isBlindMode = true;
+    --end
 
     --perform the cleanup/relight on the key art scene
     ALIVE_Scene_LevelCleanup_404_BoardingSchoolDorm(keyArtScene);
@@ -132,7 +132,8 @@ ALIVE_MainMenu_PrepareMenu = function() --Boilerplate to ensure there are no sca
 
     ALIVE_Menu_CreateMainMenu(kScene);
 
-    return not isBlindMode;
+    --return not isBlindMode;
+    return true;
 end
 
 ALIVE_Level_MainMenu = function()

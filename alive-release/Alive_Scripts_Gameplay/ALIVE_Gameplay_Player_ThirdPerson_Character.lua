@@ -18,6 +18,12 @@ local thirdperson_controller_anim_crouchWalk_contribution = 0;
 local thirdperson_controller_anim_zombat_idle = nil;
 local thirdperson_controller_anim_zombat_idle_contribution = 0;
 
+local thirdperson_controller_anim_zombat_walk = nil;
+local thirdperson_controller_anim_zombat_walk_contribution = 0;
+
+local thirdperson_controller_anim_zombat_run = nil;
+local thirdperson_controller_anim_zombat_run_contribution = 0;
+
 -------------------------- PROPERTIES - CONTROLLER --------------------------
 local thirdperson_characterOffset = Vector(0, 0, 0);
 local thirdperson_movementSpeed = 0.0;
@@ -89,7 +95,15 @@ ALIVE_Gameplay_Player_ThirdPerson_Character_CreateCharacter = function(startingP
     -----------------------------------------------
     thirdperson_controller_anim_idle = PlayAnimation(agent_character, "sk63_idle_ajStandA.anm");
     thirdperson_controller_anim_walking = PlayAnimation(agent_character, "sk63_aj_walk.anm");
-    thirdperson_controller_anim_running = PlayAnimation(agent_character, "sk63_aj_run.anm");
+    --thirdperson_controller_anim_walking = PlayAnimation(agent_character, "sk63_loco_ajRun.anm");
+    --thirdperson_controller_anim_running = PlayAnimation(agent_character, "sk63_aj_run.anm");
+    --thirdperson_controller_anim_running = PlayAnimation(agent_character, "sk63_aj_run_002.anm");
+    --thirdperson_controller_anim_running = PlayAnimation(agent_character, "sk62_minerva_run.anm");
+    --thirdperson_controller_anim_running = PlayAnimation(agent_character, "sk62_clementine400_run.anm");
+    --thirdperson_controller_anim_running = PlayAnimation(agent_character, "sk61_louis_run.anm");
+    --thirdperson_controller_anim_running = PlayAnimation(agent_character, "sk61_james_run.anm");
+    --thirdperson_controller_anim_running = PlayAnimation(agent_character, "sk56_clementine200_run.anm"); --bad
+    thirdperson_controller_anim_running = PlayAnimation(agent_character, "sk62_violet_run.anm"); --good
     thirdperson_controller_anim_crouchIdle = PlayAnimation(agent_character, "sk63_idle_ajCrouch.anm");
     thirdperson_controller_anim_crouchMoving = PlayAnimation(agent_character, "sk62_clementine400_crouchWalk.anm");
 
@@ -131,67 +145,27 @@ ALIVE_Gameplay_Player_ThirdPerson_Character_CreateCharacter = function(startingP
     thirdperson_agent_character = AgentFindInScene(thirdperson_name_character, ThirdPerson_kScene); --Agent type
     thirdperson_agent_characterParent = AgentFindInScene(thirdperson_name_characterParent, ThirdPerson_kScene); --Agent type
     thirdperson_agent_knife = AgentFindInScene(thirdperson_name_knife, ThirdPerson_kScene); --Agent type
-
-
-
-
-
-
-
-
-
-
-
-    local uiTest = AgentCreate("UITEST1", "ui_vignette.prop", Vector(0,0,0), Vector(0,0,0), ThirdPerson_kScene, false, false);
 end
 
 --|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - INPUT ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - INPUT ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - INPUT ||||||||||||||||||||||||||||||||||||||||||||||
 
-local zombatKeyTimeLag = 0;
---local zombatKeyPrevBool = true;
-
+----------------------------------------------------------------------
 ALIVE_Gameplay_Player_ThirdPerson_Character_UpdateInput = function()
     thirdperson_frameTime = GetFrameTime();
-
-    ------------------------------INPUT------------------------------
-    local key_moveForward = Input_IsVKeyPressed(87); --key w
-    local key_moveBackward = Input_IsVKeyPressed(83); --key s
-    local key_moveLeft = Input_IsVKeyPressed(65); --key a
-    local key_moveRight = Input_IsVKeyPressed(68); --key d
-    local key_running = Input_IsVKeyPressed(16); --key shift
-    local key_crouch1 = Input_IsVKeyPressed(67); --key c
-    local key_crouch2 = Input_IsVKeyPressed(17); --key ctrl
-    local key_zombatToggle = Input_IsVKeyPressed(82); --key R
 
     ------------------------------MOVEMENT------------------------------
     local walkSpeed = 0.013;
     local crouchWalkSpeed = 0.01;
     local runSpeed = 0.06;
     thirdperson_movementSpeed = walkSpeed;
-    
-    --moving
-    if key_moveForward or key_moveBackward or key_moveLeft or key_moveRight then
-        thirdperson_state_moving = true;
-    else
-        thirdperson_state_moving = false;
-    end
 
-    --crouching
-    if key_crouch1 or key_crouch2 then
-        thirdperson_state_crouching = true;
-    else
-        thirdperson_state_crouching = false;
-    end
-    
     --running (can only run if we are not crouching and we are moving)
     if (thirdperson_state_crouching == false) and (thirdperson_state_moving == true) then
-        if key_running then
-            thirdperson_state_running = true;
+        if thirdperson_state_running then
             thirdperson_movementSpeed = runSpeed;
         else
-            thirdperson_state_running = false;
             thirdperson_movementSpeed = walkSpeed;
         end
     else
@@ -199,33 +173,13 @@ ALIVE_Gameplay_Player_ThirdPerson_Character_UpdateInput = function()
         thirdperson_movementSpeed = crouchWalkSpeed;
     end
 
-    local movementVector_x = 0.0;
-    local movementVector_y = 0.0;
-    local movementVector_z = 0.0;
-
-    if key_moveForward then
-        movementVector_z = 1.0;
-    elseif key_moveBackward then
-        movementVector_z = -1.0;
+    if (thirdperson_inputDirection_x > 0) or (thirdperson_inputDirection_x < 0) or (thirdperson_inputDirection_y > 0) or (thirdperson_inputDirection_y < 0) or (thirdperson_inputDirection_z > 0) or (thirdperson_inputDirection_z < 0) then
+        thirdperson_state_moving = true;
+    else
+        thirdperson_state_moving = false;
     end
-    
-    if key_moveLeft then
-        movementVector_x = -1.0;
-    elseif key_moveRight then
-        movementVector_x = 1.0;
-    end
-    
-    thirdperson_movementVector = Vector(movementVector_x, movementVector_y, movementVector_z);
 
-    --ZOMBAT KEYS
-    if key_zombatToggle then
-        zombatKeyTimeLag = zombatKeyTimeLag + GetFrameTime();
-
-        if(zombatKeyTimeLag > 0.25) and (thirdperson_state_zombieStation == false) then
-            thirdperson_state_zombatReady = not thirdperson_state_zombatReady;
-            zombatKeyTimeLag = 0;
-        end
-    end
+    thirdperson_movementVector = Vector(thirdperson_inputDirection_x, thirdperson_inputDirection_y, thirdperson_inputDirection_z);
 end
 
 --|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER UPDATES - CHARACTER ||||||||||||||||||||||||||||||||||||||||||||||
@@ -245,9 +199,7 @@ ALIVE_Gameplay_Player_ThirdPerson_Character_UpdateCharacter = function()
     end
 
     thirdperson_agent_cameraDummy = AgentFindInScene(thirdperson_name_dummyObject, ThirdPerson_kScene);
-    --local newRotation = Vector(thirdperson_inputMouseAmountY - 90, thirdperson_inputMouseAmountX, 0);
-    --newRotation.x = ALIVE_Clamp(newRotation.x, -90, 90);
-    
+
     ------------------------------THIRD PERSON SHARED------------------------------
     local vector_character_position = AgentGetWorldPos(thirdperson_agent_characterParent); --Vector type
     local vector_character_forward = AgentGetForwardVec(thirdperson_agent_characterParent); --Vector type

@@ -1,3 +1,56 @@
+--[[
+local HackyCameraVolumetrics_AgentParentName = "VolumetricParentGroup";
+local HackyCameraVolumetrics_AgentParent = nil;
+
+local HackyCameraVolumetrics_AgentChildName = "Volumetric_";
+
+HackyCameraVolumetrics_Initalize = function()
+  local elementPropFile = "fx_glowWhite.prop" -- in 201 data
+  HackyCameraVolumetrics_AgentParent = AgentCreate(HackyCameraVolumetrics_AgentParentName, "group.prop", Vector(0,0,0), Vector(0,0,0), HackyCameraVolumetrics_kScene, false, false);
+
+  for index = 1, HackyCameraVolumetrics_Settings.Samples, 1 do 
+
+    local currentPosition = Vector(0,0,(index * HackyCameraVolumetrics_Settings.SampleOffset));
+    local currentRotation = Vector(0,180,0);
+    --local currentRotation = Vector(0,0,0);
+
+    local currentElementAgentName = HackyCameraVolumetrics_AgentChildName .. tostring(index);
+    local currentElementAgent = AgentCreate(currentElementAgentName, elementPropFile, currentPosition, currentRotation, HackyCameraVolumetrics_kScene, false, false);
+
+    ALIVE_AgentSetProperty(currentElementAgentName, "Render Global Scale", 20.0, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Render Cull", false, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Render Layer", 25, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Render Diffuse Color", HackyCameraVolumetrics_Settings.FogColor, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Render Constant Alpha Multiply", 1, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Render After Anti-Aliasing", false, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Render EnvLight Shadow Cast Enable", false, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Motion Blur Enabled", false, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Render Depth Test", true, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Camera Facing", false, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Render Static", false, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Camera Facing Type", 0, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Render Depth Write", false, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Render Depth Write Alpha", false, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Render 3D Alpha", false, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Render Color Write", true, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Render Force As Alpha", false, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Render Depth Test Function", 4, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Receive Shadows", true, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Render FX Color Enabled", true, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Render Shadow Force Visible", false, HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "Render Enlighten Force Visible", false, HackyCameraVolumetrics_kScene)
+
+    ALIVE_AgentSetProperty(currentElementAgentName, "fx_glowWhite - Texture", "color_fFFFFF", HackyCameraVolumetrics_kScene)
+    ALIVE_AgentSetProperty(currentElementAgentName, "fx_glowWhite - Light Color Diffuse", HackyCameraVolumetrics_Settings.FogColor, HackyCameraVolumetrics_kScene)
+
+    AgentAttach(currentElementAgent, HackyCameraVolumetrics_AgentParent);
+  end
+
+  AgentSetWorldPos(HackyCameraVolumetrics_AgentParent, Vector(16.77, 1.0, -3.492));
+  AgentSetRot(HackyCameraVolumetrics_AgentParent, Vector(1.70, 152.87, 0));
+end
+]]--
+
 ALIVE_Scene_LevelRelight_404_BoardingSchoolDorm_MainMenu = function(kScene)
     local agent_name_scene = kScene;
     local maxDistance = 2.75;

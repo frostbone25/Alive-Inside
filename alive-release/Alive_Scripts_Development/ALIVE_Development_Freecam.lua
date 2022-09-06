@@ -56,6 +56,8 @@ ALIVE_Development_Freecam_PositionIncrementDefault = 0.025;
 ALIVE_Development_Freecam_PositionIncrementShift = 0.25;
 ALIVE_Development_Freecam_FovIncrement = 0.5;
 
+require("ALIVE_Development_Freecam_Input.lua");
+
 --input workaround because S1 has different API
 local ALIVE_InputKeyPress = function(keyCode)
     if (ALIVE_Development_UseSeasonOneAPI == true) then
@@ -80,17 +82,17 @@ ALIVE_Development_CreateFreeCamera = function()
     ALIVE_RemovingAgentsWithPrefix(sceneObj, "cam_")
 
     CameraPush(ALIVE_Development_Freecam_CameraName);
+
+    InputMapperActivate("Alive_Development_Freecam.imap");
 end
 
 ALIVE_Development_UpdateFreeCamera = function()
     local currFrameTime = GetFrameTime();
 
     --freecamera freezing
-    if ALIVE_InputKeyPress(82) then
-        --R key
+    if ALIVE_InputKeyPress(ALIVE_Core_Keycodes_R) then
         ALIVE_Development_Freecam_Frozen = false;
-    elseif ALIVE_InputKeyPress(70) then
-        --F key
+    elseif ALIVE_InputKeyPress(ALIVE_Core_Keycodes_F) then
         ALIVE_Development_Freecam_Frozen = true;
     end
 
@@ -107,51 +109,42 @@ ALIVE_Development_UpdateFreeCamera = function()
     ------------------------------MOVEMENT------------------------------
     local positionIncrement = ALIVE_Development_Freecam_PositionIncrementDefault;
     
-    if ALIVE_InputKeyPress(16) then
-        --key shift
+    if ALIVE_InputKeyPress(ALIVE_Core_Keycodes_Shift) then
         positionIncrement = ALIVE_Development_Freecam_PositionIncrementShift;
     end
     
-    if ALIVE_InputKeyPress(81) then
-        --key q (decrease)
+    if ALIVE_InputKeyPress(ALIVE_Core_Keycodes_Q) then
         ALIVE_Development_Freecam_InputHeightValue = -positionIncrement;
-    elseif ALIVE_InputKeyPress(69) then
-        --key e (increase)
+    elseif ALIVE_InputKeyPress(ALIVE_Core_Keycodes_E) then
         ALIVE_Development_Freecam_InputHeightValue = positionIncrement;
     else
         ALIVE_Development_Freecam_InputHeightValue = 0;
     end
     
-    if ALIVE_InputKeyPress(87) then
-        --key w (increase)
+    if ALIVE_InputKeyPress(ALIVE_Core_Keycodes_W) then
         ALIVE_Development_Freecam_InputVerticalValue = positionIncrement;
-    elseif ALIVE_InputKeyPress(83) then
-        --key s (decrease)
+    elseif ALIVE_InputKeyPress(ALIVE_Core_Keycodes_S) then
         ALIVE_Development_Freecam_InputVerticalValue = -positionIncrement;
     else
         ALIVE_Development_Freecam_InputVerticalValue = 0;
     end
     
-    if ALIVE_InputKeyPress(65) then
-        --key a (decrease)
+    if ALIVE_InputKeyPress(ALIVE_Core_Keycodes_A) then
         ALIVE_Development_Freecam_InputHorizontalValue = positionIncrement;
-    elseif ALIVE_InputKeyPress(68) then
-        --key d (increase)
+    elseif ALIVE_InputKeyPress(ALIVE_Core_Keycodes_D) then
         ALIVE_Development_Freecam_InputHorizontalValue = -positionIncrement;
     else
         ALIVE_Development_Freecam_InputHorizontalValue = 0;
     end
     
     ------------------------------ZOOMING------------------------------
-    local fovIncrement = ALIVE_Development_Freecam_FovIncrement
+    --local fovIncrement = ALIVE_Development_Freecam_FovIncrement
     
-    if ALIVE_InputKeyPress(1) then
-        --left mouse (decrease)
-        ALIVE_Development_Freecam_InputFieldOfViewAmount = ALIVE_Development_Freecam_InputFieldOfViewAmount - fovIncrement;
-    elseif ALIVE_InputKeyPress(2) then
-        --right mouse (increase)
-        ALIVE_Development_Freecam_InputFieldOfViewAmount = ALIVE_Development_Freecam_InputFieldOfViewAmount + fovIncrement;
-    end
+    --if ALIVE_InputKeyPress(ALIVE_Core_Keycodes_LeftMouse) then
+        --ALIVE_Development_Freecam_InputFieldOfViewAmount = ALIVE_Development_Freecam_InputFieldOfViewAmount - fovIncrement;
+    --elseif ALIVE_InputKeyPress(ALIVE_Core_Keycodes_RightMouse) then
+        --ALIVE_Development_Freecam_InputFieldOfViewAmount = ALIVE_Development_Freecam_InputFieldOfViewAmount + fovIncrement;
+    --end
     
     ------------------------------MOUSELOOK------------------------------
     local currCursorPos = CursorGetPos()

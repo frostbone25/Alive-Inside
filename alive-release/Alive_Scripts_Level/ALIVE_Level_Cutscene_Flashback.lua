@@ -46,12 +46,12 @@ ALIVE_DOF_AUTOFOCUS_GameplayCameraNames = { "test" };
 ALIVE_DOF_AUTOFOCUS_ObjectEntries = { "AJ" };
 
 ALIVE_Level_Cutscene_Flashback = function()
-    ALIVE_Project_SetProjectSettings();
+    ALIVE_Core_Project_SetProjectSettings();
     
     ALIVE_Scene_LevelCleanup_403_TrainTile(kScene);
-    --ALIVE_Scene_LevelRelight_403_TrainTile(kScene);
+    ALIVE_Scene_LevelRelight_403_TrainTile(kScene);
 
-    ALIVE_Gameplay_Shared_HideCusorInGame();
+    --ALIVE_Gameplay_Shared_HideCusorInGame();
 
     --Custom_DarkenAllSceneCameras();
 
@@ -78,8 +78,6 @@ ALIVE_Level_Cutscene_Flashback = function()
         --Callback_OnPostUpdate:Add(ALIVE_Gameplay_AI_UpdateZombie_Character);
         --Callback_OnPostUpdate:Add(ALIVE_Gameplay_AI_UpdateZombie_CharacterAnimation);
     --end
-
-    Custom_DarkenAllSceneCameras();
 end
 
 SceneOpen(kScene, kScript)

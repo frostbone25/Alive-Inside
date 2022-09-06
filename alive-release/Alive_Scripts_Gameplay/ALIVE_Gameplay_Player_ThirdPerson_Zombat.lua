@@ -84,6 +84,11 @@ ALIVE_Gameplay_Player_ThirdPerson_Zombat_Main = function()
         AgentSetWorldPos(thirdperson_agent_characterParent, vector_zombie_position);
         AgentSetWorldRot(thirdperson_agent_characterParent, vector_zombie_rotation);
 
+        --SoundPlay("sfx_chop_gore_07.wav");
+        AudioPlay("sfx_chop_gore_07.wav");
+        SoundPlayEventByName("sfx_chop_gore_07.wav");
+        SoundPlayEventByGuid("sfx_chop_gore_07.wav");
+
         endTime = GetTotalTime() + ControllerGetLength(currentZombieController);
     else
         local currentTime = GetTotalTime();
