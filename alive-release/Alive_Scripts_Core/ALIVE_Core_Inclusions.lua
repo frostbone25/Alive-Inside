@@ -1,3 +1,4 @@
+print("Main Inclusions Block")
 require("ALIVE_Core_Project.lua");
 require("ALIVE_Core_Utilities.lua");
 require("ALIVE_Core_AgentExtensions_Properties.lua");
@@ -12,6 +13,11 @@ require("ALIVE_Core_Strings.lua");
 require("ALIVE_Core_PropertyKeys.lua");
 require("ALIVE_Core_Keycodes.lua");
 
+print("Development Inclusions Block")
 require("ALIVE_Development_Freecam.lua");
 require("ALIVE_Development_AgentBrowser.lua");
 require("ALIVE_Development_PerformanceMetrics.lua");
+
+require("ALIVE_Fofle_FofleUtils.lua");
+
+print("END INCLUSIONS")
