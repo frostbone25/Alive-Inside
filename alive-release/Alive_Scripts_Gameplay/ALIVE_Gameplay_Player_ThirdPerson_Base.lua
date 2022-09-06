@@ -2,6 +2,7 @@
 --|||||||||||||||||||||||||||||||||||||||||||||| 3RD PERSON CONTROLLER ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| 3RD PERSON CONTROLLER ||||||||||||||||||||||||||||||||||||||||||||||
 
+require("ALIVE_Gameplay_Player_ThirdPerson_Input.lua");
 require("ALIVE_Gameplay_Player_ThirdPerson_Camera.lua");
 require("ALIVE_Gameplay_Player_ThirdPerson_Character.lua");
 require("ALIVE_Gameplay_Player_ThirdPerson_Death.lua");
@@ -35,7 +36,7 @@ thirdperson_state_dying = false;
 thirdperson_state_zombatReady = false;
 
 -------------------------- PROPERTIES - THIRD PERSON CONTROLLER --------------------------
-thirdperson_constrainToWBOX = true;
+thirdperson_constrainToWBOX = false;
 
 -------------------------- PROPERTIES - AGENTS --------------------------
 --to reduce the amount of AgentFindInScene calls we make, which can be expensive
@@ -50,6 +51,9 @@ thirdperson_agent_knife = nil;
 
 -------------------------- PROPERTIES - SHARED VARIABLES --------------------------
 thirdperson_frameTime = 0.0;
+thirdperson_inputDirection_x = 0;
+thirdperson_inputDirection_y = 0;
+thirdperson_inputDirection_z = 0;
 thirdperson_movementVector = Vector(0, 0, 0);
 thirdperson_characterDirection = Vector(0, 0, 0);
 ALIVE_Gameplay_AI_Zombies_CurrentStationedZombieObject = nil;
@@ -88,4 +92,6 @@ ALIVE_Gameplay_CreateThirdPersonController = function(startingPosition, kScene)
     Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_Zombat_SetZombieStation);
     Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_Zombat_Main);
     Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_Death_Main);
+
+    InputMapperActivate("Alive_ThirdPersonController.imap");
 end

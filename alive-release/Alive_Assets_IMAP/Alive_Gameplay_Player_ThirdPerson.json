@@ -1,0 +1,118 @@
+[
+  {
+    "mMetaStreamVersion": "6VSM",
+    "mDefaultSectionChunkSize": 1322,
+    "mDebugSectionChunkSize": 0,
+    "mAsyncSectionChunkSize": 0,
+    "mClassNamesLength": 2,
+    "mClassNames": [
+      {
+        "mTypeNameCRC": {
+          "mCrc64": 16494572205536610790
+        },
+        "mVersionCRC": 2938478536
+      },
+      {
+        "mTypeNameCRC": {
+          "mCrc64": 18168016941510070708
+        },
+        "mVersionCRC": 1107160761
+      }
+    ]
+  },
+  {
+    "mName": "Alive_Gameplay_Player_ThirdPerson.imap",
+    "mMappedEvents": [
+      {
+        "mInputCode": 87,
+        "mEvent": 0,
+        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_MoveForward_Begin",
+        "mControllerIndexOverride": -1
+      },
+      {
+        "mInputCode": 87,
+        "mEvent": 1,
+        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_MoveForward_End",
+        "mControllerIndexOverride": -1
+      },
+      {
+        "mInputCode": 83,
+        "mEvent": 0,
+        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_MoveBackward_Begin",
+        "mControllerIndexOverride": -1
+      },
+      {
+        "mInputCode": 83,
+        "mEvent": 1,
+        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_MoveBackward_End",
+        "mControllerIndexOverride": -1
+      },
+      {
+        "mInputCode": 65,
+        "mEvent": 0,
+        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_MoveLeft_Begin",
+        "mControllerIndexOverride": -1
+      },
+      {
+        "mInputCode": 65,
+        "mEvent": 1,
+        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_MoveLeft_End",
+        "mControllerIndexOverride": -1
+      },
+      {
+        "mInputCode": 68,
+        "mEvent": 0,
+        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_MoveRight_Begin",
+        "mControllerIndexOverride": -1
+      },
+      {
+        "mInputCode": 68,
+        "mEvent": 1,
+        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_MoveRight_End",
+        "mControllerIndexOverride": -1
+      },
+      {
+        "mInputCode": 16,
+        "mEvent": 0,
+        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_Running_Begin",
+        "mControllerIndexOverride": -1
+      },
+      {
+        "mInputCode": 16,
+        "mEvent": 1,
+        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_Running_End",
+        "mControllerIndexOverride": -1
+      },
+      {
+        "mInputCode": 67,
+        "mEvent": 0,
+        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_Crouching_Begin",
+        "mControllerIndexOverride": -1
+      },
+      {
+        "mInputCode": 67,
+        "mEvent": 1,
+        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_Crouching_End",
+        "mControllerIndexOverride": -1
+      },
+      {
+        "mInputCode": 17,
+        "mEvent": 0,
+        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_Crouching_Begin",
+        "mControllerIndexOverride": -1
+      },
+      {
+        "mInputCode": 17,
+        "mEvent": 1,
+        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_Crouching_End",
+        "mControllerIndexOverride": -1
+      },
+      {
+        "mInputCode": 82,
+        "mEvent": 0,
+        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_ZombatToggle_Begin",
+        "mControllerIndexOverride": -1
+      }
+    ]
+  }
+]

@@ -7,6 +7,7 @@
 
 -------------------------- ZOMBIES - GLOBAL --------------------------
 local ai_zombie_name_character = "ZombieAI";
+local ai_zombie_name_characterParent = ai_zombie_name_character .. "_Parent";
 
 local zombie_props = 
 {
@@ -20,34 +21,6 @@ local zombie_props =
     "sk61_zombie400Incapacitated.prop"
 };
 
---[[
-local zombie_props = 
-{
-    "sk62_clementine400.prop"
-};
-]]--
-
---local ai_zombie_name_characterProp = "sk62_brodyZombie.prop";
---local ai_zombie_name_characterProp = "sk61_aasim.prop";
---local ai_zombie_name_characterProp = "sk61_abel.prop";
---local ai_zombie_name_characterProp = "sk61_louis.prop";
---local ai_zombie_name_characterProp = "sk61_marlon.prop";
---local ai_zombie_name_characterProp = "sk61_mitch.prop";
---local ai_zombie_name_characterProp = "sk62_brody.prop";
---local ai_zombie_name_characterProp = "sk62_clementine400.prop";
---local ai_zombie_name_characterProp = "sk62_violet.prop";
---local ai_zombie_name_characterProp = "sk63_aj.prop";
---local ai_zombie_name_characterProp = "sk63_omar.prop";
---local ai_zombie_name_characterProp = "sk63_ruby.prop";
---local ai_zombie_name_characterProp = "sk63_tennyson.prop";
---local ai_zombie_name_characterProp = "sk63_willy.prop";
-
-local ai_zombie_name_characterParent = ai_zombie_name_character .. "_Parent";
-local ai_zombie_sceneWbox = "adv_boardingSchoolExterior.wbox";
-local ai_zombie_name_target = "AJ";
---local ai_zombie_name_target = "ClemYoung";
-local ai_zombie_constrainToWBOX = false;
-
 local zombie_idleAnimations = 
 {
     "sk61_idle_zombieStandA.anm",
@@ -56,6 +29,7 @@ local zombie_idleAnimations =
     "sk61_idle_zombieStandF.anm"
 };
 
+local zombie_walkProfilesCount = 11;
 local zombie_walkProfiles = 
 {
     profile1 = 
@@ -115,19 +89,6 @@ local zombie_walkProfiles =
     }
 };
 
---[[
-local zombie_walkProfiles = 
-{
-    profile1 = 
-    {
-        animationName = "sk61_zombie_walkSlowB",
-        moveSpeed = 0.275
-    }
-};
-]]--
-
-local zombie_walkProfilesCount = 11;
-
 -------------------------- ZOMBIE OBJECT - VARIABLE NAMES --------------------------
 zombie_agent_name =                        "Agent Name";
 zombie_agent_parent_name =                 "Agent Name Parent";
@@ -139,17 +100,17 @@ zombie_controller_anim_walk =              "Controller Animation Walk";
 zombie_controller_anim_idle =              "Controller Animation Idle";
 zombie_controller_anim_walk_contribution = "Controller Animation Walk Contribution";
 zombie_controller_anim_idle_contribution = "Controller Animation Idle Contribution";
-zombie_distance_stopping =                 "Zombie Stopping Distance";
-zombie_distance_stoppingTeam =             "Zombie Stopping Distance For Other Zombies";
-zombie_profile_walk =                      "Zombie Speed Walk";
-zombie_profile_walk_animation =            "Zombie Animation Walk";
-zombie_profile_idle_animation =            "Zombie Animation Idle";
-zombie_look_position =                     "Zombie Look Position";
-zombie_state_moving =                      "Zombie State Moving";
-zombie_state_blockedPath =                 "Zombie State Path Blocked";
-zombie_state_stationedWithPlayer =         "Zombie State Stationed With Player"
-zombie_state_killingPlayer =               "Zombie State Killing Player";
-zombie_state_dead =                        "Zombie State Dead";
+zombie_distance_stopping =                 "Stopping Distance";
+zombie_distance_stoppingTeam =             "Stopping Distance For Other Zombies";
+zombie_profile_walk =                      "Speed Walk";
+zombie_profile_walk_animation =            "Animation Walk";
+zombie_profile_idle_animation =            "Animation Idle";
+zombie_look_position =                     "Look Position";
+zombie_state_moving =                      "State Moving";
+zombie_state_blockedPath =                 "State Path Blocked";
+zombie_state_stationedWithPlayer =         "State Stationed With Player"
+zombie_state_killingPlayer =               "State Killing Player";
+zombie_state_dead =                        "State Dead";
 
 ALIVE_Gameplay_AI_ZombiesArray = {}; --Zombie Object Array
 
@@ -187,14 +148,13 @@ ALIVE_Gameplay_AI_CreateZombies = function(zombieCount, startingPosition, starti
         --PropertyAddGlobal(agent_zombieParent.mProps, "module_physicsobject");
         --PhysicsEnableCollision(agent_zombieParent, true);
 
-        --ALIVE_AgentSetProperty(newZombieName, "Render Global Scale", 1.31, ThirdPerson_kScene);
         ALIVE_AgentSetProperty(newZombieName, "Render Global Scale", 1.0, ThirdPerson_kScene);
     
         -----------------------------------------------
         local controllers_array_zombie = AgentGetControllers(agent_zombie);
     
         for i, controller in ipairs(controllers_array_zombie) do
-            ControllerKill(cnt);
+            ControllerKill(controller);
         end
 
         -----------------------------------------------
@@ -250,8 +210,6 @@ ALIVE_Gameplay_AI_CreateZombies = function(zombieCount, startingPosition, starti
         newZombieObject[zombie_state_dead] = false;
         newZombieObject[zombie_distance_stopping] = ai_zombie_stoppingDistance;
         newZombieObject[zombie_distance_stoppingTeam] = ai_zombie_stoppingDistanceSameTeam;
-        --newZombieObject[zombie_distance_stopping] = 0.55;
-        --newZombieObject[zombie_distance_stoppingTeam] = 0.35;
         newZombieObject[zombie_profile_walk] = zombieWalkProfile_variableName_moveSpeed;
         newZombieObject[zombie_profile_walk_animation] = zombieWalkProfile_variableName_anim;
         newZombieObject[zombie_profile_idle_animation] = zombieIdleAnm;

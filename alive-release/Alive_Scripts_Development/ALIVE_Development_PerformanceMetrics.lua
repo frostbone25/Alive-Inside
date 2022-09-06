@@ -6,10 +6,6 @@
 ALIVE_Development_PerformanceMetrics_Text = nil;
 ALIVE_Development_PerformanceMetrics_TextTitle = "[Performance Metrics]";
 
-local previousFrameNumber = 0;
-local previousTime = 0;
-local fpsValue = 0;
-
 local CreateTextAgent = function(name, text, posx, posy, posz, halign, valign)
     local pos       = Vector(posx, posy, posz)
     local textAgent = AgentCreate(name, "ui_text.prop", pos)

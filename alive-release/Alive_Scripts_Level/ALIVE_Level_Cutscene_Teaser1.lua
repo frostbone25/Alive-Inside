@@ -6,6 +6,7 @@ require("ALIVE_Scene_LevelCleanup_404_ForestBarn_Teaser.lua");
 require("ALIVE_Scene_LevelRelight_404_ForestBarn_Teaser.lua");
 require("ALIVE_Character_AJ.lua");
 require("ALIVE_Character_Clementine.lua");
+require("ALIVE_Effect_HackyCameraVolumetrics.lua");
 
 ResourceSetEnable("ProjectSeason4");
 ResourceSetEnable("WalkingDead402");
@@ -27,7 +28,7 @@ ALIVE_Development_SceneObjectAgentName = kSceneObj;
 ALIVE_Development_UseSeasonOneAPI = false;
 ALIVE_Development_FreecamUseFOVScale = false;
 
-local EnableFreecamTools = false;
+local EnableFreecamTools = true;
 local EnablePerformanceMetrics = true;
 
 --DOF Autofocus Variables
@@ -48,14 +49,14 @@ ALIVE_DOF_AUTOFOCUS_Settings =
 };
 ALIVE_DOF_AUTOFOCUS_BokehSettings =
 {
-    BokehBrightnessDeltaThreshold = 0.1,
-    BokehBrightnessThreshold = 0.1,
-    BokehBlurThreshold = 0.1,
+    BokehBrightnessDeltaThreshold = 0.05,
+    BokehBrightnessThreshold = 0.05,
+    BokehBlurThreshold = 0.05,
     BokehMinSize = 0.0,
-    BokehMaxSize = 0.05,
-    BokehFalloff = 0.30,
+    BokehMaxSize = 0.04,
+    BokehFalloff = 0.75,
     MaxBokehBufferAmount = 1.0,
-    BokehPatternTexture = "bokeh_circle5.d3dtx"
+    BokehPatternTexture = "bokeh_circle.d3dtx"
 };
 ALIVE_DOF_AUTOFOCUS_ManualSettings =
 {
@@ -66,6 +67,15 @@ ALIVE_DOF_AUTOFOCUS_ManualSettings =
     FarFocusDistance = 2.25,
     FarFalloff = 0.25,
     FarMax = 0.25
+};
+
+ALIVE_HackyCameraVolumetrics_kScene = kScene;
+ALIVE_HackyCameraVolumetrics_Settings = 
+{
+    Samples = 128,
+    SampleOffset = 0.1,
+    SampleStartOffset = 1.0,
+    FogColor = Color(0.1, 0.1, 0.1, 0.1)
 };
 
 --cutscene variables
@@ -79,7 +89,7 @@ local currentSequence_angle = nil; --dont touch (the actual angle object the cli
 
 --main sequence variables
 local sequence_maxClips = 8; --the maximum amount of clips in the sequence
-local sequence_currentShotIndex = 1; --dont touch (the current shot index that are are on)
+local sequence_currentShotIndex = 5; --dont touch (the current shot index that are are on)
 local sequence_currentTimer = 0; --dont touch (update tick that gets incremented 1 every frame and resets when we reach the end of the current shot duration)
 
 --this variable is an array that will contain our (clips)
@@ -600,6 +610,10 @@ Cutscene_UpdateSequence = function()
         ALIVE_AgentSetProperty(kSceneObj, "FX Bloom Intensity", 0.45, kScene);
     elseif (sequence_currentShotIndex == 8) then --black
     end
+
+    --ALIVE_AgentSetProperty("module_environment", "Env - Fog Density", 0, kScene);
+    --ALIVE_AgentSetProperty(kSceneObj, "Ambient Color", Color(0,0,0,0), kScene);
+    --ALIVE_AgentSetProperty("myLight_SunAmb", "EnvLight - Intensity", 0.0, kScene);
 end
 
 local zombie01Move = Vector(0,0,0);
@@ -1070,6 +1084,9 @@ ALIVE_Level_Cutscene_Teaser1 = function()
     SetupClementineAndAJ();
     ALIVE_Character_AJ_Teaser(kScene);
     ALIVE_Character_Clementine_Sick(kScene);
+
+    ALIVE_HackyCameraVolumetrics_Initalize();
+    Callback_OnPostUpdate:Add(ALIVE_HackyCameraVolumetrics_Update);
     
     --cutscene setup (start calling our cutscene setup functions)
     Cutscene_CreateSoundtrack(); --start playing our custom soundtrack and have it loop
@@ -1106,7 +1123,7 @@ ALIVE_Level_Cutscene_Teaser1 = function()
     ----------------------------------------------------------------
     --CUTSCENE DEVELOPMENT
 
-    if (ALIVE_Core_Project_IsDebugMode) then
+    --if (ALIVE_Core_Project_IsDebugMode) then
         if(EnablePerformanceMetrics) then
             ALIVE_Development_PerformanceMetrics_Initalize();
             Callback_OnPostUpdate:Add(ALIVE_Development_PerformanceMetrics_Update);
@@ -1125,7 +1142,7 @@ ALIVE_Level_Cutscene_Teaser1 = function()
             Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Input);
             Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Main);
         end
-    end
+    --end
 end
 
 --open the scene with this script
