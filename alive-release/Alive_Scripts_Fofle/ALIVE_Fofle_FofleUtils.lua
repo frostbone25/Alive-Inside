@@ -1,4 +1,4 @@
-FofleProject_FileVersion = 110
+FofleProject_FileVersion = 120
 
 Fofle_IsSceneVersionSupported = function(version)
     if (version > FofleProject_FileVersion) then

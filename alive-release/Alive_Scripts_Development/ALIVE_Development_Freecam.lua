@@ -42,10 +42,10 @@ ALIVE_Development_Freecam_PrevCamRot = Vector(0,0,0);
 ALIVE_Development_Freecam_PrevCursorPos = Vector(0,0,0);
 ALIVE_Development_Freecam_InputMouseAmountX = 0;
 ALIVE_Development_Freecam_InputMouseAmountY = 0;
-ALIVE_Development_Freecam_InputFieldOfViewAmount = 90;
+ALIVE_Development_Freecam_InputFieldOfViewAmount = 110;
 ALIVE_Development_Freecam_PrevTime = 0;
 ALIVE_Development_Freecam_Frozen = false;
-ALIVE_Development_Freecam_CameraName = "myNewFreecamera";
+ALIVE_Development_Freecam_CameraName = "fofle_devtoolsFreecam";
 
 --user configruable
 ALIVE_Development_Freecam_SnappyMovement = false;

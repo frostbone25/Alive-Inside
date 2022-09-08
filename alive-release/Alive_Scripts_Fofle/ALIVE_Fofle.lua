@@ -1,4 +1,5 @@
-print("Fofle - Load")
+print("Fofle - kScene " .. kScene)
+
 if not ALIVE_FileUtils_IsCurrentlyInitialized then
     print("Fofle - Init FileUtils")
     ALIVE_Core_FileUtils_Init();
@@ -66,6 +67,22 @@ if not (sceneInfo.agents.remove == nil) then --If file contains agents to be rem
        AgentDetach(v)
     end
 end
+
+--[[
+Gameplay Controllers
+]]--
+
+print("Fofle - Controllers")
+if(sceneInfo.fofle.version >= 120) then
+    print("Fofle 120 - 3rd Person Controller")
+    if (sceneInfo.debug.useFreecamTools) then
+        print("Fofle 120 - 3rd Person Controller Not Added, Freecam Already Initialized.")
+    else
+        print("Fofle 120 - Adding 3rd Person Controller")
+        ALIVE_Gameplay_CreateThirdPersonController(Vector(sceneInfo.controller.position[1], sceneInfo.controller.position[2], sceneInfo.controller.position[3]), kScene, sceneInfo.controller.constrainToWbox, sceneInfo.controller.wbox);
+        ALIVE_Gameplay_Shared_HideCusorInGame();
+    end
+end     
 
 --[[
 Callbacks

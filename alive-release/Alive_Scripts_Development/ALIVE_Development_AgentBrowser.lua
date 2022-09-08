@@ -37,7 +37,7 @@ Callback_OnPostUpdate:Add(ALIVE_Development_UpdateFreeCamera)
 ALIVE_Development_CutsceneToolsText = nil;
 ALIVE_Development_CutsceneToolsHighlightText = nil;
 ALIVE_Development_CutsceneToolsEditMode = false;
-ALIVE_Development_CutsceneToolsTextTitle = "Cutscene Tools v1.0";
+ALIVE_Development_CutsceneToolsTextTitle = "FOFLE Editor v1.0";
 ALIVE_Development_SceneAgentNames = {};
 ALIVE_Development_SceneAgentOriginalVisibility = {};
 ALIVE_Development_AgentIndex = 1;
@@ -305,6 +305,14 @@ ALIVE_Development_UpdateCutsceneTools_Input = function()
         --F key
         ALIVE_Development_CutsceneToolsEditMode = true;
         ALIVE_Development_BuildSceneAgentList();
+    end
+
+    ------------------------------------------------------------
+    if ALIVE_InputKeyPress(27) then
+        --Esc key
+        print("Fofle EDITOR - Scene Reload Requested - " .. kScene .. ".lua");
+        SubProject_Switch("Menu", kScript .. ".lua")
+        return;
     end
     
     -------------------------------------------------------------

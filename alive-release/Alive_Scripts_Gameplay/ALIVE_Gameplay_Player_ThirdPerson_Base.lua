@@ -22,7 +22,7 @@ thirdperson_name_desiredCameraPositionObject = "Player_ThirdPersonDesiredCameraO
 thirdperson_name_dummyObject = "Player_ThirdPersonDummyObject";
 thirdperson_name_dummyObjectHip = "Player_ThirdPersonDummyHipObject";
 thirdperson_name_knife = "Player_KnifeObject";
-thirdperson_sceneWbox = "customWBOX.wbox";
+thirdperson_sceneWbox = "";
 --thirdperson_sceneWbox = "adv_riverShoreline.wbox";
 --thirdperson_sceneWbox = "adv_riverShorelineNight.wbox";
 --thirdperson_sceneWbox = "adv_riverShorelineNight_dock.wbox";
@@ -62,7 +62,13 @@ ALIVE_Gameplay_AI_Zombies_CurrentStationedZombieObject = nil;
 --|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER SETUP ||||||||||||||||||||||||||||||||||||||||||||||
 --|||||||||||||||||||||||||||||||||||||||||||||| CONTROLLER SETUP ||||||||||||||||||||||||||||||||||||||||||||||
 
-ALIVE_Gameplay_CreateThirdPersonController = function(startingPosition, kScene)
+ALIVE_Gameplay_CreateThirdPersonController = function(startingPosition, kScene, useWbox, wbox)
+
+    if (useWbox ~= nil) and (wbox ~= nil) then
+        thirdperson_constrainToWBOX = useWbox;
+        thirdperson_sceneWbox = wbox;
+    end
+
     -----------------------------------------------
     --base character
     ALIVE_Gameplay_Player_ThirdPerson_Character_CreateCharacter(startingPosition)
@@ -93,5 +99,6 @@ ALIVE_Gameplay_CreateThirdPersonController = function(startingPosition, kScene)
     Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_Zombat_Main);
     Callback_OnPostUpdate:Add(ALIVE_Gameplay_Player_ThirdPerson_Death_Main);
 
-    InputMapperActivate("Alive_ThirdPersonController.imap");
+    print("TPC - InputMapperActivate")
+    InputMapperActivate("Alive_Gameplay_Player_ThirdPerson.imap");
 end

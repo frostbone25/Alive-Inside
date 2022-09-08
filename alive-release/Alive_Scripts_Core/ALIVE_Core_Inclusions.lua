@@ -20,4 +20,9 @@ require("ALIVE_Development_PerformanceMetrics.lua");
 
 require("ALIVE_Fofle_FofleUtils.lua");
 
+require("ALIVE_Gameplay_Shared.lua");
+require("ALIVE_Gameplay_Player_ThirdPerson_Base.lua");
+require("ALIVE_Character_AJ.lua");
+require("ALIVE_Character_Clementine.lua");
+
 print("END INCLUSIONS")
