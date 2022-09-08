@@ -50,7 +50,7 @@ ALIVE_Menu_PlayCredits = function()
   local cSpeed = 0.5; --0.5
   --Remember to update these when you update the credits! -Violet
   local cPos = -26; --Determines the initial starting point
-  local cPosMax = 19.5; --Determines where the credits *Stop* scrolling, eg. when the legal text is centered.
+  local cPosMax = 19.6; --Determines where the credits *Stop* scrolling, eg. when the legal text is centered.
 
   local scrollCredits = true; --Don't touch me!
 
@@ -59,14 +59,15 @@ ALIVE_Menu_PlayCredits = function()
   end
   ALIVE_Menu_AreCreditsRunning = true; 
   CursorHide(true, "ui_creditsClosing");  
-  
+    
+  if not ALIVE_FileUtils_IsCurrentlyInitialized then
+    ALIVE_Core_FileUtils_Init();
+  end
+
   if ALIVE_Menu_IsMainMenuActive and ALIVE_Menu_ActiveMenuSound ~= nil then --Fades out the current menu music.
     ControllerFadeOut(ALIVE_Menu_ActiveMenuSound, 0.5, true)
     Menu_Pop(); --Removes any active menus.
   else --There is not currently an active menu -- SAVE THE GAME instead.
-    if not ALIVE_FileUtils_IsCurrentlyInitialized then
-      ALIVE_Core_FileUtils_Init();
-    end
     if not ALIVE_Core_FileUtils_SaveSetCheckpoint(99) then
       DialogBox_Okay("Save failed.")
     end
@@ -74,12 +75,16 @@ ALIVE_Menu_PlayCredits = function()
 
   print("Reached Milestone: Add Credits Scene");
 
+  if ALIVE_FileUtils_OptionsFile.superSecretCredits then 
+    ALIVE_Menu_CreditsMusicFile = "mus_alive_awesomeGod.wav";
+  end
+  
   Sleep(1);
   MenuUtils_AddScene(cScene); --Add credits scene for blank background.
   Sleep(0.25);
 
   ALIVE_Menu_CreditsMusic = SoundPlay(ALIVE_Menu_CreditsMusicFile); --Adds credits music and plays it.
-  ControllerSetLooping(ALIVE_Menu_CreditsMusic, true);
+  ControllerSetLooping(ALIVE_Menu_CreditsMusic, false);
 
   Sleep(0.5);
 
@@ -178,6 +183,8 @@ ALIVE_Menu_CreditsText = [[
   DomTheBomb
   Lightning
   Melora
+  RHINAVAUT
+  Party Poison
   and You.
 
   
@@ -245,6 +252,4 @@ ALIVE_Menu_CreditsText = [[
 
   Telltale Modding Group is not endorsed by or otherwise associated
   with Telltale Games, Skybound Entertainment, or their affiliates.
-
-  Made with <3 across the world | THANK YOU FOR PLAYING
 ]]

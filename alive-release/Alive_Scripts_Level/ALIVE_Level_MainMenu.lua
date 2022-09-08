@@ -26,8 +26,8 @@ ALIVE_Development_SceneObjectAgentName = keyArtScene;
 ALIVE_Development_UseSeasonOneAPI = false;
 ALIVE_Development_FreecamUseFOVScale = false;
 
-local EnableFreecamTools = true;
-local EnablePerformanceMetrics = true;
+local EnableFreecamTools = false;
+local EnablePerformanceMetrics = false;
 
 --DOF Autofocus Variables
 ALIVE_DOF_AUTOFOCUS_SceneObject = keyArtScene;

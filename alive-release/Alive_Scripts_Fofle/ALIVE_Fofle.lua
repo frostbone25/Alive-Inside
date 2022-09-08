@@ -4,8 +4,15 @@ if not ALIVE_FileUtils_IsCurrentlyInitialized then
     ALIVE_Core_FileUtils_Init();
 end
 
+if (FOFLE_SceneID == nil) then
+    print("Fofle - Fatal Error, Scene ID is nil")
+    Fofle_DialogBoxOkay("Please check your mod's " .. kScene .. " lua file and ensure FOFLE_SceneID is set. If you're not the author of this mod, report this bug.", "Scene ID is nil!")
+    SubProject_Switch("Menu", "Menu_Main.lua")
+    return
+end
+
 print("Fofle - Get Scene Info")
-local sceneInfo = ALIVE_Core_FileUtils_DecodeJSONFile(ALIVE_FileUitls_SubDirectory .. "fofleTest.json")
+local sceneInfo = ALIVE_Core_FileUtils_DecodeJSONFile(ALIVE_FileUitls_SubDirectory .. "Data\\fofle_" .. FOFLE_SceneID .. ".json")
 
 print("Fofle - Is Scene Supported Check")
 if not (Fofle_IsSceneVersionSupported(sceneInfo.fofle.version)) then
@@ -16,6 +23,29 @@ if not (Fofle_IsSceneVersionSupported(sceneInfo.fofle.version)) then
 end
 
 print("Fofle - Succesfully Initialized.")
+
+--[[
+Development Tools
+]]--
+
+if (sceneInfo.fofle.version >= 110) then
+    print("Fofle 110 - Development Toolkit")
+
+    if (sceneInfo.debug.useFreecamTools) then
+        --Initialize tools
+        ALIVE_Development_CreateFreeCamera();
+        ALIVE_Development_InitalizeCutsceneTools();
+        
+        Callback_OnPostUpdate:Add(ALIVE_Development_UpdateFreeCamera);
+        Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Input);
+        Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Main);
+    end
+
+    if(sceneInfo.debug.showPerformanceMetrics) then
+        ALIVE_Development_PerformanceMetrics_Initalize();
+        Callback_OnPostUpdate:Add(ALIVE_Development_PerformanceMetrics_Update);
+    end
+end
 
 --[[
 Agent Modification
