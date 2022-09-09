@@ -152,7 +152,8 @@ ALIVE_Development_UpdateFreeCamera = function()
     end
     
     ------------------------------BUILD FINAL MOVEMENT/ROTATION------------------------------
-    local newPosition = Vector(positionIncrement * ALIVE_Development_Freecam_InputHorizontalValue, positionIncrement * ALIVE_Development_Freecam_InputHeightValue, positionIncrement * ALIVE_Development_Freecam_InputVerticalValue);
+    local newPosition = Vector(ALIVE_Development_Freecam_InputHorizontalValue, ALIVE_Development_Freecam_InputHeightValue, ALIVE_Development_Freecam_InputVerticalValue);
+    newPosition = newPosition * positionIncrement;
 
     if (ALIVE_Development_Freecam_SnappyMovement == true) then
         ALIVE_Development_Freecam_PrevCamPos = newPosition;
