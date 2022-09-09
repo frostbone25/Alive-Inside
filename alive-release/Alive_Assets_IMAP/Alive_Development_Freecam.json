@@ -144,25 +144,25 @@
         "mControllerIndexOverride": -1
       },
       {
-        "mInputCode": 1,
+        "mInputCode": 816,
         "mEvent": 0,
         "mScriptFunction": "ALIVE_Development_Freecam_Input_LeftMouseBegin",
         "mControllerIndexOverride": -1
       },
       {
-        "mInputCode": 1,
+        "mInputCode": 816,
         "mEvent": 1,
         "mScriptFunction": "ALIVE_Development_Freecam_Input_LeftMouseEnd",
         "mControllerIndexOverride": -1
       },
       {
-        "mInputCode": 2,
+        "mInputCode": 817,
         "mEvent": 0,
         "mScriptFunction": "ALIVE_Development_Freecam_Input_RightMouseBegin",
         "mControllerIndexOverride": -1
       },
       {
-        "mInputCode": 2,
+        "mInputCode": 817,
         "mEvent": 1,
         "mScriptFunction": "ALIVE_Development_Freecam_Input_RightMouseEnd",
         "mControllerIndexOverride": -1

@@ -33,16 +33,23 @@ Callback_OnPostUpdate:Add(ALIVE_Development_UpdateFreeCamera)
 --ALIVE_Development_UseSeasonOneAPI
 --ALIVE_Development_FreecamUseFOVScale
 
+require("ALIVE_Development_Freecam_Input.lua");
+
 --(public) cutscene dev freecam variables (public because these values need to be persistent)
 ALIVE_Development_Freecam_InputHorizontalValue = 0;
 ALIVE_Development_Freecam_InputVerticalValue = 0;
 ALIVE_Development_Freecam_InputHeightValue = 0;
+ALIVE_Development_Freecam_InputSpeeding = false;
+ALIVE_Development_Freecam_InputCrawling = false;
 ALIVE_Development_Freecam_PrevCamPos = Vector(0,0,0);
 ALIVE_Development_Freecam_PrevCamRot = Vector(0,0,0);
 ALIVE_Development_Freecam_PrevCursorPos = Vector(0,0,0);
 ALIVE_Development_Freecam_InputMouseAmountX = 0;
 ALIVE_Development_Freecam_InputMouseAmountY = 0;
-ALIVE_Development_Freecam_InputFieldOfViewAmount = 110;
+ALIVE_Development_Freecam_InputZoomingIn = false;
+ALIVE_Development_Freecam_InputZoomingOut = false;
+ALIVE_Development_Freecam_PrevFieldOfViewAmount = 110;
+ALIVE_Development_Freecam_TargetFieldOfViewAmount = 110;
 ALIVE_Development_Freecam_PrevTime = 0;
 ALIVE_Development_Freecam_Frozen = false;
 ALIVE_Development_Freecam_CameraName = "fofle_devtoolsFreecam";
@@ -52,11 +59,14 @@ ALIVE_Development_Freecam_SnappyMovement = false;
 ALIVE_Development_Freecam_SnappyRotation = false;
 ALIVE_Development_Freecam_PositionLerpFactor = 5.0;
 ALIVE_Development_Freecam_RotationLerpFactor = 7.5;
+
 ALIVE_Development_Freecam_PositionIncrementDefault = 0.025;
 ALIVE_Development_Freecam_PositionIncrementShift = 0.25;
-ALIVE_Development_Freecam_FovIncrement = 0.5;
+ALIVE_Development_Freecam_PositionIncrementCrawl = 0.0025;
 
-require("ALIVE_Development_Freecam_Input.lua");
+ALIVE_Development_Freecam_SnappyZoom = false;
+ALIVE_Development_Freecam_ZoomLerpFactor = 5.0;
+ALIVE_Development_Freecam_FovIncrement = 0.5;
 
 --input workaround because S1 has different API
 local ALIVE_InputKeyPress = function(keyCode)
@@ -89,13 +99,6 @@ end
 ALIVE_Development_UpdateFreeCamera = function()
     local currFrameTime = GetFrameTime();
 
-    --freecamera freezing
-    if ALIVE_InputKeyPress(ALIVE_Core_Keycodes_R) then
-        ALIVE_Development_Freecam_Frozen = false;
-    elseif ALIVE_InputKeyPress(ALIVE_Core_Keycodes_F) then
-        ALIVE_Development_Freecam_Frozen = true;
-    end
-
     --hide/show the cursor
     if (ALIVE_Development_Freecam_Frozen == true) then
         CursorHide(false);
@@ -109,42 +112,18 @@ ALIVE_Development_UpdateFreeCamera = function()
     ------------------------------MOVEMENT------------------------------
     local positionIncrement = ALIVE_Development_Freecam_PositionIncrementDefault;
     
-    if ALIVE_InputKeyPress(ALIVE_Core_Keycodes_Shift) then
+    if ALIVE_Development_Freecam_InputSpeeding then
         positionIncrement = ALIVE_Development_Freecam_PositionIncrementShift;
+    elseif ALIVE_Development_Freecam_InputCrawling then
+        positionIncrement = ALIVE_Development_Freecam_PositionIncrementCrawl;
     end
-    
-    if ALIVE_InputKeyPress(ALIVE_Core_Keycodes_Q) then
-        ALIVE_Development_Freecam_InputHeightValue = -positionIncrement;
-    elseif ALIVE_InputKeyPress(ALIVE_Core_Keycodes_E) then
-        ALIVE_Development_Freecam_InputHeightValue = positionIncrement;
-    else
-        ALIVE_Development_Freecam_InputHeightValue = 0;
-    end
-    
-    if ALIVE_InputKeyPress(ALIVE_Core_Keycodes_W) then
-        ALIVE_Development_Freecam_InputVerticalValue = positionIncrement;
-    elseif ALIVE_InputKeyPress(ALIVE_Core_Keycodes_S) then
-        ALIVE_Development_Freecam_InputVerticalValue = -positionIncrement;
-    else
-        ALIVE_Development_Freecam_InputVerticalValue = 0;
-    end
-    
-    if ALIVE_InputKeyPress(ALIVE_Core_Keycodes_A) then
-        ALIVE_Development_Freecam_InputHorizontalValue = positionIncrement;
-    elseif ALIVE_InputKeyPress(ALIVE_Core_Keycodes_D) then
-        ALIVE_Development_Freecam_InputHorizontalValue = -positionIncrement;
-    else
-        ALIVE_Development_Freecam_InputHorizontalValue = 0;
-    end
-    
+
     ------------------------------ZOOMING------------------------------
-    --local fovIncrement = ALIVE_Development_Freecam_FovIncrement
-    
-    --if ALIVE_InputKeyPress(ALIVE_Core_Keycodes_LeftMouse) then
-        --ALIVE_Development_Freecam_InputFieldOfViewAmount = ALIVE_Development_Freecam_InputFieldOfViewAmount - fovIncrement;
-    --elseif ALIVE_InputKeyPress(ALIVE_Core_Keycodes_RightMouse) then
-        --ALIVE_Development_Freecam_InputFieldOfViewAmount = ALIVE_Development_Freecam_InputFieldOfViewAmount + fovIncrement;
-    --end
+    if ALIVE_Development_Freecam_InputZoomingIn then
+        ALIVE_Development_Freecam_TargetFieldOfViewAmount = ALIVE_Development_Freecam_TargetFieldOfViewAmount - ALIVE_Development_Freecam_FovIncrement;
+    elseif ALIVE_Development_Freecam_InputZoomingOut then
+        ALIVE_Development_Freecam_TargetFieldOfViewAmount = ALIVE_Development_Freecam_TargetFieldOfViewAmount + ALIVE_Development_Freecam_FovIncrement;
+    end
     
     ------------------------------MOUSELOOK------------------------------
     local currCursorPos = CursorGetPos()
@@ -173,7 +152,7 @@ ALIVE_Development_UpdateFreeCamera = function()
     end
     
     ------------------------------BUILD FINAL MOVEMENT/ROTATION------------------------------
-    local newPosition = Vector(ALIVE_Development_Freecam_InputHorizontalValue, ALIVE_Development_Freecam_InputHeightValue, ALIVE_Development_Freecam_InputVerticalValue);
+    local newPosition = Vector(positionIncrement * ALIVE_Development_Freecam_InputHorizontalValue, positionIncrement * ALIVE_Development_Freecam_InputHeightValue, positionIncrement * ALIVE_Development_Freecam_InputVerticalValue);
 
     if (ALIVE_Development_Freecam_SnappyMovement == true) then
         ALIVE_Development_Freecam_PrevCamPos = newPosition;
@@ -186,6 +165,12 @@ ALIVE_Development_UpdateFreeCamera = function()
     else
         ALIVE_Development_Freecam_PrevCamRot = ALIVE_VectorLerp(ALIVE_Development_Freecam_PrevCamRot, newRotation, currFrameTime * ALIVE_Development_Freecam_RotationLerpFactor);
     end
+
+    if (ALIVE_Development_Freecam_SnappyZoom == true) then
+        ALIVE_Development_Freecam_PrevFieldOfViewAmount = ALIVE_Development_Freecam_TargetFieldOfViewAmount;
+    else
+        ALIVE_Development_Freecam_PrevFieldOfViewAmount = ALIVE_NumberLerp(ALIVE_Development_Freecam_PrevFieldOfViewAmount, ALIVE_Development_Freecam_TargetFieldOfViewAmount, currFrameTime * ALIVE_Development_Freecam_ZoomLerpFactor);
+    end
     
     ------------------------------ASSIGNMENT------------------------------
     local myCameraAgent = AgentFindInScene(ALIVE_Development_Freecam_CameraName, ALIVE_Development_SceneObject); --Agent type
@@ -195,11 +180,11 @@ ALIVE_Development_UpdateFreeCamera = function()
     ALIVE_SetAgentRotation(ALIVE_Development_Freecam_CameraName, ALIVE_Development_Freecam_PrevCamRot, ALIVE_Development_SceneObject)
 
     if (ALIVE_Development_FreecamUseFOVScale == true) then
-        local fovScale = ALIVE_Development_Freecam_InputFieldOfViewAmount / 50.0;
+        local fovScale = ALIVE_Development_Freecam_PrevFieldOfViewAmount / 50.0;
 
         ALIVE_AgentSetProperty(ALIVE_Development_Freecam_CameraName, "Field of View Scale", fovScale, ALIVE_Development_SceneObject);
     else
-        ALIVE_AgentSetProperty(ALIVE_Development_Freecam_CameraName, "Field of View", ALIVE_Development_Freecam_InputFieldOfViewAmount, ALIVE_Development_SceneObject);
+        ALIVE_AgentSetProperty(ALIVE_Development_Freecam_CameraName, "Field of View", ALIVE_Development_Freecam_PrevFieldOfViewAmount, ALIVE_Development_SceneObject);
     end
 
     ALIVE_Development_Freecam_PrevCursorPos = CursorGetPos();
