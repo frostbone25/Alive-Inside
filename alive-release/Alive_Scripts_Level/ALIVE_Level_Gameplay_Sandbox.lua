@@ -69,7 +69,7 @@ ALIVE_Development_SceneObjectAgentName = agent_name_scene;
 ALIVE_Development_UseSeasonOneAPI = false;
 ALIVE_Development_FreecamUseFOVScale = false;
 
-local EnableFreecam = true;
+local EnableFreecam = false;
 local EnablePerformanceMetrics = false;
 
 --|||||||||||||||||||||||||||||||||||||||||||||| SCENE SETUP ||||||||||||||||||||||||||||||||||||||||||||||
@@ -152,15 +152,15 @@ ALIVE_Level_Gameplay_Sandbox = function()
         --Callback_OnPostUpdate:Add(ALIVE_Development_UpdateCutsceneTools_Main);
     else
         SceneAdd(ThirdPerson_UI_kScene);
-        ALIVE_Gameplay_CreateThirdPersonController(Vector(6, 0, 0));
+        ALIVE_Gameplay_CreateThirdPersonController(Vector(11, 0, 11), kScene, true, "boardingSchoolExterior.wbox")
         --ALIVE_Gameplay_AI_CreateZombies(35, Vector(0, 0, 25), Vector(20, 0, 20));
 
         local allies =
         {
-            "Aasim"
+            "Aasim",
         };
 
-        --ALIVE_Gameplay_AI_CreateAllies(allies, Vector(0, 0, 0), Vector(5, 0, 5));
+        ALIVE_Gameplay_AI_CreateAllies(allies, Vector(0, 0, 0), Vector(5, 0, 5));
     end
 
     ALIVE_Character_AJ_Jackets(kScene);

@@ -112,6 +112,12 @@
         "mEvent": 0,
         "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_ZombatToggle_Begin",
         "mControllerIndexOverride": -1
+      },
+      {
+        "mInputCode": 70,
+        "mEvent": 0,
+        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_NoClipToggle_Begin",
+        "mControllerIndexOverride": -1
       }
     ]
   }

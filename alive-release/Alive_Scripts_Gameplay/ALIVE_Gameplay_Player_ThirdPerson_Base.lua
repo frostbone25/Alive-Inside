@@ -34,9 +34,10 @@ thirdperson_state_crouching = false;
 thirdperson_state_zombieStation = false;
 thirdperson_state_dying = false;
 thirdperson_state_zombatReady = false;
+thirdperson_noclip = false;
 
 -------------------------- PROPERTIES - THIRD PERSON CONTROLLER --------------------------
-thirdperson_constrainToWBOX = false;
+thirdperson_constrainToWBOX = true;
 
 -------------------------- PROPERTIES - AGENTS --------------------------
 --to reduce the amount of AgentFindInScene calls we make, which can be expensive

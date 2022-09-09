@@ -65,3 +65,12 @@ ALIVE_Gameplay_Player_ThirdPerson_Character_Input_ZombatToggle_Begin = function(
     --On R Down
     thirdperson_state_zombatReady = not thirdperson_state_zombatReady;
 end
+
+----------------------------------------------------------------------
+ALIVE_Gameplay_Player_ThirdPerson_Character_Input_NoClipToggle_Begin = function()
+    --On F Down
+
+    if ALIVE_Core_Project_IsDebugMode then
+        thirdperson_noclip = not thirdperson_noclip;
+    end
+end

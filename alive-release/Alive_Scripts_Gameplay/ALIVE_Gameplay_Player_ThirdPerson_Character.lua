@@ -239,7 +239,7 @@ ALIVE_Gameplay_Player_ThirdPerson_Character_UpdateCharacter = function()
     --newCharacterPosition = newCharacterPosition + finalPlayerMovement;
     newCharacterPosition = newCharacterPosition + prevFinalPlayerMovement;
 
-    if (thirdperson_constrainToWBOX) then
+    if (thirdperson_constrainToWBOX) and (thirdperson_noclip == false) then
         newCharacterPosition = WalkBoxesPosOnWalkBoxes(newCharacterPosition, 0, thirdperson_sceneWbox, 1);
     end
 
