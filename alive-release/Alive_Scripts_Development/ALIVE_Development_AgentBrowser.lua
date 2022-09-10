@@ -44,6 +44,8 @@ ALIVE_Development_AgentIndex = 1;
 ALIVE_Development_MaxDisplayedItemCount = 10;
 ALIVE_Development_MenuItem = 1;
 
+Fofle_EditorActiveProject = nil;
+
 local currentAgent_name = ""; --string type
 local currentAgent_agent = nil; --Agent type
 local currentAgent_position_vector = nil; --Vector type
@@ -255,6 +257,16 @@ ALIVE_Development_BuildSceneAgentList = function()
 end
 
 ALIVE_Development_InitalizeCutsceneTools = function()
+
+    Fofle_EditorActiveProject = Fofle_GetActiveProject();
+    if (Fofle_EditorActiveProject ~= nil) and (Fofle_EditorActiveProject ~= false) then
+        print("Fofle EDITOR - Set Agents Marked For Deletion");
+        for i, sceneAgent in pairs(Fofle_EditorActiveProject.agents.remove) do
+            print("Fofle EDITOR - Set Agents Marked For Deletion - Add: " .. sceneAgent);
+            FOFLE_AgentsMarkedForDeletion[sceneAgent] = sceneAgent;
+        end
+    end
+
     -------------------------------------------------------------
     --initalize menu text
     --force scene vignette off because it makes it hard to read text
@@ -390,6 +402,10 @@ ALIVE_Development_UpdateCutsceneTools_Main = function()
         relightMenuText = relightMenuText .. "ESC | Reload Scene";
         relightMenuText = relightMenuText .. "\n"; --new line
         relightMenuText = relightMenuText .. "\n"; --new line
+
+        if(FOFLE_AgentsMarkedForDeletion[text_currSceneAgentName] ~= nil) and (FOFLE_AgentsMarkedForDeletion[text_currSceneAgentName] ~= false) then
+            relightMenuText = relightMenuText .. "This agent is currently marked for deletion on scene load.\n"
+        end
         
         local displayIndex = 0;
         local displayIndexOffset = 0;
@@ -482,13 +498,12 @@ FOFLE_Editor_ReloadScene = function()
 end
 
 FOFLE_Editor_ExportJSON = function()
-    local theProject = Fofle_GetActiveProject();
-    if (theProject ~= nil) and (theProject ~= false) then
+    if (Fofle_EditorActiveProject ~= nil) and (Fofle_EditorActiveProject ~= false) then
         print("Fofle EDITOR - JSON Export - Active Project Loaded")
         --Proceed with Export
         
         print("Fofle EDITOR - JSON Export - Set File Version " .. FofleProject_FileVersion)
-        theProject.fofle.version = FofleProject_FileVersion;
+        Fofle_EditorActiveProject.fofle.version = FofleProject_FileVersion;
 
         local fileName, cancel = Menu_OpenTextEntryBox(FOFLE_SceneID, Menu_Text("Please enter the Scene ID. The default value will override the existing loaded scene."))
         if(cancel) then
@@ -498,26 +513,27 @@ FOFLE_Editor_ExportJSON = function()
         end
 
         local enableTools = DialogBox_YesNo("Would you like to enable devtools by default when this project is loaded?", "Export - Enable Tools?")
-        theProject.debug.useFreecamTools = enableTools;
+        Fofle_EditorActiveProject.debug.useFreecamTools = enableTools;
 
         local enableMetrics = DialogBox_YesNo("Would you like to enable performance metrics by default when this project is loaded?", "Export - Enable Metrics?")
-        theProject.debug.showPerformanceMetrics = enableMetrics;
+        Fofle_EditorActiveProject.debug.showPerformanceMetrics = enableMetrics;
 
-        if not theProject.debug.useFreecamTools then
+        if not Fofle_EditorActiveProject.debug.useFreecamTools then
             print("Fofle EDITOR - JSON Export - Freecam Tools Not Enabled")
             DialogBox_Okay("We won't add devtools.", "Export - Tools Not Enabled.")
         end
 
         print("Fofle EDITOR - JSON Export - Mark Agents For Deletion")
+        Fofle_EditorActiveProject.agents.remove = {};
         for i, sceneAgent in pairs(FOFLE_AgentsMarkedForDeletion) do
             
-            if(sceneAgent ~= nil) then
+            if(sceneAgent ~= nil) and (sceneAgent ~= false) then
                 print("Fofle EDITOR - JSON Export - Mark Agent For Deletion - Add: " .. sceneAgent)
-                theProject.agents.remove[#theProject.agents.remove+1] = sceneAgent;
+                Fofle_EditorActiveProject.agents.remove[#Fofle_EditorActiveProject.agents.remove+1] = sceneAgent;
             end
         end
 
-        if ALIVE_Core_FileUtils_EncodeJSONFile(theProject, "\\Data\\fofle_" .. fileName) then
+        if ALIVE_Core_FileUtils_EncodeJSONFile(Fofle_EditorActiveProject, "\\Data\\fofle_" .. fileName) then
             print("Fofle EDITOR - JSON Export - Export Successful");
             DialogBox_Okay("Export Successful!", "Project Exported");
         else
