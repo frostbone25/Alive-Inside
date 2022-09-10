@@ -188,6 +188,8 @@ local FogModifiablePropertyNames =
     "Env - Fog Color"
 }
 
+local FOFLE_AgentsMarkedForDeletion = {};
+
 --input workaround because S1 has different API
 local ALIVE_InputKeyPress = function(keyCode)
     if (ALIVE_Development_UseSeasonOneAPI == true) then
@@ -295,7 +297,6 @@ ALIVE_Development_UpdateCutsceneTools_Input = function()
         inputRunRate = 0;
     end
     
-    -------------------------------------------------------------
     --edit mode toggle
     
     if ALIVE_InputKeyPress(70) then
@@ -311,64 +312,13 @@ ALIVE_Development_UpdateCutsceneTools_Input = function()
 
     ------------------------------------------------------------
 
-    --[[
-    if ALIVE_InputKeyPress(27) then
-        --Esc key
-        print("Fofle EDITOR - Scene Reload Requested - " .. kScene .. ".lua");
-        SubProject_Switch("Menu", kScript .. ".lua")
-        return;
-    end
-    --]]
-
-    -------------------------------------------------------------
-    --if we are not in edit mode, don't continue
     if (ALIVE_Development_CutsceneToolsEditMode == false) then
         do return end
     end
 
-    -------------------------------------------------------------
-    --agent list cycle
-    if ALIVE_InputKeyPress(81) then
-        --key q [81] (decrease)
-        --key 1 [49] (decrease)
-        ALIVE_Development_AgentIndex = ALIVE_Development_AgentIndex - 1;
-    elseif ALIVE_InputKeyPress(69) then
-        --key e [69] (increase)
-        --key 2 [50] (increase)
-        ALIVE_Development_AgentIndex = ALIVE_Development_AgentIndex + 1;
-    end
-    
-    --clamp the index value
-    if (ALIVE_Development_AgentIndex > #ALIVE_Development_SceneAgentNames) then
-        ALIVE_Development_AgentIndex = 1;
-    elseif (ALIVE_Development_AgentIndex < 1) then
-        ALIVE_Development_AgentIndex = #ALIVE_Development_SceneAgentNames;
-    end
-    
-    -------------------------------------------------------------
-    --agent scene list refresh
     if ALIVE_InputKeyPress(9) then
         --tab
         ALIVE_Development_BuildSceneAgentList();
-    end
-    
-    -------------------------------------------------------------
-    --menu cycle and operations
-
-    --[[
-    if ALIVE_InputKeyPress(38) then
-        --key up [38] (menu cycle up)
-        --key w [87] (menu cycle up)
-        ALIVE_Development_MenuItem = ALIVE_Development_MenuItem - 1;
-    elseif ALIVE_InputKeyPress(40) then
-        --key down [40] (menu cycle down)
-        --key s [83] (menu cycle down)
-        ALIVE_Development_MenuItem = ALIVE_Development_MenuItem + 1;
-    end
-    --]]
-    
-    if (ALIVE_Development_MenuItem < 1) then
-        ALIVE_Development_MenuItem = 1;
     end
 end
 
@@ -418,14 +368,26 @@ ALIVE_Development_UpdateCutsceneTools_Main = function()
         relightMenuText = relightMenuText .. "[EDIT MODE]";
         relightMenuText = relightMenuText .. "\n"; --new line
         
+        --clamp
+        if (ALIVE_Development_AgentIndex > #ALIVE_Development_SceneAgentNames) then
+            ALIVE_Development_AgentIndex = 1;
+        elseif (ALIVE_Development_AgentIndex < 1) then
+            ALIVE_Development_AgentIndex = #ALIVE_Development_SceneAgentNames;
+        end
+
+        if (ALIVE_Development_MenuItem < 1) then
+            ALIVE_Development_MenuItem = 1;
+        end
+
         local text_sceneAgentIndex = tostring(ALIVE_Development_AgentIndex);
         local text_totalSceneAgentAmount = tostring(#ALIVE_Development_SceneAgentNames);
         local text_currSceneAgentName = tostring(ALIVE_Development_SceneAgentNames[ALIVE_Development_AgentIndex]);
         relightMenuText = relightMenuText .. "Selected Agent [" .. text_sceneAgentIndex .. " / " .. text_totalSceneAgentAmount .. "] ".. text_currSceneAgentName;
         relightMenuText = relightMenuText .. "\n";
-        relightMenuText = relightMenuText .. "Backspace - Mark Selected Agent for Deletion";
-        relightMenuText = relightMenuText .. "\n";
-        relightMenuText = relightMenuText .. "P - Save FOFLE JSON file";
+        relightMenuText = relightMenuText .. "+   | Add New Agent\n";
+        relightMenuText = relightMenuText .. "-   | Mark Agent For Deletion (toggle)\n";
+        relightMenuText = relightMenuText .. "P   | Save FOFLE JSON File\n";
+        relightMenuText = relightMenuText .. "ESC | Reload Scene";
         relightMenuText = relightMenuText .. "\n"; --new line
         relightMenuText = relightMenuText .. "\n"; --new line
         
@@ -546,6 +508,15 @@ FOFLE_Editor_ExportJSON = function()
             DialogBox_Okay("We won't add devtools.", "Export - Tools Not Enabled.")
         end
 
+        print("Fofle EDITOR - JSON Export - Mark Agents For Deletion")
+        for i, sceneAgent in pairs(FOFLE_AgentsMarkedForDeletion) do
+            
+            if(sceneAgent ~= nil) then
+                print("Fofle EDITOR - JSON Export - Mark Agent For Deletion - Add: " .. sceneAgent)
+                theProject.agents.remove[#theProject.agents.remove+1] = sceneAgent;
+            end
+        end
+
         if ALIVE_Core_FileUtils_EncodeJSONFile(theProject, "\\Data\\fofle_" .. fileName) then
             print("Fofle EDITOR - JSON Export - Export Successful");
             DialogBox_Okay("Export Successful!", "Project Exported");
@@ -560,10 +531,39 @@ FOFLE_Editor_ExportJSON = function()
     end
 end
 
+FOFLE_Editor_CycleMenuLeft = function()
+    ALIVE_Development_AgentIndex = ALIVE_Development_AgentIndex - 1;
+end
+
+FOFLE_Editor_CycleMenuRight = function()
+    ALIVE_Development_AgentIndex = ALIVE_Development_AgentIndex + 1;
+end
+
 FOFLE_Editor_CycleMenuUp = function()
     ALIVE_Development_MenuItem = ALIVE_Development_MenuItem + 1;
 end
 
 FOFLE_Editor_CycleMenuDown = function()
     ALIVE_Development_MenuItem = ALIVE_Development_MenuItem - 1;
+end
+
+FOFLE_Editor_RemoveAgent = function()
+    local selectedAgent = ALIVE_Development_SceneAgentNames[ALIVE_Development_AgentIndex];
+    if FOFLE_AgentsMarkedForDeletion[selectedAgent] == nil or FOFLE_AgentsMarkedForDeletion[selectedAgent] == false then
+        print("Fofle EDITOR - Mark Agent For Deletion - " .. selectedAgent)
+        --Remove Agent
+        ALIVE_AgentSetProperty(ALIVE_Development_SceneAgentNames[ALIVE_Development_AgentIndex], "Runtime: Visible", false, kScene)
+        FOFLE_AgentsMarkedForDeletion[selectedAgent] = selectedAgent;
+        DialogBox_Okay("The agent " .. ALIVE_Development_SceneAgentNames[ALIVE_Development_AgentIndex] .. " has been marked for deletion, and won't appear on the next scene load.", "Marked for deletion");
+    else
+        print("Fofle EDITOR - UNDO Mark Agent For Deletion - " .. selectedAgent)
+        --Add Agent Back
+        ALIVE_AgentSetProperty(ALIVE_Development_SceneAgentNames[ALIVE_Development_AgentIndex], "Runtime: Visible", true, kScene)
+        FOFLE_AgentsMarkedForDeletion[selectedAgent] = false;
+        DialogBox_Okay("The agent " .. ALIVE_Development_SceneAgentNames[ALIVE_Development_AgentIndex] .. " is no longer marked for deletion, and will appear on the next scene load.", "No Longer Marked");
+    end
+end
+
+FOFLE_Editor_AddAgent = function()
+    DialogBox_Okay("Not Yet Implemented", "Add Agent")
 end

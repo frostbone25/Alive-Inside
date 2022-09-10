@@ -58,6 +58,18 @@
         "mEvent": 0,
         "mScriptFunction": "FOFLE_Editor_ExportJSON",
         "mControllerIndexOverride": -1
+      },
+      {
+        "mInputCode": 187,
+        "mEvent": 0,
+        "mScriptFunction": "FOFLE_Editor_AddAgent",
+        "mControllerIndexOverride": -1
+      },
+      {
+        "mInputCode": 189,
+        "mEvent": 0,
+        "mScriptFunction": "FOFLE_Editor_RemoveAgent",
+        "mControllerIndexOverride": -1
       }
     ]
   }
