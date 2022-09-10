@@ -14,6 +14,7 @@ end
 
 print("Fofle - Get Scene Info")
 local sceneInfo = ALIVE_Core_FileUtils_DecodeJSONFile(ALIVE_FileUitls_SubDirectory .. "Data\\fofle_" .. FOFLE_SceneID .. ".json")
+Fofle_SetActiveProject(sceneInfo);
 
 print("Fofle - Is Scene Supported Check")
 if not (Fofle_IsSceneVersionSupported(sceneInfo.fofle.version)) then

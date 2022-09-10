@@ -297,24 +297,29 @@ ALIVE_Development_UpdateCutsceneTools_Input = function()
     
     -------------------------------------------------------------
     --edit mode toggle
-    if ALIVE_InputKeyPress(82) then
-        --R key
-        ALIVE_Development_CutsceneToolsEditMode = false;
-        ALIVE_Development_BuildSceneAgentList();
-    elseif ALIVE_InputKeyPress(70) then
+    
+    if ALIVE_InputKeyPress(70) then
         --F key
-        ALIVE_Development_CutsceneToolsEditMode = true;
+        ALIVE_Development_CutsceneToolsEditMode = not ALIVE_Development_CutsceneToolsEditMode;
+        if(ALIVE_Development_CutsceneToolsEditMode) then
+            InputMapperActivate("FOFLE_Editor.imap")
+        else
+            InputMapperActivate("Alive_Development_Freecam.imap")
+        end
         ALIVE_Development_BuildSceneAgentList();
     end
 
     ------------------------------------------------------------
+
+    --[[
     if ALIVE_InputKeyPress(27) then
         --Esc key
         print("Fofle EDITOR - Scene Reload Requested - " .. kScene .. ".lua");
         SubProject_Switch("Menu", kScript .. ".lua")
         return;
     end
-    
+    --]]
+
     -------------------------------------------------------------
     --if we are not in edit mode, don't continue
     if (ALIVE_Development_CutsceneToolsEditMode == false) then
@@ -349,13 +354,18 @@ ALIVE_Development_UpdateCutsceneTools_Input = function()
     
     -------------------------------------------------------------
     --menu cycle and operations
-    if ALIVE_InputKeyPress(87) then
+
+    --[[
+    if ALIVE_InputKeyPress(38) then
+        --key up [38] (menu cycle up)
         --key w [87] (menu cycle up)
         ALIVE_Development_MenuItem = ALIVE_Development_MenuItem - 1;
-    elseif ALIVE_InputKeyPress(83) then
+    elseif ALIVE_InputKeyPress(40) then
+        --key down [40] (menu cycle down)
         --key s [83] (menu cycle down)
         ALIVE_Development_MenuItem = ALIVE_Development_MenuItem + 1;
     end
+    --]]
     
     if (ALIVE_Development_MenuItem < 1) then
         ALIVE_Development_MenuItem = 1;
@@ -412,6 +422,10 @@ ALIVE_Development_UpdateCutsceneTools_Main = function()
         local text_totalSceneAgentAmount = tostring(#ALIVE_Development_SceneAgentNames);
         local text_currSceneAgentName = tostring(ALIVE_Development_SceneAgentNames[ALIVE_Development_AgentIndex]);
         relightMenuText = relightMenuText .. "Selected Agent [" .. text_sceneAgentIndex .. " / " .. text_totalSceneAgentAmount .. "] ".. text_currSceneAgentName;
+        relightMenuText = relightMenuText .. "\n";
+        relightMenuText = relightMenuText .. "Backspace - Mark Selected Agent for Deletion";
+        relightMenuText = relightMenuText .. "\n";
+        relightMenuText = relightMenuText .. "P - Save FOFLE JSON file";
         relightMenuText = relightMenuText .. "\n"; --new line
         relightMenuText = relightMenuText .. "\n"; --new line
         
@@ -481,6 +495,8 @@ ALIVE_Development_UpdateCutsceneTools_Main = function()
         relightMenuText = relightMenuText .. "\n"; --new line
         relightMenuText = relightMenuText .. "[FREECAMERA MODE]";
         relightMenuText = relightMenuText .. "\n"; --new line
+        relightMenuText = relightMenuText .. "Press F to toggle edit mode.";
+        relightMenuText = relightMenuText .. "\n"; --new line
         
         relightMenuText = relightMenuText .. "\n"; --new line
         relightMenuText = relightMenuText .. "Current Camera: " .. currentCamera_name;
@@ -493,4 +509,61 @@ ALIVE_Development_UpdateCutsceneTools_Main = function()
     end
     
     TextSet(ALIVE_Development_CutsceneToolsText, relightMenuText)
+end
+
+FOFLE_Editor_ReloadScene = function()
+    print("Fofle EDITOR - Scene Reload Requested - " .. kScene .. ".lua");
+
+    if (DialogBox_YesNo("All unsaved progress will be lost! Press P to export/save your work BEFORE doing this!", "Are you sure?")) then
+        SubProject_Switch("Menu", kScript .. ".lua")
+    end
+end
+
+FOFLE_Editor_ExportJSON = function()
+    local theProject = Fofle_GetActiveProject();
+    if (theProject ~= nil) and (theProject ~= false) then
+        print("Fofle EDITOR - JSON Export - Active Project Loaded")
+        --Proceed with Export
+        
+        print("Fofle EDITOR - JSON Export - Set File Version " .. FofleProject_FileVersion)
+        theProject.fofle.version = FofleProject_FileVersion;
+
+        local fileName, cancel = Menu_OpenTextEntryBox(FOFLE_SceneID, Menu_Text("Please enter the Scene ID. The default value will override the existing loaded scene."))
+        if(cancel) then
+            print("Fofle EDITOR - JSON Export - Cancel")
+            DialogBox_Okay("We've cancelled the scene export.", "Export - Cancelled")
+            return
+        end
+
+        local enableTools = DialogBox_YesNo("Would you like to enable devtools by default when this project is loaded?", "Export - Enable Tools?")
+        theProject.debug.useFreecamTools = enableTools;
+
+        local enableMetrics = DialogBox_YesNo("Would you like to enable performance metrics by default when this project is loaded?", "Export - Enable Metrics?")
+        theProject.debug.showPerformanceMetrics = enableMetrics;
+
+        if not theProject.debug.useFreecamTools then
+            print("Fofle EDITOR - JSON Export - Freecam Tools Not Enabled")
+            DialogBox_Okay("We won't add devtools.", "Export - Tools Not Enabled.")
+        end
+
+        if ALIVE_Core_FileUtils_EncodeJSONFile(theProject, "\\Data\\fofle_" .. fileName) then
+            print("Fofle EDITOR - JSON Export - Export Successful");
+            DialogBox_Okay("Export Successful!", "Project Exported");
+        else
+            print("Fofle EDITOR - JSON Export - Export NOT Successful");
+            DialogBox_Okay("Export Unsuccessful", "Fatal Error");
+        end
+
+    else
+        print("Fofle EDITOR - JSON Export - Project Load Failed")
+        DialogBox_Okay("Could not get active FOFLE project.", "Fatal Error");
+    end
+end
+
+FOFLE_Editor_CycleMenuUp = function()
+    ALIVE_Development_MenuItem = ALIVE_Development_MenuItem + 1;
+end
+
+FOFLE_Editor_CycleMenuDown = function()
+    ALIVE_Development_MenuItem = ALIVE_Development_MenuItem - 1;
 end

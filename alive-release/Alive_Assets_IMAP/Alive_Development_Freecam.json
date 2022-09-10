@@ -37,12 +37,6 @@
       },
       {
         "mInputCode": 83,
-        "mEvent": 0,
-        "mScriptFunction": "ALIVE_Development_Freecam_Input_BackwardBegin",
-        "mControllerIndexOverride": -1
-      },
-      {
-        "mInputCode": 83,
         "mEvent": 1,
         "mScriptFunction": "ALIVE_Development_Freecam_Input_BackwardEnd",
         "mControllerIndexOverride": -1

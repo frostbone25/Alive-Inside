@@ -22,6 +22,14 @@ ALIVE_Core_FileUtils_DecodeJSONFile = function(fileName)
     return ALIVE_Core_JSON.decode(content) --Return the decoded file.
 end
 
+ALIVE_Core_FileUtils_EncodeJSONFile = function(content, path)
+    local theFile = (io.open)(ALIVE_FileUitls_SubDirectory .. path .. ".json", "w")
+    theFile:write(ALIVE_Core_JSON.encode(content));
+    theFile:close();
+    return true;
+end
+
+
 ALIVE_Core_FileUtils_SaveSetCheckpoint = function(checkpoint)
     if ALIVE_FileUtils_OptionsFile == nil or ALIVE_FileUtils_ActiveSave == nil then
         return false;

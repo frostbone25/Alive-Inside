@@ -1,7 +1,7 @@
 [
   {
     "mMetaStreamVersion": "6VSM",
-    "mDefaultSectionChunkSize": 1322,
+    "mDefaultSectionChunkSize": 1410,
     "mDebugSectionChunkSize": 0,
     "mAsyncSectionChunkSize": 0,
     "mClassNamesLength": 2,
@@ -69,54 +69,6 @@
         "mInputCode": 68,
         "mEvent": 1,
         "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_MoveRight_End",
-        "mControllerIndexOverride": -1
-      },
-      {
-        "mInputCode": 16,
-        "mEvent": 0,
-        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_Running_Begin",
-        "mControllerIndexOverride": -1
-      },
-      {
-        "mInputCode": 16,
-        "mEvent": 1,
-        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_Running_End",
-        "mControllerIndexOverride": -1
-      },
-      {
-        "mInputCode": 67,
-        "mEvent": 0,
-        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_Crouching_Begin",
-        "mControllerIndexOverride": -1
-      },
-      {
-        "mInputCode": 67,
-        "mEvent": 1,
-        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_Crouching_End",
-        "mControllerIndexOverride": -1
-      },
-      {
-        "mInputCode": 17,
-        "mEvent": 0,
-        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_Crouching_Begin",
-        "mControllerIndexOverride": -1
-      },
-      {
-        "mInputCode": 17,
-        "mEvent": 1,
-        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_Crouching_End",
-        "mControllerIndexOverride": -1
-      },
-      {
-        "mInputCode": 82,
-        "mEvent": 0,
-        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_ZombatToggle_Begin",
-        "mControllerIndexOverride": -1
-      },
-      {
-        "mInputCode": 70,
-        "mEvent": 0,
-        "mScriptFunction": "ALIVE_Gameplay_Player_ThirdPerson_Character_Input_NoClipToggle_Begin",
         "mControllerIndexOverride": -1
       }
     ]
